@@ -10,7 +10,7 @@ interface HeaderProps {
 // Define the Header component as a functional component
 const Header: React.FC<HeaderProps> = ({ username = "Malinda-Sampath" }) => {
   return (
-    <div className="bg-transparent h-16 px-4 flex justify-between w-full items-center">
+    <div className="flex items-center justify-between w-full h-16 px-4 mt-6 bg-transparent">
       <div></div>
       <div className="flex items-center gap-2 mr-2">
         <HiOutlineBell fontSize={24} className="text-[#F99C30]" />
