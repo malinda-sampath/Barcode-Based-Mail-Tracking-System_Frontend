@@ -1,14 +1,16 @@
 import React from "react";
-import "./App.css";
-import Button from "./components/buttonComponents/Button";
+
+import TableTest from "./components/table/TableTest";
+import AppRouter from "./routes/AppRouter";
 import AllButtonComponents from "./components/buttonComponents/AllButtonComponents";
 
-function App() {
-  return (
-    <div className="App">
-      <AllButtonComponents/>
-    </div>
-  );
-}
+const App: React.FC = () => (
+  <div>
+    {/* <TableTest /> */}
+    {/* <AppRouter /> */}
+    <AllButtonComponents/>
+  </div>
+);
+
 
 export default App;
