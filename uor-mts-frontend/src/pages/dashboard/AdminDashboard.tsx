@@ -1,68 +1,76 @@
 import React from "react";
-import {Button} from '../../components/ui/button'
-import { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from "../../components/ui/card";
-import { GitBranch, GitBranchIcon, MailsIcon, User2Icon, Users2Icon } from "lucide-react";
-import { FaCodeBranch, FaUser, FaUsers } from "react-icons/fa";
-import { HiUsers } from "react-icons/hi";
-import {Dataset} from '../dashboard/Chart/Dataset'
-
-
+import { Button } from "../../components/ui/button";
+import { Card, CardHeader, CardTitle, CardContent } from "../../components/ui/card";
+import { Calendar, GitBranchIcon, MailsIcon, Users2Icon } from "lucide-react";
+import { Dataset } from "../../PagesComponents/dashboard/chart/Dataset";
+import { CalendarDemo } from "../../PagesComponents/dashboard/calender/CalendarDemo";
 
 export default function Dashboard() {
   return (
     <>
+      {/* Dashboard Title */}
+     
+      {/* Card Section */}
+      <div className="flex flex-wrap gap-10 ml-8 sm:gap-5">
+        {/* Branches Card */}
+        <Card className="w-full p-4 m-1 sm:w-1/4">
+          <CardHeader>
+            <CardTitle className="flex justify-start items-center gap-4 text-[#611010]">
+              <GitBranchIcon className="text-[40px] text-[#611010]" />
+              BRANCHES
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <span className="text-[60px] text-[#F99C30] font-bold">24</span>
+          </CardContent>
+        </Card>
 
-    <div className="ml-[48px] mb-5 text-[#611010] font-bold text-[20px]">DASHBOARD</div>
-    <div className="ml-10 sm:flex sm:flex-row md:flex md:flex-row lg:flex lg:flex-row ">
-      <Card className=" pr-[100px] m-2   sm:pr-6 md:pr-20 lg:pr-20">
-        <CardHeader>
-          <CardTitle className="flex justify-start items-center gap-[6px] sm:gap-10 text-[#611010]"><GitBranchIcon className="text-[40px] text-[#611010]" /><span className="text-[30px]">BRANCHES</span></CardTitle>
-         </CardHeader>
-        <CardContent >
-         <span className="text-[60px] text-[#F99C30] font-bold">24</span>
-        </CardContent>
-        <CardFooter>
+        {/* Admins Card */}
+        <Card className="w-full p-4 m-1 sm:w-1/4">
+          <CardHeader>
+            <CardTitle className="flex justify-start items-center gap-4 text-[#611010]">
+              <Users2Icon className="text-[40px] text-[#611010]" />
+              Admins
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <span className="text-[60px] text-[#F99C30] font-bold">24</span>
+          </CardContent>
+        </Card>
+
+        {/* Received Mails Today Card */}
+        <Card className="w-full p-4 m-1 sm:w-1/3">
+          <CardHeader>
+            <CardTitle className="flex justify-start items-center gap-4 text-[#611010]">
+              <MailsIcon className="text-[50px] text-[#611010]" />
+             RECEIVED MAILS TODAY
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <span className="text-[60px] text-[#F99C30] font-bold">24</span>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Chart and Report Button Section */}
+      <div className="flex flex-wrap gap-4 mt-4 ml-7">
+        <Dataset />
+
+        {/* Calendar */}
+        <div className="">
+          <CalendarDemo />
+          <div className="flex flex-col gap-5 mt-7">
+          <Button className="px-10 py-2 bg-black sm:mt-0 sm-py-5">View Report</Button>
+        
+           
           
-        </CardFooter>
-      </Card>
-
-
-      <Card className="  m-2   pr-[100px]  sm:pr-6 md:pr-20 lg:pr-20">
-        <CardHeader>
-        <CardTitle className="flex justify-start items-center gap-[6px] sm:gap-10 text-[#611010]"><Users2Icon className="text-[40px] text-[#611010]" /><span className="text-[30px]">Admins</span></CardTitle>
-
-        </CardHeader>
-        <CardContent >
-         <span className="text-[60px] text-[#F99C30] font-bold">24</span>
-        </CardContent>
-        <CardFooter>
-          
-        </CardFooter>
-      </Card>
-
-      <Card className=" pr-[90px] m-2    sm:pr-6 md:pr-20 lg:pr-20">
-        <CardHeader>
-        <CardTitle className="flex justify-start items-center gap-[6px] sm:gap-10 text-[#611010]"><MailsIcon className="text-[50px] sm:text-[50px] md:text-[50px]   text-[#611010]" /><span className="text-[25px]">RECIEVED MAILS TODAY</span></CardTitle>
-        </CardHeader>
-        <CardContent >
-         <span className="text-[60px] text-[#F99C30] font-bold">24</span>
-        </CardContent>
-        <CardFooter>
-          
-        </CardFooter>
-      </Card>
-    </div>
-    <div className="flex flex-row justify-start">
-  <Dataset />
-  <Button className="bg-black mt-[300px] pl-10 pr-10">Report</Button>
-</div>
-
-
-
-  
+          </div>
     
-    
+        </div>
+
+        {/* Buttons */}
+        
+      </div>
     </>
-    
   );
 }

@@ -3,20 +3,27 @@ import { Outlet } from "react-router-dom"; // Import Outlet for rendering nested
 import Sidebar from "./Sidebar"; // Import Sidebar component
 import Header from "./Header"; // Import Header component
 
-// Define the Layout component
+
 const Layout: React.FC = () => {
   return (
-    <div className="flex flex-row bg-neutral-100 h-screen w-screen overflow-hidden">
-      <Sidebar /> {/* Sidebar component */}
-      <div className="flex flex-col flex-1">
-        <Header /> {/* Header component */}
-        <div>
-          <Outlet />
-        </div>{" "}
-        {/* Render nested routes */}
-      </div>
-      {/* <p>Footer</p> */} {/* Footer (commented out) */}
+    <div className="flex w-screen h-screen overflow-x-hidden bg-neutral-100">
+ 
+  <div>
+    <Sidebar />
+  </div>
+
+  
+  <div className="flex flex-col flex-1 ml-60">
+    <Header /> 
+    <div className="h-full p-4 overflow-x-hidden overflow-y-auto">
+      <Outlet />
     </div>
+  </div>
+
+ 
+  {/* <p>Footer</p> */}
+</div>
+
   );
 };
 
