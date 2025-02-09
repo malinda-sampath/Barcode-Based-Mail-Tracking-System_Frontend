@@ -22,7 +22,7 @@ export const DASHBOARD_SIDEBAR_LINKS = [
   },
   {
     key: "AdminManagement",
-    label: "Admin Management",
+    label: "Mail Handle",
     path: "/adminmanagement",
     icon: <FaUsers className="text-[#F99C30]" />,
   },

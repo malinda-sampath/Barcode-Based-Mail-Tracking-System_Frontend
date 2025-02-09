@@ -25,7 +25,7 @@ const columns = [
 const TableTest: React.FC = () => (
   <div className="p-4">
     <h1 className="text-2xl font-bold mb-4">User List</h1>
-    <Table columns={columns} data={data} />
+    {/* <Table columns={columns} data={data} /> */}
   </div>
 );
 

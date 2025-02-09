@@ -12,34 +12,14 @@ type TableProps<T> = {
   columns: { key: keyof T; label: string }[];
   data: T[];
   rowsPerPage?: number;
+  onViewClick: (row: T) => void; // Prop for handling the "View" button click
+  onEditClick: (row: T) => void;
 };
 
-const Table = <T,>({ columns, data, rowsPerPage = 5 }: TableProps<T>) => {
+const Table = <T,>({ columns, data, rowsPerPage = 5, onViewClick , onEditClick }: TableProps<T>) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [sortKey, setSortKey] = useState<keyof T | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
-
-  // Define default actions inside Table
-  const actions: ActionType<T>[] = [
-    {
-      name: "view",
-      label: "View",
-      icon: <FaEye />,
-      onClick: (row) => alert(`Viewing ${JSON.stringify(row)}`),
-    },
-    {
-      name: "edit",
-      label: "Edit",
-      icon: <FaEdit />,
-      onClick: (row) => alert(`Editing ${JSON.stringify(row)}`),
-    },
-    {
-      name: "delete",
-      label: "Delete",
-      icon: <FaTrash />,
-      onClick: (row) => alert(`Deleting ${JSON.stringify(row)}`),
-    },
-  ];
 
   const handleSort = (key: keyof T) => {
     if (sortKey === key) {
@@ -101,25 +81,29 @@ const Table = <T,>({ columns, data, rowsPerPage = 5 }: TableProps<T>) => {
                 </td>
               ))}
               <td className="px-4 py-2 flex space-x-2">
-                {actions.map((action, actionIndex) => (
-                  <button
-                    key={actionIndex}
-                    className="p-2 text-sm bg-gray-200 rounded hover:bg-gray-300"
-                    onClick={() => action.onClick(row)}
+                {/* View Button */}
+                <button
+                  className="p-2 text-sm bg-gray-200 rounded hover:bg-gray-300"
+                  onClick={() => onViewClick(row)}
+                >
+                  <FaEye className="w-4 h-4 text-blue-500" />
+                </button>
+
+                {/* Edit Button */}
+                <button
+                  className="p-2 text-sm bg-gray-200 rounded hover:bg-gray-300"
+                  onClick={() => onEditClick(row)} // Corrected to use onEditClick
                   >
-                    {React.cloneElement(action.icon as React.ReactElement, {
-                      className: `w-4 h-4 ${
-                        action.name === "delete"
-                          ? "text-red-500"
-                          : action.name === "edit"
-                          ? "text-green-500"
-                          : action.name === "view"
-                          ? "text-blue-500"
-                          : ""
-                      }`,
-                    })}
+                      <FaEdit className="w-4 h-4 text-green-500" />
                   </button>
-                ))}
+
+                {/* Delete Button */}
+                <button
+                  className="p-2 text-sm bg-gray-200 rounded hover:bg-gray-300"
+                  onClick={() => alert(`Deleting ${JSON.stringify(row)}`)}
+                >
+                  <FaTrash className="w-4 h-4 text-red-500" />
+                </button>
               </td>
             </tr>
           ))}
