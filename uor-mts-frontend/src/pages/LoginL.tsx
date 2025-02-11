@@ -11,7 +11,7 @@ const LoginL = () => {
     if (username === "admin" && password === "password") {
       alert("Login successful!");
     } else {
-      alert("Invalid username or password");
+      alert("Invalid username or password,Please check again");
     }
   };
 
