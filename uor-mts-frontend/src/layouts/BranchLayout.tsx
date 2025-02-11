@@ -1,15 +1,15 @@
 import React from "react"; // Import React
 import { Outlet } from "react-router-dom"; // Import Outlet for rendering nested routes
-import Sidebar from "./Sidebar"; // Import Sidebar component
+import BranchSidebar from "./BranchSidebar"; // Import Sidebar component
 import Header from "./Header"; // Import Header component
 
 
-const Layout: React.FC = () => {
+const BranchLayout: React.FC = () => {
   return (
     <div className="flex w-screen h-screen overflow-x-hidden bg-neutral-100">
  
   <div>
-    <Sidebar />
+    <BranchSidebar />
   </div>
 
   
@@ -27,4 +27,4 @@ const Layout: React.FC = () => {
   );
 };
 
-export default Layout;
+export default BranchLayout;
