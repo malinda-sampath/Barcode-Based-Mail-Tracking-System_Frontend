@@ -157,7 +157,13 @@ export default function AdminManagement() {
       {formType === "view" && selectedAdmin && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
           <AdminDetails 
-            admin={selectedAdmin} 
+            admin={{
+              "First Name": selectedAdmin.firstName,
+              "Last Name": selectedAdmin.lastName,
+              "Email": selectedAdmin.email,
+              "Mobile No": selectedAdmin.mobileNo,
+              "User Name": selectedAdmin.userName
+            }}
             columns={columns} 
             onClose={handleClosePopup} />
         </div>
