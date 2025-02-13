@@ -1,12 +1,11 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import BranchLayout from "../layouts/BranchLayout";
-import MailManagement from "../pages/MailManagement";
 import AllMails from "../pages/AllMails";
 import Help from "../pages/Help";
 import Settings from "../pages/Setting";
 import BranchDashboard from "../pages/dashboard/BranchDashboard";
 
-function AdminAppRouter() {
+function BranchAppRouter() {
   return (
     <Router>
       <Routes>
@@ -22,4 +21,4 @@ function AdminAppRouter() {
   );
 }
 
-export default AdminAppRouter;
+export default BranchAppRouter;

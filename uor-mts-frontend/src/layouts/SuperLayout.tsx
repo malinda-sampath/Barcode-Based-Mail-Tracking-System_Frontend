@@ -4,7 +4,7 @@ import Sidebar from "./SuperSidebar"; // Import Sidebar component
 import Header from "./Header"; // Import Header component
 
 
-const Layout: React.FC = () => {
+const SuperLayout: React.FC = () => {
   return (
     <div className="flex w-screen h-screen overflow-x-hidden bg-neutral-100">
  
@@ -27,4 +27,4 @@ const Layout: React.FC = () => {
   );
 };
 
-export default Layout;
+export default SuperLayout;

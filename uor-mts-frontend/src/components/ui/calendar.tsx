@@ -14,7 +14,6 @@ function Calendar({
   ...props
 }: CalendarProps) {
   return (
-    
     <DayPicker
       showOutsideDays={showOutsideDays}
       className={cn("p-3 bg-white text-black ", className)}  // White background & black text

@@ -8,7 +8,6 @@ import Settings from "../pages/Setting";
 
 function SuperAdminAppRouter() {
   return (
-    <Router>
       <Routes>
         <Route path="/" element={<SuperLayout />}>
           <Route index element={<SuperAdminDashboard />} /> {/* Default route */}
@@ -18,8 +17,7 @@ function SuperAdminAppRouter() {
           <Route path="help" element={<Help />} />
           <Route path="login" element={<div>This is Login Page</div>} />
         </Route>
-      </Routes>
-    </Router>
+    </Routes>
   );
 }
 
