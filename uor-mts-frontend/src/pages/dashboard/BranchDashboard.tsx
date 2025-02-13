@@ -1,12 +1,12 @@
 import React from "react";
 import { Button } from "../../components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "../../components/ui/card";
-import { Calendar, GitBranchIcon, MailMinusIcon, MailsIcon, Users2Icon } from "lucide-react";
-import { AdminDataset } from "../../PagesComponents/dashboard/chart/AdminDataset";
+import { Calendar, GitBranchIcon, MailCheck, MailMinusIcon, MailsIcon, Users2Icon } from "lucide-react";
+import { BranchDataset } from "../../PagesComponents/dashboard/chart/BranchDataset";
 import { CalendarDemo } from "../../PagesComponents/dashboard/calender/CalendarDemo";
 import { FaRegCreditCard, FaRegObjectGroup } from "react-icons/fa";
 
-export default function AdminDashboard() {
+export default function BranchDashboard() {
   return (
     <>
       {/* Dashboard Title */}
@@ -17,8 +17,8 @@ export default function AdminDashboard() {
         <Card className="w-full p-4 m-1 sm:w-1/4">
           <CardHeader>
             <CardTitle className="flex justify-start items-center gap-4 text-[#611010]">
-              <MailsIcon className="text-[40px] text-[#611010]" />
-             Entered Mails
+              <MailCheck className="text-[40px] text-[#611010]" />
+            CLAIM Mails
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -45,7 +45,7 @@ export default function AdminDashboard() {
 
       {/* Chart and Report Button Section */}
       <div className="flex flex-wrap gap-4 mt-4 ml-7">
-        <AdminDataset />
+        <BranchDataset />
 
         {/* Calendar */}
         <div className="">

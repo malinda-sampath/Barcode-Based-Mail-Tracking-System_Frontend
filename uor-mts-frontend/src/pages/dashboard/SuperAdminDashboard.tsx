@@ -1,12 +1,11 @@
 import React from "react";
 import { Button } from "../../components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "../../components/ui/card";
-import { Calendar, GitBranchIcon, MailMinusIcon, MailsIcon, Users2Icon } from "lucide-react";
-import { AdminDataset } from "../../PagesComponents/dashboard/chart/AdminDataset";
+import { Calendar, GitBranchIcon, MailsIcon, Users2Icon } from "lucide-react";
+import { Dataset } from "../../PagesComponents/dashboard/chart/SuperDataset";
 import { CalendarDemo } from "../../PagesComponents/dashboard/calender/CalendarDemo";
-import { FaRegCreditCard, FaRegObjectGroup } from "react-icons/fa";
 
-export default function AdminDashboard() {
+export default function Dashboard() {
   return (
     <>
       {/* Dashboard Title */}
@@ -17,8 +16,8 @@ export default function AdminDashboard() {
         <Card className="w-full p-4 m-1 sm:w-1/4">
           <CardHeader>
             <CardTitle className="flex justify-start items-center gap-4 text-[#611010]">
-              <MailsIcon className="text-[40px] text-[#611010]" />
-             Entered Mails
+              <GitBranchIcon className="text-[40px] text-[#611010]" />
+              BRANCHES
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -26,26 +25,36 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
 
-        {/* Rejected mail Card */}
+        {/* Admins Card */}
         <Card className="w-full p-4 m-1 sm:w-1/4">
           <CardHeader>
             <CardTitle className="flex justify-start items-center gap-4 text-[#611010]">
-              <MailMinusIcon className="text-[40px] text-[#611010]" />
-              REJECT MAILS
+              <Users2Icon className="text-[40px] text-[#611010]" />
+              Admins
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <span className="text-[60px] text-[#F99C30] font-bold">20</span>
+            <span className="text-[60px] text-[#F99C30] font-bold">24</span>
           </CardContent>
         </Card>
 
-      
-        
+        {/* Received Mails Today Card */}
+        <Card className="w-full p-4 m-1 sm:w-1/3">
+          <CardHeader>
+            <CardTitle className="flex justify-start items-center gap-4 text-[#611010]">
+              <MailsIcon className="text-[50px] text-[#611010]" />
+             RECEIVED MAILS TODAY
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <span className="text-[60px] text-[#F99C30] font-bold">24</span>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Chart and Report Button Section */}
       <div className="flex flex-wrap gap-4 mt-4 ml-7">
-        <AdminDataset />
+        <Dataset />
 
         {/* Calendar */}
         <div className="">
