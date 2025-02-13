@@ -1,22 +1,12 @@
 import React from "react";
+import TrackingG from "./pages/TrackingG";
+import TrackingL from "./pages/TrackingL";
 
-import TableTest from "./components/table/TableTest";
-import AppRouter from "./routes/AppRouter";
-<<<<<<< HEAD
-import Form from "./components/form/Form";
-=======
-import AllButtonComponents from "./components/buttonComponents/AllButtonComponents";
->>>>>>> b3eba5ec396832b94f767fae522e6a4289c49373
 
 const App: React.FC = () => (
   <div>
-    {/* <TableTest /> */}
-    {/* <AppRouter /> */}
-<<<<<<< HEAD
-   <Form/>
-=======
-    <AllButtonComponents/>
->>>>>>> b3eba5ec396832b94f767fae522e6a4289c49373
+    <TrackingG /> //This will render the TrackingG component(For Gayan)
+    <TrackingL /> //This will render the TrackingG component(For Gayan)
   </div>
 );
 
