@@ -83,26 +83,35 @@ const Table = <T,>({ columns, data, rowsPerPage = 5, onViewClick , onEditClick }
               <td className="px-4 py-2 flex space-x-2">
                 {/* View Button */}
                 <button
+                  type="button"
                   className="p-2 text-sm bg-gray-200 rounded hover:bg-gray-300"
                   onClick={() => onViewClick(row)}
+                  title="View"
                 >
                   <FaEye className="w-4 h-4 text-blue-500" />
+                  <span className="sr-only">View</span>
                 </button>
 
                 {/* Edit Button */}
                 <button
+                  type="button"
                   className="p-2 text-sm bg-gray-200 rounded hover:bg-gray-300"
-                  onClick={() => onEditClick(row)} // Corrected to use onEditClick
-                  >
-                      <FaEdit className="w-4 h-4 text-green-500" />
-                  </button>
+                  onClick={() => onEditClick(row)}
+                  title="Edit"
+                >
+                  <FaEdit className="w-4 h-4 text-green-500" />
+                  <span className="sr-only">Edit</span>
+                </button>
 
                 {/* Delete Button */}
                 <button
+                  type="button"
                   className="p-2 text-sm bg-gray-200 rounded hover:bg-gray-300"
                   onClick={() => alert(`Deleting ${JSON.stringify(row)}`)}
+                  title="Delete"
                 >
                   <FaTrash className="w-4 h-4 text-red-500" />
+                  <span className="sr-only">Delete</span>
                 </button>
               </td>
             </tr>
@@ -111,6 +120,7 @@ const Table = <T,>({ columns, data, rowsPerPage = 5, onViewClick , onEditClick }
       </table>
       <div className="flex justify-between items-center mt-4">
         <button
+          type="button"
           className="p-2 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
@@ -121,6 +131,7 @@ const Table = <T,>({ columns, data, rowsPerPage = 5, onViewClick , onEditClick }
           Page {currentPage} of {totalPages}
         </span>
         <button
+          type="button"
           className="p-2 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
           onClick={() =>
             setCurrentPage((prev) => Math.min(prev + 1, totalPages))
