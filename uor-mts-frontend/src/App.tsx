@@ -1,12 +1,18 @@
 import React from "react";
+import { Routes, Route } from "react-router-dom";
 import SuperAdminAppRouter from "./routes/SuperAdminAppRouter";
+import BranchRou
 import Login from "./pages/Login";
 
 
 const App: React.FC = () => (
-  <div>
-    <Login />
-  </div>
+  <>
+    <Routes>
+      <Route path="/" element={<Login />} />
+      <Route path="/admin/*" element={<SuperAdminAppRouter />} />
+
+    </Routes>
+  </>
 );
 
 

@@ -8,10 +8,10 @@ export default function Login() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center w-full min-h-screen px-4 bg-center bg-cover brightness-100 bg-custom-bg">
+    <div className="flex flex-col items-center justify-center min-h-screen px-4 bg-center bg-cover brightness-100 bg-[url(./assets/uorbg.jpg)] h-screen w-full">
       {/* Header Section */}
       <form
-        className="w-[800px] h-[470px] rounded-md opacity-90 pt-14  mx-auto bg-[#681d1d] shadow-md  space-y-6"
+        className="w-[700px] h-[470px] rounded-md opacity-90 pt-14  mx-auto bg-[#681d1d] shadow-md  space-y-6"
         onSubmit={handleSubmit}
       >
         <div className="flex items-center justify-center gap-4 mb-4">
@@ -57,7 +57,7 @@ export default function Login() {
 
           <button
             type="submit"
-            className="w-[95px] bg-[#4169E1] text-white py-3 rounded hover:bg-blue-700 transition-colors duration-200"
+            className="w-[110px] bg-[#4169E1] text-white py-3 rounded-md hover:bg-blue-700 transition-colors duration-200"
           >
             LOGIN
           </button>
