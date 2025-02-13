@@ -9,11 +9,7 @@ import AllButtonComponents from "./components/buttonComponents/AllButtonComponen
 
 const App: React.FC = () => (
   <div>
-    {/* <TableTest /> */}
       <AppRouter />    
-  {/* <AdminManagement/>  */}
-  
-  
   </div>
 );
 
