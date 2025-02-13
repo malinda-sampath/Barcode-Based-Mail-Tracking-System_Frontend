@@ -1,5 +1,4 @@
 import React from "react";
-import TrackingG from "./pages/TrackingG";
 import TrackingL from "./pages/TrackingL";
 
 const App: React.FC = () => {
@@ -8,6 +7,7 @@ const App: React.FC = () => {
     alert("Button clicked!");
   };
 
+<<<<<<< HEAD
   return (
     
       
@@ -16,5 +16,13 @@ const App: React.FC = () => {
    
   );
 };
+=======
+const App: React.FC = () => (
+  <div>
+    
+    <TrackingL /> //This will render the TrackingL component(For Layan)
+  </div>
+);
+>>>>>>> 4a7e2bf571a0793bc3df4b493796771390e1d9e8
 
 export default App;
