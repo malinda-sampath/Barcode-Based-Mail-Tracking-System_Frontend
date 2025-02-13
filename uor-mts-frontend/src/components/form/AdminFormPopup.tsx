@@ -43,12 +43,21 @@ const AdminFormPopup: React.FC<AdminFormPopupProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+    <div className="max-w-full mx-auto p-6 bg-white shadow-lg rounded-lg">
         {successMessage && (
-          <div className="bg-green-500 text-white p-3 rounded-md mb-4 text-center">
-            ✅ {title} Updated Successfully
+          <div className="flex items-center justify-between bg-green-600 text-white p-3 rounded-md mb-4">
+          <div className="flex items-center gap-2">
+            ✅ <span>{title} Updated Successfully</span>
           </div>
+          <button
+            onClick={() => setSuccessMessage(false)}
+            className="text-white font-bold"
+          >
+            ✖
+          </button>
+        </div>
+      
+         
         )}
         <h2 className="text-xl font-bold text-center" style={{ color: "#611010" }}>
           {title}
@@ -102,8 +111,7 @@ const AdminFormPopup: React.FC<AdminFormPopupProps> = ({
             </div>
           </div>
         </form>
-      </div>
-    </div>
+  </div>
   );
 };
 
