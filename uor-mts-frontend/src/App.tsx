@@ -5,11 +5,10 @@ import Login from "./pages/Login";
 
 
 const App: React.FC = () => (
-// App.tsx
-<Routes>
-  <Route path="/" element={<Login />} />
-  <Route path="/admin/*" element={<SuperAdminAppRouter />} />
-</Routes>
+    <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/admin/*" element={<SuperAdminAppRouter />} />
+    </Routes> 
 );
 
 
