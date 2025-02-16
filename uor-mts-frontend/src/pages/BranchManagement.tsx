@@ -33,7 +33,7 @@ export default function AdminManagement() {
     <p className="text-[#611010] text-lg font-semibold text-center md:text-left md:absolute md:top-5 md:left-80">Branch Management</p>
     
     <Today/>
-    <div className="flex flex-wrap items-center justify-center md:justify-between px-4 md:px-8 gap-4 md:gap-[150px]">
+    <div className="flex flex-wrap items-center justify-center md:justify-between px-4 md:px-8 gap-4 md:gap-[10px]">
       <Search/>
       <div onClick={handleButtonClick1}>
           <Button
