@@ -8,7 +8,7 @@ import Settings from "../pages/Setting";
 
 function AdminAppRouter() {
   return (
-    <Router>
+     <Router>
       <Routes>
         <Route path="/" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} /> {/* Default route */}
@@ -19,7 +19,7 @@ function AdminAppRouter() {
           <Route path="login" element={<div>This is Login Page</div>} />
         </Route>
       </Routes>
-    </Router>
+     </Router>
   );
 }
 

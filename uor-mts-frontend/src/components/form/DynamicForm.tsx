@@ -11,7 +11,8 @@ interface FormProps {
   title: string; // Example: "Admin", "Branch"
   fields: Field[];
   onSubmit: (formData: Record<string, any>) => void; // Function to send form data to parent
-  onBack: () => void; // Function to handle "Back" button
+  onBack?: () => void ; // Function to handle "Back" button
+  
 }
 
 const DynamicForm: React.FC<FormProps> = ({ title, fields, onSubmit, onBack }) => {
@@ -45,6 +46,14 @@ const DynamicForm: React.FC<FormProps> = ({ title, fields, onSubmit, onBack }) =
   const handleClear = () => {
     setFormData({}); // Reset the form data
   };
+
+  const handleBackClick = (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevents form submission
+    if (onBack) {
+        onBack(); // Call onBack only if it's provided
+    }
+};
+  
 
   return (
     <div className="max-w-full mx-auto p-6 bg-white shadow-lg rounded-lg">
@@ -98,15 +107,15 @@ const DynamicForm: React.FC<FormProps> = ({ title, fields, onSubmit, onBack }) =
 
         {/* Action Buttons */}
         <div className="flex items-center justify-between mt-8  ">
-          <div onClick={onBack}>
-            <Button
-              text="Back"
-              bgColor="bg-[#F93058]"
-              hoverColor="bg-[#f60f3d]"
-              height="h-8"
-              width="w-26"
-            />
-          </div>
+        <div onClick={handleBackClick}>
+                <Button
+                    text="Back"
+                    bgColor="bg-[#F93058]"
+                    hoverColor="bg-[#f60f3d]"
+                    height="h-8"
+                    width="w-26"
+                />
+            </div>
           <div onClick={handleClear}>
             <Button
               text="Clear"
