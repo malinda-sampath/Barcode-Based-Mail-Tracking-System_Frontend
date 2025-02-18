@@ -8,7 +8,7 @@ import SuperAdminAppRouter from "./routes/SuperAdminAppRouter";
 const App: React.FC = () => (
   <div>
     {/* <TableTest /> */}
-    <SuperAdminAppRouter />
+    <AdminAppRouter />
   
   </div>
 );
