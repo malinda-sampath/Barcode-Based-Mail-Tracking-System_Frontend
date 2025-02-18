@@ -28,7 +28,10 @@ const getDashboardRoute = (userRole: string) => {
       return "/admin/";
 
     case "ROLE_MAIL_HANDLER":
-      return "/mail-handler/";
+      return "/mail-handler/*";
+
+    case "ROLE_BRANCH_MANAGER":
+      return "/branch/*";
 
     default:
       return "/";
