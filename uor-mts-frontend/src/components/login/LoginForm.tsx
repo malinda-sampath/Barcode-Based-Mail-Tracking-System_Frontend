@@ -1,8 +1,8 @@
-import React, { useState} from "react";
+import React, { useState } from "react";
 import Logo from "../../assets/Logo.png"; // Import the logo
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
-import {Eye, EyeOff} from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 
 interface LoginFormProps {
   onEmailEnter: () => void; // Function prop to handle forgot password click
@@ -14,24 +14,28 @@ interface LoginRequest {
 }
 
 interface LoginResponse {
-      status: number;
-      message: string;
-      data: {
-          token: string;
-          expiresIn: number;
-      };
+  status: number;
+  message: string;
+  data: {
+    token: string;
+    expiresIn: number;
+  };
 }
 
 const getDashboardRoute = (userRole: string) => {
   switch (userRole) {
     case "ROLE_SUPER_ADMIN":
       return "/admin/";
+
+    case "ROLE_MAIL_HANDLER":
+      return "/mail-handler/";
+
     default:
       return "/";
   }
 };
 
-const LoginForm: React.FC<LoginFormProps>=({onEmailEnter})=> {
+const LoginForm: React.FC<LoginFormProps> = ({ onEmailEnter }) => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
@@ -45,30 +49,32 @@ const LoginForm: React.FC<LoginFormProps>=({onEmailEnter})=> {
     const loginRequest: LoginRequest = { email, password };
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/user/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(loginRequest),
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/user/login`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(loginRequest),
+        }
+      );
 
-    const output: LoginResponse = await response.json();
+      const output: LoginResponse = await response.json();
 
-    if (output.status === 200 && output.data.token) {
-      localStorage.setItem("token", output.data.token);
+      if (output.status === 200 && output.data.token) {
+        localStorage.setItem("token", output.data.token);
 
-      const decoded: any = jwtDecode(output.data.token);
-      navigate(getDashboardRoute(decoded.role[0].authority));
-    } else {
-      setError(output.message || "Invalid credentials.");
+        const decoded: any = jwtDecode(output.data.token);
+        navigate(getDashboardRoute(decoded.role[0].authority));
+      } else {
+        setError(output.message || "Invalid credentials.");
+      }
+    } catch (e) {
+      setError("Login failed. Please check your connection.");
+      console.error("Error logging in:", e);
+    } finally {
+      setLoading(false);
     }
-
-  } catch (e) {
-    setError("Login failed. Please check your connection.");
-    console.error("Error logging in:", e);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -117,7 +123,7 @@ const LoginForm: React.FC<LoginFormProps>=({onEmailEnter})=> {
             onChange={(e) => setEmail(e.target.value)}
           />
 
-        <div className="relative w-full max-w-md">
+          <div className="relative w-full max-w-md">
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Enter Password"
@@ -136,12 +142,14 @@ const LoginForm: React.FC<LoginFormProps>=({onEmailEnter})=> {
           </div>
 
           <div>
-          <p>
-            <button onClick={onEmailEnter} className="text-[#FFD700] hover:underline ">
-              Forgot Password?
-            </button>
-          </p>
-
+            <p>
+              <button
+                onClick={onEmailEnter}
+                className="text-[#FFD700] hover:underline "
+              >
+                Forgot Password?
+              </button>
+            </p>
           </div>
 
           <button
@@ -151,12 +159,13 @@ const LoginForm: React.FC<LoginFormProps>=({onEmailEnter})=> {
             {loading ? "Loading..." : "Login"}
           </button>
           <div>
-            {error && <p className="text-red-500 pb-5">{error}</p>} {/* Display error message */}
+            {error && <p className="text-red-500 pb-5">{error}</p>}{" "}
+            {/* Display error message */}
           </div>
         </div>
       </form>
     </div>
   );
-}
+};
 
 export default LoginForm;
