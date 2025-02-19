@@ -1,4 +1,9 @@
 import React from "react";
+import { FcBullish } from "react-icons/fc";
+import {
+  DASHBOARD_SIDEBAR_LINKS,
+  DASHBOARD_SIDEBAR_BOTTOM_LINKS,
+} from "./DashboardLayout";
 import { Link, useLocation } from "react-router-dom";
 import classNames from "classnames";
 import { HiOutlineLogout } from "react-icons/hi";
@@ -60,15 +65,16 @@ const Sidebar: React.FC<SidebarProps> = ({ setIsSidebarOpen }) => {
       )}
 
       {/* Sidebar Logo */}
-      <div className="flex items-center px-2 py-2">
+      <div className="flex items-center p-2">
         <img
           src={Logo}
           alt="Ruhuna_Logo"
           className={`object-cover ${isOpen ? "w-24 h-24" : "hidden"}`}
         />
         {isOpen && !isMobile && (
-          <span className="text-lg text-neutral-100">
-            <b className="text-[#F99C30]">GENERAL</b> ADMIN
+          <span className="text-lg text-neutral-100 ">
+            <b className="text-[#F99C30] text-xl">Administrative Unit</b>
+            <br /> University of Ruhuna
           </span>
         )}
       </div>

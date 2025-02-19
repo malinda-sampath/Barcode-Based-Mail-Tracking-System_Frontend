@@ -10,7 +10,7 @@ function AdminAppRouter() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<AdminLayout />}>
+        <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} /> {/* Default route */}
           <Route path="mailmanagement" element={<MailManagement />} />
           <Route path="claimmails" element={<ClaimMails />} />
