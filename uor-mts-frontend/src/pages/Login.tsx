@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import LoginForm from "../components/login/LoginForm";
-import EmailEnterForm from "../components/login/EmailEnterForm";
-import OtpEnterForm from "../components/login/OtpEnterForm";
-import PasswordResetForm from "../components/login/PasswordResetForm";
+import LoginForm from "../components/pageComponent/login/LoginForm";
+import EmailEnterForm from "../components/pageComponent/login/EmailEnterForm";
+import OtpEnterForm from "../components/pageComponent/login/OtpEnterForm";
+import PasswordResetForm from "../components/pageComponent/login/PasswordResetForm";
 
 const Login: React.FC = () => {
   const [view, setView] = useState<

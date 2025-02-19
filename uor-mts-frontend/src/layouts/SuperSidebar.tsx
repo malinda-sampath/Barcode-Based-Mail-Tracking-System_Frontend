@@ -1,6 +1,9 @@
 import React from "react";
 import { FcBullish } from "react-icons/fc";
-import { DASHBOARD_SIDEBAR_LINKS, DASHBOARD_SIDEBAR_BOTTOM_LINKS } from "./DashboardLayout";
+import {
+  DASHBOARD_SIDEBAR_LINKS,
+  DASHBOARD_SIDEBAR_BOTTOM_LINKS,
+} from "./DashboardLayout";
 import { Link, useLocation } from "react-router-dom";
 import classNames from "classnames";
 import { HiOutlineLogout } from "react-icons/hi";
@@ -33,9 +36,9 @@ const Sidebar: React.FC = () => {
 
   return (
     <div
-      className={`fixed top-0 left-0 flex flex-col bg-[#611010] text-white h-screen transition-all duration-300  ${
+      className={`fixed top-0 left-0 flex flex-col bg-[#611010] text-white h-screen transition-all duration-300 ${
         isOpen ? "w-60" : "w-16"
-      } sm:w-60 p-3 sm:overflow-y-auto`}
+      } sm:w-80 p-3 sm:overflow-y-auto`}
     >
       {/* Hamburger Menu Button for Mobile */}
       {isMobile && (
@@ -48,15 +51,16 @@ const Sidebar: React.FC = () => {
       )}
 
       {/* Sidebar Logo */}
-      <div className="flex items-center px-2 py-2">
+      <div className="flex items-center p-2">
         <img
           src={Logo}
           alt="Ruhuna_Logo"
           className={`object-cover ${isOpen ? "w-24 h-24" : "hidden"}`}
         />
         {isOpen && !isMobile && (
-          <span className="text-lg text-neutral-100">
-            <b className="text-[#F99C30]">GENRAL</b> ADMIN
+          <span className="text-lg text-neutral-100 ">
+            <b className="text-[#F99C30] text-xl">Administrative Unit</b>
+            <br /> University of Ruhuna
           </span>
         )}
       </div>
