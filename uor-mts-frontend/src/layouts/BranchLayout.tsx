@@ -1,30 +1,29 @@
-import React from "react"; // Import React
-import { Outlet } from "react-router-dom"; // Import Outlet for rendering nested routes
-import BranchSidebar from "./BranchSidebar"; // Import Sidebar component
-import Header from "./Header"; // Import Header component
+import React, { useState } from "react";
+import { Outlet } from "react-router-dom";
+import Sidebar from "./BranchSidebar";
+import Header from "./Header";
 
+const Layout: React.FC = () => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Sidebar open state
 
-const BranchLayout: React.FC = () => {
   return (
-    <div className="flex w-screen h-screen overflow-x-hidden bg-neutral-100">
- 
-  <div>
-    <BranchSidebar />
-  </div>
+    <div className="flex w-screen h-screen overflow-hidden bg-neutral-100">
+      {/* Sidebar */}
+      <Sidebar setIsSidebarOpen={setIsSidebarOpen} />
 
-  
-  <div className="flex flex-col flex-1 ml-60">
-    <Header /> 
-    <div className="h-full p-4 overflow-x-hidden overflow-y-auto">
-      <Outlet />
+      {/* Content area, dynamically adjusting margin */}
+      <div
+        className={`flex flex-col flex-1 transition-all duration-300 ${
+          isSidebarOpen ? "ml-60" : "ml-16"
+        }`}
+      >
+        <Header />
+        <div className="h-full p-4 overflow-y-auto">
+          <Outlet />
+        </div>
+      </div>
     </div>
-  </div>
-
- 
-  {/* <p>Footer</p> */}
-</div>
-
   );
 };
 
-export default BranchLayout;
+export default Layout;
