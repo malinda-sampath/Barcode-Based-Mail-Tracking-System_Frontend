@@ -9,41 +9,55 @@ import classNames from "classnames";
 import { HiOutlineLogout } from "react-icons/hi";
 import Logo from "../assets/Logo.png";
 import { RxCross1, RxHamburgerMenu } from "react-icons/rx";
+import { 
+  DASHBOARD_SIDEBAR_LINKS, 
+  DASHBOARD_SIDEBAR_BOTTOM_LINKS 
+} from "./DashboardLayout";
 
 const linkClass =
-  "flex items-center gap-2 font-light px-3 py-2 mb-2 rounded-md hover:bg-white hover:no-underline hover:text-[#611010] hover:rounded-md active:bg-white rounded-md text-base";
+  "flex items-center gap-2 font-light px-3 py-2 mb-2 rounded-md hover:bg-white hover:no-underline hover:text-[#611010] active:bg-white text-base";
 
-const Sidebar: React.FC = () => {
+interface SidebarProps {
+  setIsSidebarOpen: (isOpen: boolean) => void;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ setIsSidebarOpen }) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const [isMobile, setIsMobile] = React.useState(false);
 
   React.useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 640) {
-        setIsMobile(false); // Automatically open on larger screens
-        setIsOpen(true); // Set the sidebar to be open by default on desktop
+        setIsMobile(false); // Desktop
+        setIsOpen(true);
+        setIsSidebarOpen(true);
       } else {
-        setIsMobile(true); // Mobile devices will start with collapsed sidebar
-        setIsOpen(false); // Ensure the sidebar is collapsed by default
+        setIsMobile(true); // Mobile
+        setIsOpen(false);
+        setIsSidebarOpen(false);
       }
     };
 
     handleResize();
     window.addEventListener("resize", handleResize);
-
     return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  }, [setIsSidebarOpen]);
+
+  const toggleSidebar = () => {
+    setIsOpen(!isOpen);
+    setIsSidebarOpen(!isOpen);
+  };
 
   return (
     <div
       className={`fixed top-0 left-0 flex flex-col bg-[#611010] text-white h-screen transition-all duration-300 ${
         isOpen ? "w-60" : "w-16"
-      } sm:w-80 p-3 sm:overflow-y-auto`}
+      } sm:w-60 p-3`}
     >
-      {/* Hamburger Menu Button for Mobile */}
+      {/* Toggle Button for Mobile */}
       {isMobile && (
         <button
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={toggleSidebar}
           className="sm:hidden text-white bg-[#F99C30] p-2 rounded-md mb-3 w-10 ml-auto"
         >
           {isOpen ? <RxCross1 size={24} /> : <RxHamburgerMenu size={24} />}
@@ -66,7 +80,7 @@ const Sidebar: React.FC = () => {
       </div>
 
       {/* Sidebar Links */}
-      <div className="flex-1 py-8 flex flex-col gap-0.5 overflow-y-auto md:overflow-hidden">
+      <div className="flex-1 py-8 flex flex-col gap-0.5 overflow-y-auto">
         {DASHBOARD_SIDEBAR_LINKS.map((item) => (
           <SidebarLink key={item.key} item={item} isOpen={isOpen} />
         ))}
@@ -95,6 +109,7 @@ interface SidebarLinkProps {
 
 const SidebarLink: React.FC<SidebarLinkProps> = ({ item, isOpen }) => {
   const { pathname } = useLocation();
+
   return (
     <Link
       to={item.path}
