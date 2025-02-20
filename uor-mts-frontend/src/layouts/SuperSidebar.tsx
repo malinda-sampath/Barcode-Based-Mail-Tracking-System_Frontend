@@ -9,10 +9,6 @@ import classNames from "classnames";
 import { HiOutlineLogout } from "react-icons/hi";
 import Logo from "../assets/Logo.png";
 import { RxCross1, RxHamburgerMenu } from "react-icons/rx";
-import { 
-  DASHBOARD_SIDEBAR_LINKS, 
-  DASHBOARD_SIDEBAR_BOTTOM_LINKS 
-} from "./DashboardLayout";
 
 const linkClass =
   "flex items-center gap-2 font-light px-3 py-2 mb-2 rounded-md hover:bg-white hover:no-underline hover:text-[#611010] active:bg-white text-base";
@@ -52,7 +48,7 @@ const Sidebar: React.FC<SidebarProps> = ({ setIsSidebarOpen }) => {
     <div
       className={`fixed top-0 left-0 flex flex-col bg-[#611010] text-white h-screen transition-all duration-300 ${
         isOpen ? "w-60" : "w-16"
-      } sm:w-60 p-3`}
+      } sm:w-80 p-3`}
     >
       {/* Toggle Button for Mobile */}
       {isMobile && (

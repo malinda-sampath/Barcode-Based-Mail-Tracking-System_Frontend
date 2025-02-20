@@ -7,6 +7,8 @@ import AdminDetails from "../components/table/AdminDetails";
 import AdminFormPopup from "../components/form/AdminFormPopup"; // Import the AdminFormPopup component
 import SearchButton from "../components/buttonComponents/SearchButton";
 
+interface AdminSave {}
+
 type Person = {
   firstName: string;
   lastName: string;

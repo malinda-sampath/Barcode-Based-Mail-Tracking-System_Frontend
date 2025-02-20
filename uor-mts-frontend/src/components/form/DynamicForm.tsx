@@ -14,7 +14,12 @@ interface FormProps {
   onBack: () => void; // Function to handle "Back" button
 }
 
-const DynamicForm: React.FC<FormProps> = ({ title, fields, onSubmit, onBack }) => {
+const DynamicForm: React.FC<FormProps> = ({
+  title,
+  fields,
+  onSubmit,
+  onBack,
+}) => {
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [successMessage, setSuccessMessage] = useState(false);
 
@@ -64,13 +69,22 @@ const DynamicForm: React.FC<FormProps> = ({ title, fields, onSubmit, onBack }) =
       )}
 
       {/* 🔽 Form Section */}
-      <h1 className="text-2xl font-bold text-center mb-6" style={{ color: "#611010" }}>
+      <h1
+        className="text-2xl font-bold text-center mb-6"
+        style={{ color: "#611010" }}
+      >
         {title}
       </h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         {fields.map((field, index) => (
-          <div key={index} className="flex flex-col sm:flex-row items-center gap-4">
-            <label className="w-full sm:w-1/3 text-sm font-medium" style={{ color: "#611010" }}>
+          <div
+            key={index}
+            className="flex flex-col sm:flex-row items-center gap-4"
+          >
+            <label
+              className="w-full sm:w-1/3 text-sm font-medium"
+              style={{ color: "#611010" }}
+            >
               {field.label}
             </label>
             {field.type === "textarea" ? (
