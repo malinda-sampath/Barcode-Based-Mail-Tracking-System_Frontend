@@ -13,6 +13,8 @@ import { FaCodeBranch } from "react-icons/fa";
 
 import { FaUsers } from "react-icons/fa";
 import { MailCheck, MailIcon } from "lucide-react";
+import { Avatar } from "@radix-ui/react-avatar";
+import { RxAvatar } from "react-icons/rx";
 
 export const DASHBOARD_SIDEBAR_LINKS = [
   {
@@ -58,6 +60,12 @@ export const ADMIN_DASHBOARD_SIDEBAR_LINKS = [
 
 export const DASHBOARD_SIDEBAR_BOTTOM_LINKS = [
   {
+    key: "profile",
+    label: "Profile",
+    path: "/profile",
+    icon: <RxAvatar className="text-[#F99C30]" />,
+  },
+  {
     key: "settings",
     label: "Settings",
     path: "/settings",
@@ -72,6 +80,12 @@ export const DASHBOARD_SIDEBAR_BOTTOM_LINKS = [
 ];
 
 export const ADMIN_DASHBOARD_SIDEBAR_BOTTOM_LINKS = [
+  {
+    key: "profile",
+    label: "Profile",
+    path: "/profile",
+    icon: <RxAvatar className="text-[#F99C30]" />,
+  },
   {
     key: "settings",
     label: "Settings",
@@ -102,6 +116,12 @@ export const BRANCH_DASHBOARD_SIDEBAR_LINKS = [
 ];
 
 export const BRANCH_DASHBOARD_SIDEBAR_BOTTOM_LINKS = [
+  {
+    key: "profile",
+    label: "Profile",
+    path: "/profile",
+    icon: <RxAvatar className="text-[#F99C30]" />,
+  },
   {
     key: "settings",
     label: "Settings",
