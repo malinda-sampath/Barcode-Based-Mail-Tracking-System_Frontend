@@ -21,10 +21,11 @@ export default function AdminDashboard() {
              Entered Mails
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <span className="text-[60px] text-[#F99C30] font-bold">24</span>
+          <CardContent className="text-[60px] text-[#F99C30] font-bold">
+           <p>24</p>
           </CardContent>
         </Card>
+
 
         {/* Rejected mail Card */}
         <Card className="w-full p-4 m-1 sm:w-1/4">
@@ -35,7 +36,7 @@ export default function AdminDashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <span className="text-[60px] text-[#F99C30] font-bold">20</span>
+            <p className="text-[60px] text-[#F99C30] font-bold">20</p>
           </CardContent>
         </Card>
 

@@ -20,19 +20,19 @@ export const DASHBOARD_SIDEBAR_LINKS = [
   {
     key: "dashboard",
     label: "Dashboard",
-    path: "/",
+    path: "/admin",
     icon: <HiOutlineViewGrid className="text-[#F99C30]" />,
   },
   {
     key: "AdminManagement",
-    label: "Mail Handle",
-    path: "/adminmanagement",
+    label: "Admin Management",
+    path: "adminmanagement",
     icon: <FaUsers className="text-[#F99C30]" />,
   },
   {
     key: "BranchManagement",
     label: "Branch Management",
-    path: "/branchmanagement",
+    path: "branchmanagement",
     icon: <FaCodeBranch className="text-[#F99C30]" />,
   },
 ];
@@ -113,7 +113,6 @@ export const BRANCH_DASHBOARD_SIDEBAR_LINKS = [
     path: "/allmails",
     icon: <MailIcon className="text-[#F99C30]" />,
   },
- 
 ];
 
 export const BRANCH_DASHBOARD_SIDEBAR_BOTTOM_LINKS = [
