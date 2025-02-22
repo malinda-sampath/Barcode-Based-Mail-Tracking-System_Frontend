@@ -19,7 +19,7 @@ export default function AdminManagement() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isPopupOpen1, setIsPopupOpen1] = useState(false);
   const [isSuccessPopupOpen, setIsSuccessPopupOpen] = useState(false);
-  const [isSuccessPopupOpen1, setIsSuccessPopupOpen1] = useState(false);
+  const [isBranchPopupOpen, setIsBranchPopupOpen] = useState(false);
 
   const [branchName, setBranchName] = useState<string>("");
   const [branchDescription, setBranchDescrption] = useState<string>("");
@@ -30,15 +30,35 @@ export default function AdminManagement() {
       branchDescription,
     };
 
+    const token = localStorage.getItem("token"); // Assuming JWT is stored in localStorage
+
+    if (!token) {
+      console.error("Error: No token found in local storage");
+      return;
+    }
+
     try {
       const response = await fetch(
         `${process.env.REACT_APP_API_URL}/branch/save`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Include the JWT token here
+          },
           body: JSON.stringify(branchSaveRequest),
         }
       );
+
+      if (!response.ok) {
+        // Handle unauthorized response (401 or 403)
+        if (response.status === 401 || response.status === 403) {
+          console.error("Unauthorized: Access is denied");
+        } else {
+          console.error("An error occurred:", response.statusText);
+        }
+        return;
+      }
 
       const output: BranchSaveResponse = await response.json();
 
@@ -52,16 +72,18 @@ export default function AdminManagement() {
     setIsPopupOpen(true); // Open the popup when the button is clicked
   };
 
-  const handleButtonClick1 = () => {
-    setIsPopupOpen1(true); // Open the popup when the button is clicked
+  const handleAddBranch = () => {
+    setIsPopupOpen1(true);
   };
 
   const handleButtonClick2 = () => {
     setIsSuccessPopupOpen(true); // Open the popup when the button is clicked
   };
 
-  const handleButtonClick3 = () => {
-    setIsSuccessPopupOpen1(true); // Open the popup when the button is clicked
+  // Handle Branch save button click
+  const handleBranchSaveBtn = () => {
+    setIsBranchPopupOpen(true);
+    BrnachSave();
   };
 
   const currentDate = new Date().toLocaleDateString("en-GB", {
@@ -82,7 +104,7 @@ export default function AdminManagement() {
           <Search />
         </div>
         <div className="lg:flex sm:items-center items-end gap-4">
-          <div onClick={handleButtonClick1}>
+          <div onClick={handleAddBranch}>
             <Button
               text="+ ADD BRANCHES"
               bgColor="bg-[#4B45DA]"
@@ -163,9 +185,9 @@ export default function AdminManagement() {
             height="h-8"
             width="w-28"
           />
-          <div onClick={handleButtonClick2}>
+          <div>
             <Button
-              text="+ ADD"
+              text="Save"
               bgColor="bg-[#4B45DA]"
               hoverColor="bg-[#2019de]"
               height="h-8"
@@ -177,22 +199,27 @@ export default function AdminManagement() {
 
       <PopupMenu isOpen={isPopupOpen1} onClose={() => setIsPopupOpen1(false)}>
         {/* Popup content */}
-        <label className="block m-4">
-          <span className="text-[#611010]">Branch Name</span>
-          <input
-            type="text"
-            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            placeholder="Enter branch name"
-          />
-        </label>
-        <label className="block m-4">
-          <span className="text-[#611010]">Branch Code</span>
-          <input
-            type="text"
-            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            placeholder="Enter branch code"
-          />
-        </label>
+        <div className="space-y-6 pb-3">
+          <label className="block m-4">
+            <span className="text-[#611010]">Branch Name</span>
+            <input
+              type="text"
+              className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              placeholder="Enter branch name"
+              onChange={(e) => setBranchName(e.target.value)}
+            />
+          </label>
+          <label className="block m-4">
+            <span className="text-[#611010]">Branch Description</span>
+            <></>
+            <input
+              type="text"
+              className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              placeholder="Description"
+              onChange={(e) => setBranchDescrption(e.target.value)}
+            />
+          </label>
+        </div>
 
         <div className="flex space-x-12">
           <Button
@@ -209,13 +236,14 @@ export default function AdminManagement() {
             height="h-8"
             width="w-28"
           />
-          <div onClick={handleButtonClick3}>
+          <div>
             <Button
-              text="+ ADD"
+              text="Save"
               bgColor="bg-[#4B45DA]"
               hoverColor="bg-[#2019de]"
               height="h-8"
               width="w-28"
+              onClick={handleBranchSaveBtn}
             />
           </div>
         </div>
@@ -241,7 +269,7 @@ export default function AdminManagement() {
         </div>
       </PopupMenu>
 
-      <PopupMenu
+      {/* <PopupMenu
         isOpen={isSuccessPopupOpen1}
         onClose={() => setIsSuccessPopupOpen1(false)}
       >
@@ -259,7 +287,7 @@ export default function AdminManagement() {
             />
           </div>
         </div>
-      </PopupMenu>
+      </PopupMenu> */}
     </div>
   );
 }
