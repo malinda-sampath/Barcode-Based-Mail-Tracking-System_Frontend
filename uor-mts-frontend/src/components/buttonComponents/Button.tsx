@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface ButtonProps {
   text: string; // The text to display on the button
@@ -6,14 +6,24 @@ interface ButtonProps {
   hoverColor: string; // The hover color class (e.g., 'hover:bg-blue-700')
   height?: string; // Optional height class (e.g., 'h-10')
   width?: string; // Optional width class (e.g., 'w-32')
+  onClick?: () => void; // Optional click handler
 }
 
-const Button: React.FC<ButtonProps> = ({ text, bgColor, hoverColor, height, width }) => {
+const Button: React.FC<ButtonProps> = ({
+  text,
+  bgColor,
+  hoverColor,
+  height,
+  width,
+  onClick,
+}) => {
   const buttonClasses = `text-white font-bold py-1 px-3 rounded-lg m-4 ${bgColor} hover:${hoverColor} ${height} ${width}`;
-  
+
   return (
     <div>
-      <button className={buttonClasses}>{text}</button>
+      <button className={buttonClasses} onClick={onClick}>
+        {text}
+      </button>
     </div>
   );
 };

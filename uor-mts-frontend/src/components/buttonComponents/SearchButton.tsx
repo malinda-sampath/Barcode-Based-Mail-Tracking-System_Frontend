@@ -70,18 +70,18 @@ export default function SearchButton({
   };
 
   return (
-    <div className="relative flex items-center">
-      <FaSearch className="absolute left-3 text-gray-500" />
+    <div className="relative flex items-center space-x-2">
+      <FaSearch className="absolute left-5 text-gray-500" />
       <input
         type="text"
         placeholder="Search"
         value={searchTerm}
         onChange={handleSearchChange}
         onKeyDown={handleKeyDown}
-        className="border border-gray-300 rounded-md pl-10 pr-2 py-1 w-48 focus:outline-none"
+        className="border border-gray-300 rounded-md pl-10 pr-2 py-1 w-48 h-12 focus:outline-none"
       />
       <button
-        className={`ml-2 px-3 py-2 text-gray-600 border border-gray-300 rounded-md shadow-sm hover:bg-gray-100 transition-all duration-300 ${
+        className={`m-3 px-3 py-3 text-gray-600 border border-gray-300 rounded-md shadow-sm hover:bg-gray-100 transition-all duration-300 ${
           isButtonExpanded ? "w-28" : "w-20"
         }`}
         onClick={handleSearchButtonClick}
