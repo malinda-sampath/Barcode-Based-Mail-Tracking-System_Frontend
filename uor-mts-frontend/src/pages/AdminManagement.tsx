@@ -7,6 +7,8 @@ import AdminDetails from "../components/table/AdminDetails";
 import AdminFormPopup from "../components/form/AdminFormPopup"; // Import the AdminFormPopup component
 import SearchButton from "../components/buttonComponents/SearchButton";
 
+interface AdminSave {}
+
 type Person = {
   firstName: string;
   lastName: string;
@@ -123,9 +125,7 @@ export default function AdminManagement() {
       <h1 className="text-xl sm:text-2xl font-semibold mt-2 text-[#611010]">
         Mail Handle Management
       </h1>
-      <p className="text-xs sm:text-sm text-gray-500 text-[#611010]">
-        {currentDate}
-      </p>
+      <p className="text-xs sm:text-sm text-gray-500]">{currentDate}</p>
 
       <div className="flex flex-col sm:flex-row items-center justify-between mt-6 sm:mt-10">
         <div className="flex items-center gap-2">

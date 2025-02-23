@@ -13,24 +13,26 @@ import { FaCodeBranch } from "react-icons/fa";
 
 import { FaUsers } from "react-icons/fa";
 import { MailCheck, MailIcon } from "lucide-react";
+import { Avatar } from "@radix-ui/react-avatar";
+import { RxAvatar } from "react-icons/rx";
 
 export const DASHBOARD_SIDEBAR_LINKS = [
   {
     key: "dashboard",
     label: "Dashboard",
-    path: "/",
+    path: "/admin",
     icon: <HiOutlineViewGrid className="text-[#F99C30]" />,
   },
   {
     key: "AdminManagement",
-    label: "Mail Handle",
-    path: "/adminmanagement",
+    label: "Admin Management",
+    path: "adminmanagement",
     icon: <FaUsers className="text-[#F99C30]" />,
   },
   {
     key: "BranchManagement",
     label: "Branch Management",
-    path: "/branchmanagement",
+    path: "branchmanagement",
     icon: <FaCodeBranch className="text-[#F99C30]" />,
   },
 ];
@@ -58,6 +60,12 @@ export const ADMIN_DASHBOARD_SIDEBAR_LINKS = [
 
 export const DASHBOARD_SIDEBAR_BOTTOM_LINKS = [
   {
+    key: "profile",
+    label: "Profile",
+    path: "/profile",
+    icon: <RxAvatar className="text-[#F99C30]" />,
+  },
+  {
     key: "settings",
     label: "Settings",
     path: "/settings",
@@ -72,6 +80,12 @@ export const DASHBOARD_SIDEBAR_BOTTOM_LINKS = [
 ];
 
 export const ADMIN_DASHBOARD_SIDEBAR_BOTTOM_LINKS = [
+  {
+    key: "profile",
+    label: "Profile",
+    path: "/profile",
+    icon: <RxAvatar className="text-[#F99C30]" />,
+  },
   {
     key: "settings",
     label: "Settings",
@@ -99,10 +113,15 @@ export const BRANCH_DASHBOARD_SIDEBAR_LINKS = [
     path: "/allmails",
     icon: <MailIcon className="text-[#F99C30]" />,
   },
- 
 ];
 
 export const BRANCH_DASHBOARD_SIDEBAR_BOTTOM_LINKS = [
+  {
+    key: "profile",
+    label: "Profile",
+    path: "/profile",
+    icon: <RxAvatar className="text-[#F99C30]" />,
+  },
   {
     key: "settings",
     label: "Settings",

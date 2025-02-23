@@ -9,7 +9,13 @@ type SearchButtonProps = {
   allAdmins: any[]; // Store the full list to reset later
 };
 
-export default function SearchButton({ searchTerm, setSearchTerm, setAdmins, admins, allAdmins }: SearchButtonProps) {
+export default function SearchButton({
+  searchTerm,
+  setSearchTerm,
+  setAdmins,
+  admins,
+  allAdmins,
+}: SearchButtonProps) {
   const [isButtonExpanded, setIsButtonExpanded] = useState(false);
   const [isSearchActive, setIsSearchActive] = useState(false); // Track search state
 
@@ -18,8 +24,11 @@ export default function SearchButton({ searchTerm, setSearchTerm, setAdmins, adm
     const value = e.target.value;
     setSearchTerm(value);
 
-    if (/^\d{8}$/.test(value)) { // Auto-search when input is exactly 8 digits (barcode)
-      const filteredAdmins = allAdmins.filter(admin => admin.barcodeID === value);
+    if (/^\d{8}$/.test(value)) {
+      // Auto-search when input is exactly 8 digits (barcode)
+      const filteredAdmins = allAdmins.filter(
+        (admin) => admin.barcodeID === value
+      );
       setAdmins(filteredAdmins);
       setIsSearchActive(true);
     }
@@ -38,11 +47,14 @@ export default function SearchButton({ searchTerm, setSearchTerm, setAdmins, adm
       setIsButtonExpanded(true);
 
       if (searchTerm.length > 0) {
-        const filteredAdmins = allAdmins.filter(admin =>
-          admin.barcodeID === searchTerm || // Exact barcode match
-          Object.values(admin).some(value =>
-            typeof value === "string" && value.toLowerCase().includes(searchTerm.toLowerCase())
-          )
+        const filteredAdmins = allAdmins.filter(
+          (admin) =>
+            admin.barcodeID === searchTerm || // Exact barcode match
+            Object.values(admin).some(
+              (value) =>
+                typeof value === "string" &&
+                value.toLowerCase().includes(searchTerm.toLowerCase())
+            )
         );
         setAdmins(filteredAdmins); // Set filtered results
         setIsSearchActive(true); // Mark search as active
@@ -58,17 +70,18 @@ export default function SearchButton({ searchTerm, setSearchTerm, setAdmins, adm
   };
 
   return (
-    <div className="relative flex items-center">
-      <FaSearch className="absolute left-3 text-gray-500" />
+    <div className="relative flex items-center space-x-2">
+      <FaSearch className="absolute left-5 text-gray-500" />
       <input
         type="text"
+        placeholder="Search"
         value={searchTerm}
         onChange={handleSearchChange}
         onKeyDown={handleKeyDown}
-        className="border border-gray-300 rounded-md pl-10 pr-2 py-1 w-48 focus:outline-none"
+        className="border border-gray-300 rounded-md pl-10 pr-2 py-1 w-48 h-12 focus:outline-none"
       />
       <button
-        className={`ml-2 px-3 py-2 text-gray-600 border border-gray-300 rounded-md shadow-sm hover:bg-gray-100 transition-all duration-300 ${
+        className={`m-3 px-3 py-3 text-gray-600 border border-gray-300 rounded-md shadow-sm hover:bg-gray-100 transition-all duration-300 ${
           isButtonExpanded ? "w-28" : "w-20"
         }`}
         onClick={handleSearchButtonClick}

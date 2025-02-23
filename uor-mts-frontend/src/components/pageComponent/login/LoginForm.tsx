@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Logo from "../../assets/Logo.png"; // Import the logo
+import Logo from "../../../assets/Logo.png"; // Import the logo
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
@@ -28,7 +28,10 @@ const getDashboardRoute = (userRole: string) => {
       return "/admin/";
 
     case "ROLE_MAIL_HANDLER":
-      return "/mail-handler/";
+      return "/mail-handler/*";
+
+    case "ROLE_BRANCH_MANAGER":
+      return "/branch/*";
 
     default:
       return "/";

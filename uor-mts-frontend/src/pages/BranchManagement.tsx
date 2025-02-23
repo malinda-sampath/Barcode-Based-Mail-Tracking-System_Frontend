@@ -1,63 +1,154 @@
 import React, { useState } from "react";
-import Today from "../components/dateComponenet/Today";
 import Button from "../components/buttonComponents/Button";
 import TableBranch from "../components/table/TableBranch";
 import Search from "../components/searchBar/Search";
 import PopupMenu from "../components/popupComponent/Popup";
+import ToastContainer from "../components/ui/toastContainer";
+import { clear } from "console";
+
+interface BranchSaveRequest {
+  branchName: string;
+  branchDescription: string;
+}
+
+interface BranchSaveResponse {
+  status: number;
+  message: string;
+  data: {};
+}
 
 export default function AdminManagement() {
+  const [toasts, setToasts] = useState<
+    { message: string; type: "success" | "error" | "info" | "warning" }[]
+  >([]);
 
+  const triggerToast = (
+    message: string,
+    type: "success" | "error" | "info" | "warning"
+  ) => {
+    setToasts((prev) => [...prev, { message, type }]);
+  };
+  // Popup state
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isPopupOpen1, setIsPopupOpen1] = useState(false);
+  const [isBranchPopupOpen, setIsBranchPopupOpen] = useState(false);
+
+  // User input
+  const [branchName, setBranchName] = useState<string>("");
+  const [branchDescription, setBranchDescrption] = useState<string>("");
+
+  // API response
+  const [status, setStatus] = useState<number>(0);
+  const [error, setError] = useState<string>("");
+
+  const BrnachSave = async () => {
+    setError("");
+    setStatus(0);
+    const branchSaveRequest: BranchSaveRequest = {
+      branchName,
+      branchDescription,
+    };
+
+    const token = localStorage.getItem("token"); // Assuming JWT is stored in localStorage
+
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/branch/save`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Include the JWT token here
+          },
+          body: JSON.stringify(branchSaveRequest),
+        }
+      );
+
+      const output: BranchSaveResponse = await response.json();
+      setStatus((prev) => output.status);
+
+      if (output.status >= 200 && output.status <= 299) {
+        triggerToast("Branch added successfully!", "success");
+      } else if (output.status === 409) {
+        triggerToast("Branch already exists!", "error");
+      } else {
+        triggerToast("Failed to add branch!", "error");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
 
   const handleButtonClick = () => {
     setIsPopupOpen(true); // Open the popup when the button is clicked
   };
 
-  const handleButtonClick1 = () => {
-    setIsPopupOpen1(true); // Open the popup when the button is clicked
+  const handleAddBranch = () => {
+    setIsPopupOpen1(true);
   };
 
-  return <div className="m-12">
+  // Handle Branch save button click
+  const handleBranchSaveBtn = () => {
+    setStatus(0); // Immediately reset the status
 
-    <p className="text-[#611010] text-[18px] font-semibold absolute top-5 left-80">Branch Management</p>
-    
-    <Today/>
-    <div className="flex items-center px-8 space-x-[90px]">
-      <Search/>
-      <div onClick={handleButtonClick1}>
-          <Button
-            text="+ ADD BRANCHES"
-            bgColor="bg-[#4B45DA]"
-            hoverColor="bg-[#2019de]"
-            height="h-8"
-            width="w-80"
-          />
-      </div>
-      <div onClick={handleButtonClick}>
-          <Button
-            text="+ ADD BRANCH USERS"
-            bgColor="bg-[#4B45DA]"
-            hoverColor="bg-[#2019de]"
-            height="h-8"
-            width="w-80"
-          />
-      </div>
-      
-      
-    </div>
-    <TableBranch/>
+    if (!branchName || !branchDescription) {
+      triggerToast("Please fill in all fields!", "error");
+      return;
+    } else {
+      setIsBranchPopupOpen(true);
+      BrnachSave();
+    }
+  };
 
-    <PopupMenu isOpen={isPopupOpen} onClose={() => setIsPopupOpen(false)}>
+  const currentDate = new Date().toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+
+  return (
+    <div className="ml-4 sm:ml-8 md:ml-16 px-4 sm:px-6 lg:px-8">
+      <h1 className="text-xl sm:text-2xl font-semibold mt-2 text-[#611010]">
+        Branch Management
+      </h1>
+      <p className="text-xs sm:text-sm text-gray-500 ">{currentDate}</p>
+
+      <div className="flex px-8 items-center justify-between w-full">
+        <div className="flex items-center gap-2">
+          <Search />
+        </div>
+        <div className="lg:flex sm:items-center items-end gap-4">
+          <div onClick={handleAddBranch}>
+            <Button
+              text="+ ADD BRANCHES"
+              bgColor="bg-[#4B45DA]"
+              hoverColor="bg-[#2019de]"
+              height="h-8"
+              width="w-full md:w-64"
+            />
+          </div>
+          <div onClick={handleButtonClick}>
+            <Button
+              text="+ ADD BRANCH USERS"
+              bgColor="bg-[#4B45DA]"
+              hoverColor="bg-[#2019de]"
+              height="h-8"
+              width="w-full md:w-64"
+            />
+          </div>
+        </div>
+      </div>
+
+      <TableBranch />
+
+      <PopupMenu isOpen={isPopupOpen} onClose={() => setIsPopupOpen(false)}>
         {/* Popup content */}
         <label className="block m-4">
           <span className="text-[#611010]">Branch Name</span>
-          <select
-            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-          >
-              <option value="branch1">FOS</option>
-              <option value="branch2">FOM</option>
-              <option value="branch3">VCO</option>
+          <select className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+            <option value="branch1">FOS</option>
+            <option value="branch2">FOM</option>
+            <option value="branch3">VCO</option>
           </select>
         </label>
         <label className="block m-4">
@@ -93,75 +184,79 @@ export default function AdminManagement() {
           />
         </label>
 
-        <div className="flex space-x-12">
+        <div className="flex flex-wrap justify-center gap-4">
           <Button
-          text="Back"
-          bgColor="bg-[#F93058]"
-          hoverColor="bg-[#f60f3d]"
-          height="h-8"
-          width="w-28"
+            text="Back"
+            bgColor="bg-[#F93058]"
+            hoverColor="bg-[#f60f3d]"
+            height="h-8"
+            width="w-28"
           />
           <Button
-          text="Clear"
-          bgColor="bg-[#2FBFDE]"
-          hoverColor="bg-[#12bbe0]"
-          height="h-8"
-          width="w-28"
+            text="Clear"
+            bgColor="bg-[#2FBFDE]"
+            hoverColor="bg-[#12bbe0]"
+            height="h-8"
+            width="w-28"
           />
-          <Button
-          text="+ ADD"
-          bgColor="bg-[#4B45DA]"
-          hoverColor="bg-[#2019de]"
-          height="h-8"
-          width="w-28"
-          />
+          <div>
+            <Button
+              text="Save"
+              bgColor="bg-[#4B45DA]"
+              hoverColor="bg-[#2019de]"
+              height="h-8"
+              width="w-28"
+            />
+          </div>
         </div>
       </PopupMenu>
 
       <PopupMenu isOpen={isPopupOpen1} onClose={() => setIsPopupOpen1(false)}>
         {/* Popup content */}
-        <label className="block m-4">
-          <span className="text-[#611010]">Branch Name</span>
-          <input
-            type="text"
-            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            placeholder="Enter branch name"
-          />
-        </label>
-        <label className="block m-4">
-          <span className="text-[#611010]">Branch Code</span>
-          <input
-            type="text"
-            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            placeholder="Enter branch code"
-          />
-        </label>
-        
-        <div className="flex space-x-12">
-          <Button
-          text="Back"
-          bgColor="bg-[#F93058]"
-          hoverColor="bg-[#f60f3d]"
-          height="h-8"
-          width="w-28"
-          />
-          <Button
-          text="Clear"
-          bgColor="bg-[#2FBFDE]"
-          hoverColor="bg-[#12bbe0]"
-          height="h-8"
-          width="w-28"
-          />
-          <Button
-          text="+ ADD"
-          bgColor="bg-[#4B45DA]"
-          hoverColor="bg-[#2019de]"
-          height="h-8"
-          width="w-28"
-          />
+        <div className="space-y-6 pb-3">
+          <label className="block m-4">
+            <span className="text-[#611010]">Branch Name</span>
+            <input
+              type="text"
+              className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              placeholder="Enter branch name"
+              onChange={(e) => setBranchName(e.target.value)}
+            />
+          </label>
+          <label className="block m-4">
+            <span className="text-[#611010]">Branch Description</span>
+            <></>
+            <input
+              type="text"
+              className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              placeholder="Description"
+              onChange={(e) => setBranchDescrption(e.target.value)}
+            />
+          </label>
+        </div>
+
+        <div className="flex gap-10 p-4 justify-end">
+          <button
+            className="w-28 h-8 bg-cyan-500 text-white font-medium rounded-lg shadow-sm 
+          transition-all duration-200 transform 
+          hover:bg-cyan-600 active:bg-cyan-700 active:scale-95
+          focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500"
+          >
+            Clear
+          </button>
+          <button
+            onClick={handleBranchSaveBtn}
+            className="w-28 h-8 bg-indigo-600 text-white font-medium rounded-lg shadow-sm 
+          transition-all duration-200 transform 
+          hover:bg-indigo-700 active:bg-indigo-800 active:scale-95
+          focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          >
+            Saves
+          </button>
         </div>
       </PopupMenu>
-    
 
-  </div>;
+      <ToastContainer toasts={toasts} />
+    </div>
+  );
 }
