@@ -1,10 +1,14 @@
-name: React Build
+name: React Runtime Tests
 
 on:
   push:
     branches:
-      - main
       - develop
+      - main
+  pull_request:
+    branches:
+      - develop
+      - main
 
 jobs:
   install_dependencies:
@@ -21,15 +25,12 @@ jobs:
           cache: 'npm'
           cache-dependency-path: uor-mts-frontend/package-lock.json
 
-      - name: Debug File System
-        run: ls -la && ls -la uor-mts-frontend  # Verify files inside the runner
-
       - name: Install Dependencies
         run: npm ci
-        working-directory: uor-mts-frontend  # Run npm ci inside the React folder
+        working-directory: uor-mts-frontend  # ✅ Now installs dependencies inside the correct folder
 
-  build_project:
-    name: Build Project
+  type_check:
+    name: Type Checking
     runs-on: ubuntu-latest
     needs: install_dependencies
     steps:
@@ -41,6 +42,31 @@ jobs:
         with:
           node-version: 20
 
-      - name: Build the React App
-        run: npm run build
-        working-directory: uor-mts-frontend  # Run build inside the React folder
+      - name: Install Dependencies
+        run: npm ci
+        working-directory: uor-mts-frontend
+
+      - name: Run TypeScript Type Check
+        run: npm run type-check
+        working-directory: uor-mts-frontend  # ✅ Ensures it runs inside the correct project folder
+
+  test:
+    name: Run Jest Tests
+    runs-on: ubuntu-latest
+    needs: type_check  # ✅ Ensures type check passes before running tests
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Dependencies
+        run: npm ci
+        working-directory: uor-mts-frontend
+
+      - name: Run Tests
+        run: npm test -- --coverage
+        working-directory: uor-mts-frontend  # ✅ Runs Jest tests inside the correct folder
