@@ -4,7 +4,7 @@ import Search from "../components/searchBar/Search";
 import PopupMenu from "../components/popupComponent/Popup";
 import ToastContainer from "../components/ui/toastContainer";
 import { saveBranch } from "../../src/services/BranchService";
-import BranchTable from "../components/pageComponent/branchManagement/BranchTable";
+import BranchTable from "../components/pageComponent/superAdmin/branchManagement/BranchTable";
 
 export default function AdminManagement() {
   const [toasts, setToasts] = useState<
