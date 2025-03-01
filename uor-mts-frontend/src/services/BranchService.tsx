@@ -28,6 +28,6 @@ export const saveBranch = async (
   });
 };
 
-export const deleteBranch = async (branchId: number) => {
-  return await apiRequest(`branch/delete/${branchId}`, "DELETE");
+export const deleteBranch = async (branchCode: string) => {
+  return await apiRequest(`branch/delete/${branchCode}`, "DELETE");
 };

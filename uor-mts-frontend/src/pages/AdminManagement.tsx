@@ -156,6 +156,7 @@ export default function AdminManagement() {
           data={admins}
           onViewClick={handleViewAdmin}
           onEditClick={handleEditAdmin}
+          onDeleteClick={() => {}} //handleDeleteAdmin}
         />
       </div>
 
