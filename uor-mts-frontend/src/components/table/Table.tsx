@@ -14,9 +14,17 @@ type TableProps<T> = {
   rowsPerPage?: number;
   onViewClick: (row: T) => void; // Prop for handling the "View" button click
   onEditClick: (row: T) => void;
+  onDeleteClick: (row: T) => void;
 };
 
-const Table = <T,>({ columns, data, rowsPerPage = 5, onViewClick , onEditClick }: TableProps<T>) => {
+const Table = <T,>({
+  columns,
+  data,
+  rowsPerPage = 5,
+  onViewClick,
+  onEditClick,
+  onDeleteClick,
+}: TableProps<T>) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [sortKey, setSortKey] = useState<keyof T | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
@@ -107,7 +115,7 @@ const Table = <T,>({ columns, data, rowsPerPage = 5, onViewClick , onEditClick }
                 <button
                   type="button"
                   className="p-2 text-sm bg-gray-200 rounded hover:bg-gray-300"
-                  onClick={() => alert(`Deleting ${JSON.stringify(row)}`)}
+                  onClick={() => onDeleteClick(row)}
                   title="Delete"
                 >
                   <FaTrash className="w-4 h-4 text-red-500" />

@@ -7,8 +7,6 @@ import AdminDetails from "../components/table/AdminDetails";
 import AdminFormPopup from "../components/form/AdminFormPopup"; // Import the AdminFormPopup component
 import SearchButton from "../components/buttonComponents/SearchButton";
 
-interface AdminSave {}
-
 type Person = {
   firstName: string;
   lastName: string;
@@ -158,6 +156,7 @@ export default function AdminManagement() {
           data={admins}
           onViewClick={handleViewAdmin}
           onEditClick={handleEditAdmin}
+          onDeleteClick={() => {}} //handleDeleteAdmin}
         />
       </div>
 

@@ -1,21 +1,10 @@
 import React, { useState } from "react";
 import Button from "../components/buttonComponents/Button";
-import TableBranch from "../components/table/TableBranch";
 import Search from "../components/searchBar/Search";
 import PopupMenu from "../components/popupComponent/Popup";
 import ToastContainer from "../components/ui/toastContainer";
-import { clear } from "console";
-
-interface BranchSaveRequest {
-  branchName: string;
-  branchDescription: string;
-}
-
-interface BranchSaveResponse {
-  status: number;
-  message: string;
-  data: {};
-}
+import { saveBranch } from "../../src/services/BranchService";
+import BranchTable from "../components/pageComponent/superAdmin/branchManagement/BranchTable";
 
 export default function AdminManagement() {
   const [toasts, setToasts] = useState<
@@ -28,54 +17,46 @@ export default function AdminManagement() {
   ) => {
     setToasts((prev) => [...prev, { message, type }]);
   };
+
   // Popup state
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [isPopupOpen1, setIsPopupOpen1] = useState(false);
+  const [isAddbranchPopupOpen, setIsAddBranchPopupOpen] = useState(false);
   const [isBranchPopupOpen, setIsBranchPopupOpen] = useState(false);
 
   // User input
   const [branchName, setBranchName] = useState<string>("");
-  const [branchDescription, setBranchDescrption] = useState<string>("");
+  const [branchDescription, setBranchDescription] = useState<string>("");
 
   // API response
   const [status, setStatus] = useState<number>(0);
   const [error, setError] = useState<string>("");
 
-  const BrnachSave = async () => {
+  // Branch save function
+  const BranchSave = async () => {
     setError("");
     setStatus(0);
-    const branchSaveRequest: BranchSaveRequest = {
-      branchName,
-      branchDescription,
-    };
 
-    const token = localStorage.getItem("token"); // Assuming JWT is stored in localStorage
+    if (!branchName || !branchDescription) {
+      triggerToast("Please fill in all fields!", "error");
+      return;
+    }
 
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/branch/save`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // Include the JWT token here
-          },
-          body: JSON.stringify(branchSaveRequest),
-        }
-      );
+      const response = await saveBranch(branchName, branchDescription);
 
-      const output: BranchSaveResponse = await response.json();
-      setStatus((prev) => output.status);
-
-      if (output.status >= 200 && output.status <= 299) {
+      if (response.status >= 200 && response.status < 300) {
         triggerToast("Branch added successfully!", "success");
-      } else if (output.status === 409) {
+        setBranchName("");
+        setBranchDescription("");
+        setIsAddBranchPopupOpen(false);
+      } else if (response.status === 409) {
         triggerToast("Branch already exists!", "error");
       } else {
         triggerToast("Failed to add branch!", "error");
       }
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error saving branch:", error);
+      triggerToast("An error occurred while saving the branch!", "error");
     }
   };
 
@@ -84,20 +65,13 @@ export default function AdminManagement() {
   };
 
   const handleAddBranch = () => {
-    setIsPopupOpen1(true);
+    setIsAddBranchPopupOpen(true);
   };
 
   // Handle Branch save button click
   const handleBranchSaveBtn = () => {
-    setStatus(0); // Immediately reset the status
-
-    if (!branchName || !branchDescription) {
-      triggerToast("Please fill in all fields!", "error");
-      return;
-    } else {
-      setIsBranchPopupOpen(true);
-      BrnachSave();
-    }
+    setIsBranchPopupOpen(true);
+    BranchSave();
   };
 
   const currentDate = new Date().toLocaleDateString("en-GB", {
@@ -120,7 +94,7 @@ export default function AdminManagement() {
         <div className="lg:flex sm:items-center items-end gap-4">
           <div onClick={handleAddBranch}>
             <Button
-              text="+ ADD BRANCHES"
+              text="+ ADD BRANCH"
               bgColor="bg-[#4B45DA]"
               hoverColor="bg-[#2019de]"
               height="h-8"
@@ -139,7 +113,7 @@ export default function AdminManagement() {
         </div>
       </div>
 
-      <TableBranch />
+      <BranchTable />
 
       <PopupMenu isOpen={isPopupOpen} onClose={() => setIsPopupOpen(false)}>
         {/* Popup content */}
@@ -211,7 +185,10 @@ export default function AdminManagement() {
         </div>
       </PopupMenu>
 
-      <PopupMenu isOpen={isPopupOpen1} onClose={() => setIsPopupOpen1(false)}>
+      <PopupMenu
+        isOpen={isAddbranchPopupOpen}
+        onClose={() => setIsAddBranchPopupOpen(false)}
+      >
         {/* Popup content */}
         <div className="space-y-6 pb-3">
           <label className="block m-4">
@@ -220,6 +197,7 @@ export default function AdminManagement() {
               type="text"
               className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
               placeholder="Enter branch name"
+              value={branchName}
               onChange={(e) => setBranchName(e.target.value)}
             />
           </label>
@@ -230,7 +208,8 @@ export default function AdminManagement() {
               type="text"
               className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
               placeholder="Description"
-              onChange={(e) => setBranchDescrption(e.target.value)}
+              value={branchDescription}
+              onChange={(e) => setBranchDescription(e.target.value)}
             />
           </label>
         </div>

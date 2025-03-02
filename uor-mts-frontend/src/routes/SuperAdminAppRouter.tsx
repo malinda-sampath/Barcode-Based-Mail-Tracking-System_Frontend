@@ -5,7 +5,6 @@ import AdminManagement from "../pages/AdminManagement";
 import BranchManagement from "../pages/BranchManagement";
 import Help from "../pages/Help";
 import Settings from "../pages/Setting";
-import Profile from "../pages/Profile";
 
 function SuperAdminAppRouter() {
   return (
