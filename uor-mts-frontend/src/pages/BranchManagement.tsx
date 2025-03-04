@@ -87,27 +87,24 @@ export default function AdminManagement() {
       </h1>
       <p className="text-xs sm:text-sm text-gray-500 ">{currentDate}</p>
 
-      <div className="flex px-8 items-center justify-between w-full">
-        <div className="flex items-center gap-2">
-          <Search />
-        </div>
-        <div className="lg:flex sm:items-center items-end gap-4">
+      <div className="flex px-8 items-center justify-end w-full">
+        <div className="flex items-end gap-4">
           <div onClick={handleAddBranch}>
             <Button
-              text="+ ADD BRANCH"
+              text="+ ADD BRANCHES"
               bgColor="bg-[#4B45DA]"
               hoverColor="bg-[#2019de]"
               height="h-8"
-              width="w-full md:w-64"
+              width="w-60 sm:w-55"
             />
           </div>
           <div onClick={handleButtonClick}>
             <Button
-              text="+ ADD BRANCH USERS"
+              text="+ ADD USERS"
               bgColor="bg-[#4B45DA]"
               hoverColor="bg-[#2019de]"
               height="h-8"
-              width="w-full md:w-64"
+              width="w-60 sm:w-55"
             />
           </div>
         </div>

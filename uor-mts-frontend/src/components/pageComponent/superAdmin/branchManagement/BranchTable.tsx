@@ -34,33 +34,38 @@ const BranchTable: React.FC = () => {
   const [error, setError] = useState<string>("");
   const [status, setStatus] = useState<number>(0);
   const [stompClient, setStompClient] = useState<Client | null>(null);
+  const [toasts, setToasts] = useState<
+    { message: string; type: "success" | "error" | "info" | "warning" }[]
+  >([]);
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredBranches, setFilteredBranches] = useState<Branch[]>([]);
+
+  const triggerToast = (
+    message: string,
+    type: "success" | "error" | "info" | "warning"
+  ) => {
+    setToasts((prev) => [...prev, { message, type }]);
+  };
 
   // Function to delete a branch
   const BranchDelete = async (branch: Branch) => {
     setError("");
     setStatus(0);
 
-    // if (!branchName || !branchDescription) {
-    //   triggerToast("Please fill in all fields!", "error");
-    //   return;
-    // }
-
     try {
       const response = await deleteBranch(branch.branchCode);
 
-      //   if (response.status >= 200 && response.status < 300) {
-      //     triggerToast("Branch added successfully!", "success");
-      //     setBranchName("");
-      //     setBranchDescription("");
-      //     setIsAddBranchPopupOpen(false);
-      //   } else if (response.status === 409) {
-      //     triggerToast("Branch already exists!", "error");
-      //   } else {
-      //     triggerToast("Failed to add branch!", "error");
-      //   }
+      if (response.status >= 200 && response.status < 300) {
+        triggerToast("Branch added successfully!", "success");
+      } else if (response.status === 409) {
+        triggerToast("Branch already exists!", "error");
+      } else {
+        triggerToast("Failed to add branch!", "error");
+      }
     } catch (error) {
       console.error("Error saving branch:", error);
-      // triggerToast("An error occurred while saving the branch!", "error");
+      // triggerToast("An error occurred while deleting the branch!", "error");
     }
   };
 
@@ -111,32 +116,38 @@ const BranchTable: React.FC = () => {
       console.log("Connected to WebSocket");
 
       stomp.subscribe("/topic/branch-updates", (message) => {
-        const updatedBranch = JSON.parse(message.body);
-        console.log("Received WebSocket update:", updatedBranch);
+        const wcResponse = JSON.parse(message.body);
 
-        setBranches((prevBranches) => {
-          const existingIndex = prevBranches.findIndex(
-            (b) => b.branchCode === updatedBranch.branchCode
-          );
-
-          let updatedList;
-          if (existingIndex !== -1) {
-            updatedList = prevBranches.map((b, index) =>
-              b.branchCode === updatedBranch.branchCode
-                ? { ...updatedBranch, index: b.index } // Keep existing index
-                : b
+        if (wcResponse.action === "save") {
+          setBranches((prevBranches) => {
+            const existingIndex = prevBranches.findIndex(
+              (b) => b.branchCode === wcResponse.branch.branchCode
             );
-          } else {
-            // Add new branch with a new index
-            updatedList = [
-              ...prevBranches,
-              { ...updatedBranch, index: prevBranches.length + 1 },
-            ];
-          }
 
-          console.log("Updated list:", updatedList);
-          return updatedList;
-        });
+            let updatedList;
+            if (existingIndex !== -1) {
+              // Update existing branch
+              updatedList = prevBranches.map((b, index) =>
+                b.branchCode === wcResponse.branch.branchCode
+                  ? { ...wcResponse.branch, index: b.index } // Preserve index
+                  : b
+              );
+            } else {
+              // Add new branch and recalculate indices
+              updatedList = [...prevBranches, { ...wcResponse.branch }];
+            }
+
+            console.log("Updated list:", updatedList);
+            return updatedList.map((b, index) => ({ ...b, index: index + 1 })); // Recalculate indices
+          });
+        } else if (wcResponse.action === "delete") {
+          setBranches((prevBranches) => {
+            const updatedList = prevBranches.filter(
+              (b) => b.branchCode !== wcResponse.branch.branchCode
+            );
+            return updatedList.map((b, index) => ({ ...b, index: index + 1 })); // Recalculate indices after deletion
+          });
+        }
       });
     };
 
@@ -156,6 +167,7 @@ const BranchTable: React.FC = () => {
 
   const handleViewBranch = (branch: Branch) => {
     setSelectedBranch(branch);
+    alert(selectedBranch?.branchCode);
     setFormType("view");
   };
 
@@ -179,6 +191,7 @@ const BranchTable: React.FC = () => {
         onViewClick={handleViewBranch}
         onEditClick={handleEditBranch}
         onDeleteClick={handleDeleteBranch}
+        searchableKeys={["branchCode", "branchName", "branchDescription"]} // Define searchable keys
       />
     </div>
   );

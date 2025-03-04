@@ -1,20 +1,21 @@
-import React, { useState, useMemo } from "react";
-import { FaSort, FaEye, FaEdit, FaTrash } from "react-icons/fa";
-
-type ActionType<T> = {
-  label: string;
-  name: "view" | "edit" | "delete";
-  icon: React.ReactNode;
-  onClick: (row: T) => void;
-};
+import React, { useState, useMemo, useRef } from "react";
+import {
+  FaSort,
+  FaEye,
+  FaEdit,
+  FaTrash,
+  FaSearch,
+  FaTimesCircle,
+} from "react-icons/fa";
 
 type TableProps<T> = {
   columns: { key: keyof T; label: string }[];
   data: T[];
   rowsPerPage?: number;
-  onViewClick: (row: T) => void; // Prop for handling the "View" button click
+  onViewClick: (row: T) => void;
   onEditClick: (row: T) => void;
   onDeleteClick: (row: T) => void;
+  searchableKeys?: (keyof T)[]; // Optional: Define which keys to search
 };
 
 const Table = <T,>({
@@ -24,10 +25,15 @@ const Table = <T,>({
   onViewClick,
   onEditClick,
   onDeleteClick,
+  searchableKeys = [],
 }: TableProps<T>) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [sortKey, setSortKey] = useState<keyof T | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [isSearchExpanded, setIsSearchExpanded] = useState(true);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSort = (key: keyof T) => {
     if (sortKey === key) {
@@ -38,9 +44,39 @@ const Table = <T,>({
     }
   };
 
+  // Generate suggestions based on searchable columns
+  const generateSuggestions = (query: string) => {
+    if (!query) return [];
+
+    const suggestionSet = new Set<string>();
+
+    data.forEach((row) => {
+      searchableKeys.forEach((key) => {
+        const value = row[key]?.toString().toLowerCase() ?? "";
+        if (value.includes(query.toLowerCase())) {
+          suggestionSet.add(value);
+        }
+      });
+    });
+
+    return Array.from(suggestionSet).slice(0, 5);
+  };
+
+  // **Search and filter data**
+  const filteredData = useMemo(() => {
+    if (!searchQuery) return data;
+    return data.filter((row) =>
+      searchableKeys.some((key) => {
+        const value = row[key]?.toString().toLowerCase() ?? "";
+        return value.includes(searchQuery.toLowerCase());
+      })
+    );
+  }, [data, searchQuery, searchableKeys]);
+
+  // **Sort the filtered data**
   const sortedData = useMemo(() => {
-    if (!sortKey) return data;
-    return [...data].sort((a, b) => {
+    if (!sortKey) return filteredData;
+    return [...filteredData].sort((a, b) => {
       const aValue = a[sortKey] ?? "";
       const bValue = b[sortKey] ?? "";
 
@@ -54,16 +90,107 @@ const Table = <T,>({
         ? Number(aValue) - Number(bValue)
         : Number(bValue) - Number(aValue);
     });
-  }, [data, sortKey, sortDirection]);
+  }, [filteredData, sortKey, sortDirection]);
 
-  const totalPages = Math.max(Math.ceil(data.length / rowsPerPage), 1);
+  const totalPages = Math.max(Math.ceil(sortedData.length / rowsPerPage), 1);
   const paginatedData = sortedData.slice(
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage
   );
 
+  const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+
+    // Generate suggestions
+    const newSuggestions = generateSuggestions(value);
+    setSuggestions(newSuggestions);
+  };
+
+  const handleSuggestionClick = (suggestion: string) => {
+    setSearchQuery(suggestion);
+    setSuggestions([]);
+  };
+
+  const clearSearch = () => {
+    setSearchQuery("");
+    setSuggestions([]);
+    setIsSearchExpanded(true);
+  };
+
   return (
     <div className="overflow-x-auto w-full">
+      {/* Advanced Search Input */}
+      <div className="relative w-1/2 mt-5 mb-5">
+        <div className="flex items-center border rounded-lg overflow-hidden shadow-sm transition-all duration-300">
+          {/* Search Icon */}
+          {!isSearchExpanded && (
+            <button
+              onClick={() => setIsSearchExpanded(true)}
+              className="p-2 hover:bg-gray-100 transition-colors"
+            >
+              <FaSearch
+                className="text-gray-600 hover:text-blue-500 transition-transform hover:scale-110"
+                size={20}
+              />
+            </button>
+          )}
+
+          {/* Search Input */}
+          {isSearchExpanded && (
+            <>
+              <div className="pl-3 pr-2 text-gray-500">
+                <FaSearch size={20} />
+              </div>
+              <input
+                ref={inputRef}
+                type="text"
+                placeholder="Search for anything ..."
+                value={searchQuery}
+                onChange={handleSearchInputChange}
+                onBlur={() => {
+                  setTimeout(() => {
+                    if (searchQuery.trim() === "") {
+                      setIsSearchExpanded(true);
+                    }
+                  }, 200);
+                }}
+                autoFocus
+                className="w-full p-2 pl-2 outline-none text-gray-700 transition-all duration-300"
+              />
+
+              {/* Clear Button */}
+              {searchQuery && (
+                <button
+                  onClick={clearSearch}
+                  className="mr-2 ml-2 text-gray-500 hover:text-gray-700 transition-colors"
+                >
+                  <FaTimesCircle size={20} />
+                </button>
+              )}
+            </>
+          )}
+        </div>
+
+        {/* Suggestions Dropdown */}
+        {suggestions.length > 0 && (
+          <div className="absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg animate-fade-in">
+            {suggestions.map((suggestion, index) => (
+              <div
+                key={index}
+                onClick={() => handleSuggestionClick(suggestion)}
+                className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center justify-between group"
+              >
+                <span className="text-gray-700 group-hover:text-blue-600 transition-colors">
+                  {suggestion}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Rest of the table remains the same as before */}
       <table className="table-auto border-collapse w-full text-left">
         <thead className="bg-gray-100">
           <tr>
@@ -81,51 +208,61 @@ const Table = <T,>({
           </tr>
         </thead>
         <tbody>
-          {paginatedData.map((row, rowIndex) => (
-            <tr key={rowIndex} className="border-t">
-              {columns.map((column) => (
-                <td key={column.key.toString()} className="px-4 py-2">
-                  {String(row[column.key])}
+          {paginatedData.length > 0 ? (
+            paginatedData.map((row, rowIndex) => (
+              <tr key={rowIndex} className="border-t">
+                {columns.map((column) => (
+                  <td key={column.key.toString()} className="px-4 py-2">
+                    {String(row[column.key])}
+                  </td>
+                ))}
+                <td className="px-4 py-2 flex space-x-2">
+                  {/* View Button */}
+                  <button
+                    type="button"
+                    className="p-2 text-sm bg-gray-200 rounded hover:bg-gray-300"
+                    onClick={() => onViewClick(row)}
+                    title="View"
+                  >
+                    <FaEye className="w-4 h-4 text-blue-500" />
+                    <span className="sr-only">View</span>
+                  </button>
+
+                  {/* Edit Button */}
+                  <button
+                    type="button"
+                    className="p-2 text-sm bg-gray-200 rounded hover:bg-gray-300"
+                    onClick={() => onEditClick(row)}
+                    title="Edit"
+                  >
+                    <FaEdit className="w-4 h-4 text-green-500" />
+                    <span className="sr-only">Edit</span>
+                  </button>
+
+                  {/* Delete Button */}
+                  <button
+                    type="button"
+                    className="p-2 text-sm bg-gray-200 rounded hover:bg-gray-300"
+                    onClick={() => onDeleteClick(row)}
+                    title="Delete"
+                  >
+                    <FaTrash className="w-4 h-4 text-red-500" />
+                    <span className="sr-only">Delete</span>
+                  </button>
                 </td>
-              ))}
-              <td className="px-4 py-2 flex space-x-2">
-                {/* View Button */}
-                <button
-                  type="button"
-                  className="p-2 text-sm bg-gray-200 rounded hover:bg-gray-300"
-                  onClick={() => onViewClick(row)}
-                  title="View"
-                >
-                  <FaEye className="w-4 h-4 text-blue-500" />
-                  <span className="sr-only">View</span>
-                </button>
-
-                {/* Edit Button */}
-                <button
-                  type="button"
-                  className="p-2 text-sm bg-gray-200 rounded hover:bg-gray-300"
-                  onClick={() => onEditClick(row)}
-                  title="Edit"
-                >
-                  <FaEdit className="w-4 h-4 text-green-500" />
-                  <span className="sr-only">Edit</span>
-                </button>
-
-                {/* Delete Button */}
-                <button
-                  type="button"
-                  className="p-2 text-sm bg-gray-200 rounded hover:bg-gray-300"
-                  onClick={() => onDeleteClick(row)}
-                  title="Delete"
-                >
-                  <FaTrash className="w-4 h-4 text-red-500" />
-                  <span className="sr-only">Delete</span>
-                </button>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={columns.length + 1} className="text-center py-4">
+                No matching results found.
               </td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
+
+      {/* Pagination Controls */}
       <div className="flex justify-between items-center mt-4">
         <button
           type="button"

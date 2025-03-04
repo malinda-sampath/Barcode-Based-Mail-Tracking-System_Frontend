@@ -5,7 +5,6 @@ import Table from "../components/table/Table";
 import DynamicForm from "../components/form/DynamicForm";
 import AdminDetails from "../components/table/AdminDetails";
 import AdminFormPopup from "../components/form/AdminFormPopup"; // Import the AdminFormPopup component
-import SearchButton from "../components/buttonComponents/SearchButton";
 
 type Person = {
   firstName: string;
@@ -123,18 +122,10 @@ export default function AdminManagement() {
       <h1 className="text-xl sm:text-2xl font-semibold mt-2 text-[#611010]">
         Mail Handle Management
       </h1>
-      <p className="text-xs sm:text-sm text-gray-500]">{currentDate}</p>
+      <p className="text-xs sm:text-sm text-gray-500 ">{currentDate}</p>
 
       <div className="flex flex-col sm:flex-row items-center justify-between mt-6 sm:mt-10">
-        <div className="flex items-center gap-2">
-          <SearchButton
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            setAdmins={setAdmins}
-            admins={data}
-            allAdmins={data} // Pass the full list for reset
-          />
-        </div>
+        <div className="flex items-center gap-2">{/* Search Button */}</div>
 
         <div
           className="mt-4 sm:mt-0 mr-0 sm:mr-10"
