@@ -69,7 +69,7 @@ const Sidebar: React.FC<SidebarProps> = ({ setIsSidebarOpen }) => {
         />
         {isOpen && !isMobile && (
           <span className="text-lg text-neutral-100 ">
-            <b className="text-[#F99C30] text-xl">Administrative Unit</b>
+            <b className="text-[#F99C30] text-lg">Administrative Unit</b>
             <br /> University of Ruhuna
           </span>
         )}

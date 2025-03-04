@@ -51,18 +51,21 @@ export const ClaimMails = () => {
 
   return (
     <>
-      <div className='text-[#611010] font-bold text-xl ml-10 mt-10 flex justify-between mr-10'>
-        CLAIM MAILS
+      <div className="px-4 ml-4 sm:ml-6 md:ml-16 sm:px-6 lg:px-8 ">
+
+<h1 className="text-xl sm:text-2xl font-semibold mb-3 text-[#611010]">
+  Claim Mails
+</h1>
         <Input
           placeholder="Filter Branch..."
-          className="max-w-sm"
+          className="max-w-sm mb-4"
           value={filter}
           onChange={(e) => setFilter(e.target.value)} 
         />
       </div>
-      <p className='mb-10 ml-10 text-sm'>2025/02/21</p>
+      
 
-      <div className="flex flex-wrap gap-10 ml-8 sm:gap-5">
+      <div className="flex flex-wrap gap-10 ml-20 sm:gap-5">
         {filteredBranches.map((branch) => (
           <button
             key={branch.code}

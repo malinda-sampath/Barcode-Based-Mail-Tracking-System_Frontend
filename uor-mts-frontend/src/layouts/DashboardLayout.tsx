@@ -13,12 +13,13 @@ import { FaCodeBranch } from "react-icons/fa";
 
 import { FaUsers } from "react-icons/fa";
 import { MailCheck, MailIcon } from "lucide-react";
+import { RxAvatar } from "react-icons/rx";
 
 export const DASHBOARD_SIDEBAR_LINKS = [
   {
     key: "dashboard",
     label: "Dashboard",
-    path: "/admin",
+    path: "/dashboard",
     icon: <HiOutlineViewGrid className="text-[#F99C30]" />,
   },
   {
@@ -39,7 +40,7 @@ export const ADMIN_DASHBOARD_SIDEBAR_LINKS = [
   {
     key: "dashboard",
     label: "Dashboard",
-    path: "/",
+    path: "/dashboard",
     icon: <HiOutlineViewGrid className="text-[#F99C30]" />,
   },
   {
@@ -57,6 +58,15 @@ export const ADMIN_DASHBOARD_SIDEBAR_LINKS = [
 ];
 
 export const DASHBOARD_SIDEBAR_BOTTOM_LINKS = [
+
+
+  {
+    key: "profile",
+    label: "Profile",
+    path: "/profile",
+    icon: <RxAvatar className="text-[#F99C30]" />,
+  },
+  
   {
     key: "settings",
     label: "Settings",
@@ -69,9 +79,19 @@ export const DASHBOARD_SIDEBAR_BOTTOM_LINKS = [
     path: "/help",
     icon: <HiOutlineQuestionMarkCircle className="text-[#F99C30]" />,
   },
+
+ 
 ];
 
 export const ADMIN_DASHBOARD_SIDEBAR_BOTTOM_LINKS = [
+
+  {
+    key: "profile",
+    label: "Profile",
+    path: "/profile",
+    icon: <RxAvatar className="text-[#F99C30]" />,
+  },
+
   {
     key: "settings",
     label: "Settings",
@@ -84,13 +104,15 @@ export const ADMIN_DASHBOARD_SIDEBAR_BOTTOM_LINKS = [
     path: "/help",
     icon: <HiOutlineQuestionMarkCircle className="text-[#F99C30]" />,
   },
+
+
 ];
 
 export const BRANCH_DASHBOARD_SIDEBAR_LINKS = [
   {
     key: "dashboard",
     label: "Dashboard",
-    path: "/",
+    path: "/dashboard",
     icon: <HiOutlineViewGrid className="text-[#F99C30]" />,
   },
   {
@@ -103,6 +125,12 @@ export const BRANCH_DASHBOARD_SIDEBAR_LINKS = [
 
 export const BRANCH_DASHBOARD_SIDEBAR_BOTTOM_LINKS = [
   {
+    key: "profile",
+    label: "Profile",
+    path: "/profile",
+    icon: <RxAvatar className="text-[#F99C30]" />,
+  },
+  {
     key: "settings",
     label: "Settings",
     path: "/settings",
@@ -114,4 +142,6 @@ export const BRANCH_DASHBOARD_SIDEBAR_BOTTOM_LINKS = [
     path: "/help",
     icon: <HiOutlineQuestionMarkCircle className="text-[#F99C30]" />,
   },
+
+  
 ];

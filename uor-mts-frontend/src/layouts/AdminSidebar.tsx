@@ -47,7 +47,7 @@ const AdminSidebar: React.FC<SidebarProps> = ({ setIsSidebarOpen }) => {
     <div
       className={`fixed top-0 left-0 flex flex-col bg-[#611010] text-white h-screen transition-all duration-300 ${
         isOpen ? "w-60" : "w-16"
-      } sm:w-60 p-3`}
+      } sm:w-80 p-3`}
     >
       {/* Toggle Button for Mobile */}
       {isMobile && (
@@ -67,9 +67,10 @@ const AdminSidebar: React.FC<SidebarProps> = ({ setIsSidebarOpen }) => {
           className={`object-cover ${isOpen ? "w-24 h-24" : "hidden"}`}
         />
         {isOpen && !isMobile && (
-          <span className="text-lg text-neutral-100">
-            <b className="text-[#F99C30]">GENERAL</b> ADMIN
-          </span>
+          <span className="text-lg text-neutral-100 ">
+          <b className="text-[#F99C30] text-lg">Administrative Unit</b>
+          <br /> University of Ruhuna
+        </span>
         )}
       </div>
 

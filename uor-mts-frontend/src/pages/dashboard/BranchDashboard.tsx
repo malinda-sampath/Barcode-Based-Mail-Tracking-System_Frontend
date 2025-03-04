@@ -6,27 +6,23 @@ import {
   CardTitle,
   CardContent,
 } from "../../components/ui/card";
-import {
-  Calendar,
-  GitBranchIcon,
-  MailCheck,
-  MailMinusIcon,
-  MailsIcon,
-  Users2Icon,
-} from "lucide-react";
-import { BranchDataset } from "../../PagesComponents/dashboard/chart/BranchDataset";
+import { Calendar, GitBranchIcon, MailCheck, MailMinus, MailsIcon, Users2Icon } from "lucide-react";
+import {Dataset}  from "../../PagesComponents/dashboard/chart/SuperDataset";
 import { CalendarDemo } from "../../PagesComponents/dashboard/calender/CalendarDemo";
-import { FaRegCreditCard, FaRegObjectGroup } from "react-icons/fa";
 
-const BranchDashboard: React.FC = () => {
+export default function Dashboard() {
   return (
     <>
       {/* Dashboard Title */}
+      <div className="px-4 ml-4 sm:ml-6 md:ml-16 sm:px-6 lg:px-8 ">
 
+      <h1 className="text-xl sm:text-2xl font-semibold mt-2 text-[#611010]">
+        Dashboard
+      </h1>
+      <p className="text-xs sm:text-sm text-gray-500]">Date</p>
       {/* Card Section */}
-      <div className="flex flex-wrap gap-10 ml-8 sm:gap-5">
-        {/* Branches Card */}
-        <Card className="w-full p-4 m-1 sm:w-1/4">
+      <div className="flex justify-between gap-0 mt-3 ml-2 " >
+      <Card className="w-full p-4 m-1 ">
           <CardHeader>
             <CardTitle className="flex justify-start items-center gap-4 text-[#611010]">
               <MailCheck className="text-[40px] text-[#611010]" />
@@ -39,10 +35,10 @@ const BranchDashboard: React.FC = () => {
         </Card>
 
         {/* Rejected mail Card */}
-        <Card className="w-full p-4 m-1 sm:w-1/4">
+        <Card className="w-full p-4 m-1">
           <CardHeader>
             <CardTitle className="flex justify-start items-center gap-4 text-[#611010]">
-              <MailMinusIcon className="text-[40px] text-[#611010]" />
+              <MailMinus className="text-[40px] text-[#611010]" />
               REJECT MAILS
             </CardTitle>
           </CardHeader>
@@ -50,26 +46,34 @@ const BranchDashboard: React.FC = () => {
             <span className="text-[60px] text-[#F99C30] font-bold">20</span>
           </CardContent>
         </Card>
+
+        
+                  
       </div>
 
       {/* Chart and Report Button Section */}
-      <div className="flex flex-wrap gap-4 mt-4 ml-7">
-        <BranchDataset />
+      <Card className="justify-center w-full p-5 mt-3 ml-3 align-middle">
+      <div className="flex flex-wrap justify-center gap-10" >
+        <Dataset />
 
-        {/* Calendar */}
-        <div className="">
-          <CalendarDemo />
-          <div className="flex flex-col gap-5 mt-7">
-            <Button className="px-10 py-2 bg-black sm:mt-0 sm-py-5">
-              View Report
-            </Button>
-          </div>
-        </div>
+        <div className="flex flex-col justify-end ">
+      
+                    <CalendarDemo/>
+                    <Button className="px-10 py-2 mt-4 mb-4 bg-black sm:mt-0 sm-py-5">
+                      View Report
+                    </Button>
 
-        {/* Buttons */}
-      </div>
+                    
+                  </div>
+       
+      </div> </Card></div>
     </>
   );
-};
+}
 
-export default BranchDashboard;
+
+
+
+
+
+
