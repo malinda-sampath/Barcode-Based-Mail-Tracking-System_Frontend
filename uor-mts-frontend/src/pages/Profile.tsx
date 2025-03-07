@@ -1,145 +1,119 @@
-import React from "react";
-import Button from "../components/buttonComponents/Button";
 import { useState } from "react";
-import PopupMenu from "../components/popupComponent/Popup";
+import { Input } from "../components/ui/input";
+import { Button } from "../components/ui/button";
+import { Label } from "../components/ui/label";
+import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
+import { Pencil } from "lucide-react";
 
-export default function AdminManagement() {
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [isPopupOpenConfirm, setIsPopupOpenConfirm] = useState(false);
-  const [isPopupOpenSuccess, setIsPopupOpenSuccess] = useState(false);
+export default function Profile() {
+  const [editing, setEditing] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "Manuri Rasara",
+    email: "manuri@example.com",
+    password: "",
+    avatar: "https://via.placeholder.com/150",
+  });
 
-  const handleButtonClick = () => {
-    setIsPopupOpen(true); // Open the popup when the button is clicked
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleButtonClickConfirm = () => {
-    setIsPopupOpenConfirm(true); // Open the popup when the button is clicked
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setFormData({ ...formData, avatar: URL.createObjectURL(file) });
+    }
   };
 
-  const handleButtonClickSuccess = () => {
-    setIsPopupOpenSuccess(true); // Open the popup when the button is clicked
+  const handleSave = () => {
+    setEditing(false);
+    console.log("Updated Profile:", formData);
   };
 
   return (
-    <div className="m-12">
-      <p className="text-[#611010] text-[18px] font-semibold absolute top-5 left-[335px]">
-        Profile
-      </p>
-      <div className="relative flex space-x-28 left-40 top-20">
-        <div className="bg-[#E0E1E2] h-28 w-28 border-neutral-800 rounded-xl relative top-12"></div>
-
-        <div>
-          <label className="block m-4">
-            <span className="text-[#611010]">Name</span>
-            <input
-              type="text"
-              className="block mt-1 border-gray-300 rounded-md shadow-sm w-96 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            />
-          </label>
-          <label className="block m-4">
-            <span className="text-[#611010]">E-mail</span>
-            <input
-              type="text"
-              className="block mt-1 border-gray-300 rounded-md shadow-sm w-96 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            />
-          </label>
-          <label className="block m-4">
-            <span className="text-[#611010]">Contact No.</span>
-            <input
-              type="text"
-              className="block mt-1 border-gray-300 rounded-md shadow-sm w-96 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            />
-          </label>
-          <div onClick={handleButtonClick}>
-            <Button
-              text="Edit Profile"
-              bgColor="bg-[#F93058]"
-              hoverColor="bg-[#f60f3d]"
-              height="h-8"
-              width="w-28"
-            />
+    <>
+      <div className="justify-start px-8 ml-8 sm:ml-10 md:ml-20 sm:px-10 lg:px-12">
+        <h1 className="text-2xl sm:text-3xl font-semibold mt-4 text-[#611010]">
+          Profile
+        </h1>
+        <p className="mb-6 text-sm text-gray-500 sm:text-base">Date</p>
+      </div>
+      <div className="flex items-center justify-center p-8 align-middle bg-gray-100">
+        <div className="w-full max-w-lg space-y-8">
+          <div className="flex flex-col items-center gap-6">
+            <div className="relative">
+              <Avatar className="w-32 h-32 overflow-hidden border-4 rounded-full border-black-200">
+                <AvatarImage src={formData.avatar} alt="Avatar" />
+                <AvatarFallback>MR</AvatarFallback>
+              </Avatar>
+              {editing && (
+                <label className="absolute p-2 bg-white rounded-full shadow-md cursor-pointer bottom-1 right-1">
+                  <Pencil className="w-6 h-6 text-gray-600" />
+                  <input
+                    type="file"
+                    className="hidden"
+                    onChange={handleFileChange}
+                  />
+                </label>
+              )}
+            </div>
+            <div className="w-full space-y-3 text-lg">
+              <Label>Name</Label>
+              <Input
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                disabled={!editing}
+                className="p-3 text-lg"
+              />
+              <Label>Email</Label>
+              <Input
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                disabled={!editing}
+                className="p-3 text-lg"
+              />
+              {editing && (
+                <>
+                  <Label>Password</Label>
+                  <Input
+                    name="password"
+                    type="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    className="p-3 text-lg"
+                  />
+                </>
+              )}
+            </div>
+            <div className="flex gap-4">
+              {editing ? (
+                <>
+                  <Button className="px-6 py-3 text-lg" onClick={handleSave}>
+                    Save
+                  </Button>
+                  <Button
+                    className="px-6 py-3 text-lg"
+                    variant="outline"
+                    onClick={() => setEditing(false)}
+                  >
+                    Cancel
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  className="px-6 py-3 text-lg"
+                  onClick={() => setEditing(true)}
+                >
+                  Edit Profile
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </div>
-
-      <PopupMenu isOpen={isPopupOpen} onClose={() => setIsPopupOpen(false)}>
-        {/* Popup content */}
-        <label className="block m-4">
-          <span className="text-[#611010]">Name</span>
-          <input
-            type="text"
-            className="block mt-1 border-gray-300 rounded-md shadow-sm w-96 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-          />
-        </label>
-        <label className="block m-4">
-          <span className="text-[#611010]">E-mail</span>
-          <input
-            type="text"
-            className="block mt-1 border-gray-300 rounded-md shadow-sm w-96 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-          />
-        </label>
-        <label className="block m-4">
-          <span className="text-[#611010]">Contact No.</span>
-          <input
-            type="text"
-            className="block mt-1 border-gray-300 rounded-md shadow-sm w-96 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-          />
-        </label>
-        <label className="block m-4">
-          <span className="text-[#611010]">Change Password</span>
-          <input
-            type="text"
-            className="block mt-1 border-gray-300 rounded-md shadow-sm w-96 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-          />
-        </label>
-        <label className="block m-4">
-          <span className="text-[#611010]">Confirm Password</span>
-          <input
-            type="text"
-            className="block mt-1 border-gray-300 rounded-md shadow-sm w-96 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-          />
-        </label>
-
-        <div className="flex space-x-12" onClick={handleButtonClickConfirm}>
-          <Button
-            text="Save"
-            bgColor="bg-[#4B45DA]"
-            hoverColor="bg-[#2019de]"
-            height="h-8"
-            width="w-28"
-          />
-        </div>
-
-        <PopupMenu
-          isOpen={isPopupOpenConfirm}
-          onClose={() => setIsPopupOpenConfirm(false)}
-        >
-          <p className="text-lg text-center text-rose-800">
-            Are you sure you want to change profile details? Confirm
-          </p>
-          <div
-            className="flex items-center justify-center"
-            onClick={handleButtonClickSuccess}
-          >
-            <Button
-              text="OK"
-              bgColor="bg-[#1D154A]"
-              hoverColor="bg-[#13094e]"
-              height="h-8"
-              width="w-36"
-            />
-          </div>
-
-          <PopupMenu
-            isOpen={isPopupOpenSuccess}
-            onClose={() => setIsPopupOpenSuccess(false)}
-          >
-            <p className="text-[28px] text-center text-green-900 ">
-              Profile Updated Successfully!!!
-            </p>
-          </PopupMenu>
-        </PopupMenu>
-      </PopupMenu>
-    </div>
+    </>
   );
 }
