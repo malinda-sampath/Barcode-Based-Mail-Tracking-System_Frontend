@@ -4,19 +4,22 @@ const Popup = ({ isOpen, onClose, children }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="relative p-6 bg-white rounded-lg shadow-lg w-[600px]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+      <div className="relative p-6 bg-white rounded-xl shadow-xl w-full max-w-lg">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute text-gray-600 top-2 right-2 hover:text-gray-800"
+          aria-label="Close popup"
+          className="absolute top-3 right-3 text-gray-500 hover:text-gray-800 transition duration-200"
         >
           ✖
         </button>
-        
+
         {/* Popup Content */}
-        <h2 className="mb-4 text-xl font-semibold text-center text-[#611010]">BRANCH</h2>
-        {children}
+        <h2 className="mb-5 text-2xl font-bold text-center text-[#611010] uppercase tracking-wide">
+          Branch
+        </h2>
+        <div className="space-y-4">{children}</div>
       </div>
     </div>
   );

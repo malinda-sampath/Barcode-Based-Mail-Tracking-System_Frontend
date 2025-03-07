@@ -6,6 +6,9 @@ import {
 } from "../../../../services/BranchService";
 import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
+import { useToggleConfirmation } from "../../../ui/toggle/useToggleConfiremation";
+import ToggleConfirmation from "../../../ui/toggle/toggleConfiremation";
+import ToastContainer from "../../../ui/toastContainer";
 
 interface Branch {
   index?: number;
@@ -34,12 +37,11 @@ const BranchTable: React.FC = () => {
   const [error, setError] = useState<string>("");
   const [status, setStatus] = useState<number>(0);
   const [stompClient, setStompClient] = useState<Client | null>(null);
+  const { isVisible, confirmationConfig, showConfirmation, hideConfirmation } =
+    useToggleConfirmation();
   const [toasts, setToasts] = useState<
     { message: string; type: "success" | "error" | "info" | "warning" }[]
   >([]);
-
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filteredBranches, setFilteredBranches] = useState<Branch[]>([]);
 
   const triggerToast = (
     message: string,
@@ -56,12 +58,10 @@ const BranchTable: React.FC = () => {
     try {
       const response = await deleteBranch(branch.branchCode);
 
-      if (response.status >= 200 && response.status < 300) {
-        triggerToast("Branch added successfully!", "success");
-      } else if (response.status === 409) {
-        triggerToast("Branch already exists!", "error");
+      if (response.status === 200) {
+        triggerToast("Branch deleted successfully!", "success");
       } else {
-        triggerToast("Failed to add branch!", "error");
+        triggerToast("Failed to delete branch!", "error");
       }
     } catch (error) {
       console.error("Error saving branch:", error);
@@ -176,10 +176,23 @@ const BranchTable: React.FC = () => {
     setFormType("edit");
   };
 
+  // const handleDeleteBranch = (branch: Branch) => {
+  //   if (window.confirm("Are you sure you want to delete this branch?")) {
+  //   }
+  // };
+
   const handleDeleteBranch = (branch: Branch) => {
-    if (window.confirm("Are you sure you want to delete this branch?")) {
-      BranchDelete(branch);
-    }
+    showConfirmation(
+      "Are you sure you want to delete this item?",
+      () => {
+        BranchDelete(branch);
+        console.log("Item deleted!");
+        hideConfirmation();
+      },
+      hideConfirmation,
+      "Delete",
+      "Cancel"
+    );
   };
 
   return (
@@ -193,6 +206,19 @@ const BranchTable: React.FC = () => {
         onDeleteClick={handleDeleteBranch}
         searchableKeys={["branchCode", "branchName", "branchDescription"]} // Define searchable keys
       />
+      {/* Confirmation dialog */}
+      {isVisible && confirmationConfig && (
+        <ToggleConfirmation
+          visible={isVisible}
+          message={confirmationConfig.message}
+          onConfirm={confirmationConfig.onConfirm}
+          onCancel={confirmationConfig.onCancel || hideConfirmation}
+          confirmText={confirmationConfig.confirmText}
+          cancelText={confirmationConfig.cancelText}
+        />
+      )}
+      {/* Toasts */}
+      <ToastContainer toasts={toasts} />
     </div>
   );
 };
