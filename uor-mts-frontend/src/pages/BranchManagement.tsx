@@ -74,6 +74,11 @@ export default function AdminManagement() {
     BranchSave();
   };
 
+  const handleClearBtn = () => {
+    setBranchName("");
+    setBranchDescription("");
+  };
+
   const currentDate = new Date().toLocaleDateString("en-GB", {
     day: "2-digit",
     month: "short",
@@ -87,27 +92,24 @@ export default function AdminManagement() {
       </h1>
       <p className="text-xs sm:text-sm text-gray-500 ">{currentDate}</p>
 
-      <div className="flex px-8 items-center justify-between w-full">
-        <div className="flex items-center gap-2">
-          <Search />
-        </div>
-        <div className="lg:flex sm:items-center items-end gap-4">
+      <div className="flex px-8 items-center justify-end w-full">
+        <div className="flex items-end gap-4">
           <div onClick={handleAddBranch}>
             <Button
-              text="+ ADD BRANCH"
+              text="+ ADD BRANCHES"
               bgColor="bg-[#4B45DA]"
               hoverColor="bg-[#2019de]"
               height="h-8"
-              width="w-full md:w-64"
+              width="w-60 sm:w-55"
             />
           </div>
           <div onClick={handleButtonClick}>
             <Button
-              text="+ ADD BRANCH USERS"
+              text="+ ADD USERS"
               bgColor="bg-[#4B45DA]"
               hoverColor="bg-[#2019de]"
               height="h-8"
-              width="w-full md:w-64"
+              width="w-60 sm:w-55"
             />
           </div>
         </div>
@@ -117,71 +119,88 @@ export default function AdminManagement() {
 
       <PopupMenu isOpen={isPopupOpen} onClose={() => setIsPopupOpen(false)}>
         {/* Popup content */}
-        <label className="block m-4">
-          <span className="text-[#611010]">Branch Name</span>
-          <select className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-            <option value="branch1">FOS</option>
-            <option value="branch2">FOM</option>
-            <option value="branch3">VCO</option>
-          </select>
-        </label>
-        <label className="block m-4">
-          <span className="text-[#611010]">Branch Code</span>
-          <input
-            type="text"
-            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            placeholder="Auto-filled branch code"
-          />
-        </label>
-        <label className="block m-4">
-          <span className="text-[#611010]">Username</span>
-          <input
-            type="text"
-            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            placeholder="Enter username"
-          />
-        </label>
-        <label className="block m-4">
-          <span className="text-[#611010]">Password</span>
-          <input
-            type="text"
-            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            placeholder="Enter password"
-          />
-        </label>
-        <label className="block m-4">
-          <span className="text-[#611010]">Confirm Password</span>
-          <input
-            type="text"
-            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            placeholder="Re-enter password"
-          />
-        </label>
+        <div className="space-y-4 px-6 py-4">
+          <label className="block">
+            <span className="text-[#611010] font-medium">Branch Name</span>
+            <select
+              className="block w-full mt-2 px-4 py-2 border border-gray-300 rounded-lg shadow-sm 
+        bg-white text-gray-900 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-300 
+        transition duration-300 ease-in-out hover:shadow-md"
+            >
+              <option value="branch1">FOS</option>
+              <option value="branch2">FOM</option>
+              <option value="branch3">VCO</option>
+            </select>
+          </label>
 
-        <div className="flex flex-wrap justify-center gap-4">
+          <label className="block">
+            <span className="text-[#611010] font-medium">Branch Code</span>
+            <input
+              type="text"
+              className="block w-full mt-2 px-4 py-2 border border-gray-300 rounded-lg shadow-sm 
+        bg-gray-100 text-gray-800 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-300 
+        transition duration-300 ease-in-out hover:shadow-md"
+              placeholder="Auto-filled branch code"
+              disabled
+            />
+          </label>
+
+          <label className="block">
+            <span className="text-[#611010] font-medium">Username</span>
+            <input
+              type="text"
+              className="block w-full mt-2 px-4 py-2 border border-gray-300 rounded-lg shadow-sm 
+        bg-white text-gray-900 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-300 
+        transition duration-300 ease-in-out hover:shadow-md"
+              placeholder="Enter username"
+            />
+          </label>
+
+          <label className="block">
+            <span className="text-[#611010] font-medium">Password</span>
+            <input
+              type="password"
+              className="block w-full mt-2 px-4 py-2 border border-gray-300 rounded-lg shadow-sm 
+        bg-white text-gray-900 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-300 
+        transition duration-300 ease-in-out hover:shadow-md"
+              placeholder="Enter password"
+            />
+          </label>
+
+          <label className="block">
+            <span className="text-[#611010] font-medium">Confirm Password</span>
+            <input
+              type="password"
+              className="block w-full mt-2 px-4 py-2 border border-gray-300 rounded-lg shadow-sm 
+        bg-white text-gray-900 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-300 
+        transition duration-300 ease-in-out hover:shadow-md"
+              placeholder="Re-enter password"
+            />
+          </label>
+        </div>
+
+        <div className="flex justify-center gap-4 p-4">
           <Button
             text="Back"
             bgColor="bg-[#F93058]"
-            hoverColor="bg-[#f60f3d]"
-            height="h-8"
+            hoverColor="bg-[#d82548]"
+            height="h-9"
             width="w-28"
           />
           <Button
             text="Clear"
             bgColor="bg-[#2FBFDE]"
-            hoverColor="bg-[#12bbe0]"
-            height="h-8"
+            hoverColor="bg-[#1ba3c7]"
+            height="h-9"
             width="w-28"
           />
-          <div>
-            <Button
-              text="Save"
-              bgColor="bg-[#4B45DA]"
-              hoverColor="bg-[#2019de]"
-              height="h-8"
-              width="w-28"
-            />
-          </div>
+          <Button
+            text="Save"
+            bgColor="bg-[#4B45DA]"
+            hoverColor="bg-[#3a37b7]"
+            height="h-9"
+            width="w-28"
+          />
         </div>
       </PopupMenu>
 
@@ -190,23 +209,29 @@ export default function AdminManagement() {
         onClose={() => setIsAddBranchPopupOpen(false)}
       >
         {/* Popup content */}
-        <div className="space-y-6 pb-3">
-          <label className="block m-4">
-            <span className="text-[#611010]">Branch Name</span>
+        <div className="space-y-6 pb-4 px-6">
+          <label className="block">
+            <span className="text-[#611010] font-medium">Branch Name</span>
             <input
               type="text"
-              className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              className="block w-full mt-2 px-4 py-2 text-gray-900 bg-white border border-gray-300 rounded-lg shadow-sm 
+        focus:border-indigo-500 focus:ring-2 focus:ring-indigo-300 focus:outline-none 
+        transition duration-300 ease-in-out hover:shadow-lg"
               placeholder="Enter branch name"
               value={branchName}
               onChange={(e) => setBranchName(e.target.value)}
             />
           </label>
-          <label className="block m-4">
-            <span className="text-[#611010]">Branch Description</span>
-            <></>
+
+          <label className="block">
+            <span className="text-[#611010] font-medium">
+              Branch Description
+            </span>
             <input
               type="text"
-              className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              className="block w-full mt-2 px-4 py-2 text-gray-900 bg-white border border-gray-300 rounded-lg shadow-sm 
+        focus:border-indigo-500 focus:ring-2 focus:ring-indigo-300 focus:outline-none 
+        transition duration-300 ease-in-out hover:shadow-lg"
               placeholder="Description"
               value={branchDescription}
               onChange={(e) => setBranchDescription(e.target.value)}
@@ -214,23 +239,24 @@ export default function AdminManagement() {
           </label>
         </div>
 
-        <div className="flex gap-10 p-4 justify-end">
+        <div className="flex gap-6 p-4 justify-end">
           <button
-            className="w-28 h-8 bg-cyan-500 text-white font-medium rounded-lg shadow-sm 
-          transition-all duration-200 transform 
-          hover:bg-cyan-600 active:bg-cyan-700 active:scale-95
-          focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500"
+            onClick={handleClearBtn}
+            className="w-28 h-9 bg-cyan-500 text-white font-medium rounded-lg shadow-md 
+      transition-all duration-200 transform 
+      hover:bg-cyan-600 active:bg-cyan-700 active:scale-95
+      focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-400"
           >
             Clear
           </button>
           <button
             onClick={handleBranchSaveBtn}
-            className="w-28 h-8 bg-indigo-600 text-white font-medium rounded-lg shadow-sm 
-          transition-all duration-200 transform 
-          hover:bg-indigo-700 active:bg-indigo-800 active:scale-95
-          focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            className="w-28 h-9 bg-indigo-600 text-white font-medium rounded-lg shadow-md 
+      transition-all duration-200 transform 
+      hover:bg-indigo-700 active:bg-indigo-800 active:scale-95
+      focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400"
           >
-            Saves
+            Save
           </button>
         </div>
       </PopupMenu>
