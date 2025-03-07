@@ -25,13 +25,13 @@ interface LoginResponse {
 const getDashboardRoute = (userRole: string) => {
   switch (userRole) {
     case "ROLE_SUPER_ADMIN":
-      return "/admin/";
+      return "/admin";
 
     case "ROLE_MAIL_HANDLER":
-      return "/mail-handler/*";
+      return "/mail_handler";
 
     case "ROLE_BRANCH_MANAGER":
-      return "/branch/*";
+      return "/branch";
 
     default:
       return "/";
