@@ -1,16 +1,17 @@
 import React from "react";
-import TableTest from "./components/table/TableTest";
-import AppRouter from "./routes/AppRouter";
-import Form from "./components/form/Form";
-import AllButtonComponents from "./components/buttonComponents/AllButtonComponents";
+import { Routes, Route } from "react-router-dom";
+import SuperAdminAppRouter from "./routes/SuperAdminAppRouter";
+import Login from "./pages/Login";
+import BranchDashboard from "./pages/dashboard/BranchDashboard";
+import AdminAppRouter from "./routes/AdminAppRouter";
 
 const App: React.FC = () => (
-  <div>
-    {/* <TableTest /> */}
-    <AppRouter />
-    {/* <Form />
-    <AllButtonComponents /> */}
-  </div>
+  <Routes>
+    <Route path="/" element={<Login />} />
+    <Route path="/admin/*" element={<SuperAdminAppRouter />} />
+    <Route path="/mail_handler/*" element={<AdminAppRouter />} />
+    <Route path="/branch/*" element={<BranchDashboard />} />
+  </Routes>
 );
 
 export default App;
