@@ -8,7 +8,7 @@ import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 import { useToggleConfirmation } from "../../../ui/toggle/useToggleConfiremation";
 import ToggleConfirmation from "../../../ui/toggle/toggleConfiremation";
-import ToastContainer from "../../../ui/toastContainer";
+import ToastContainer from "../../../ui/toast/toastContainer";
 
 interface Branch {
   index?: number;
