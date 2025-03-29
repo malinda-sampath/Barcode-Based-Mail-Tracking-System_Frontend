@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import gallery_1 from "../assets/gallery_1.png";
 
 export default function EmailVerification() {
@@ -6,7 +6,10 @@ export default function EmailVerification() {
     const [message, setMessage] = useState("");
     const [isVerified, setIsVerified] = useState(false);
     const [otp, setOtp] = useState(Array(6).fill(""));
+    const [timeLeft, setTimeLeft] = useState(30);
+    const [attempts, setAttempts] = useState(0);
     const otpRefs = useRef<(HTMLInputElement | null)[]>(Array(6).fill(null));
+    const timerRef = useRef<NodeJS.Timeout | null>(null);
 
     // Validate email format
     const isValidEmail = (email: string): boolean => {
@@ -21,22 +24,48 @@ export default function EmailVerification() {
             return;
         }
 
-        try {
-            const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/email-verification/verify/${email}`;
-            console.log("API URL:", apiUrl);
-
-            const response = await fetch(apiUrl);
-            if (!response.ok) {
-                throw new Error("Failed to send OTP");
-            }
-
-            setMessage("OTP sent to your email!");
-            setIsVerified(true);
-        } catch (error) {
-            console.error("Fetch error:", error);
-            setMessage("Server error. Please try again later.");
-        }
+        // BACKEND CONNECTION NEEDED HERE
+        // This is where we would send a request to the backend to send an OTP to the user's email
+        // Example endpoint: POST /email-verification/verify/${email}
+        
+        // Simulating successful OTP sending without backend
+        setMessage("OTP sent to your email!");
+        setIsVerified(true);
+        setTimeLeft(60); // Reset timer to 60 seconds
+        setAttempts(0); // Reset attempts counter
     };
+
+    // Effect to focus on first OTP input when verification state changes
+    useEffect(() => {
+        if (isVerified && otpRefs.current[0]) {
+            // Focus on the first OTP input
+            setTimeout(() => {
+                otpRefs.current[0]?.focus();
+            }, 50);
+
+            // Start the timer
+            timerRef.current = setInterval(() => {
+                setTimeLeft(prevTime => {
+                    if (prevTime <= 1) {
+                        // Time's up, clear interval and return to email page
+                        if (timerRef.current) clearInterval(timerRef.current);
+                        setIsVerified(false);
+                        setOtp(Array(6).fill(""));
+                        setMessage("OTP verification timeout. Please try again.");
+                        return 0;
+                    }
+                    return prevTime - 1;
+                });
+            }, 1000);
+        }
+
+        // Cleanup timer when component unmounts or isVerified changes
+        return () => {
+            if (timerRef.current) {
+                clearInterval(timerRef.current);
+            }
+        };
+    }, [isVerified]);
 
     // Handle OTP input change
     const handleOtpChange = (index: number, value: string) => {
@@ -61,11 +90,59 @@ export default function EmailVerification() {
     // Handle OTP submission
     const handleOtpSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        
+        // BACKEND CONNECTION NEEDED HERE
+        // This is where we would send the OTP to the backend for verification
+        // Example endpoint: POST /email-verification/validate-otp with the OTP and email in the request body
+        
+        // Simulating OTP verification without backend
         if (otp.join("").length === 6) {
-            setMessage("OTP verified successfully!");
+            // In a real application, we would check if the OTP is correct here
+            const isOtpCorrect = false; // Simulating incorrect OTP for testing
+            
+            if (isOtpCorrect) {
+                // Clear the timer when OTP is submitted successfully
+                if (timerRef.current) {
+                    clearInterval(timerRef.current);
+                }
+                setMessage("OTP verified successfully!");
+                // After successful verification, you might want to:
+                // - Store authentication token
+                // - Redirect user to another page
+                // - Update user verification status
+            } else {
+                // Increment attempt counter
+                const newAttempts = attempts + 1;
+                setAttempts(newAttempts);
+                
+                if (newAttempts >= 3) {
+                    // Maximum attempts reached, reset to email page
+                    if (timerRef.current) {
+                        clearInterval(timerRef.current);
+                    }
+                    setIsVerified(false);
+                    setOtp(Array(6).fill(""));
+                    setMessage("Maximum attempts reached. Please try again with a new OTP.");
+                } else {
+                    // Still have attempts left
+                    setOtp(Array(6).fill(""));
+                    setMessage(`Invalid OTP. ${3 - newAttempts} attempts remaining.`);
+                    // Focus on first input after clearing
+                    setTimeout(() => {
+                        otpRefs.current[0]?.focus();
+                    }, 50);
+                }
+            }
         } else {
-            setMessage("Invalid OTP. Please try again.");
+            setMessage("Please enter all 6 digits of the OTP.");
         }
+    };
+
+    // Format time as MM:SS
+    const formatTime = (seconds: number): string => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins}:${secs < 10 ? '0' + secs : secs}`;
     };
 
     return (
@@ -94,6 +171,12 @@ export default function EmailVerification() {
                     </form>
                 ) : (
                     <form onSubmit={handleOtpSubmit} className="w-80 mt-4">
+                        <div className="text-sm mb-2 text-gray-600">
+                            Time remaining: <span className={timeLeft <= 10 ? "text-red-600 font-bold" : ""}>{formatTime(timeLeft)}</span>
+                        </div>
+                        <div className="text-xs mb-2 text-gray-500">
+                            Attempts: {attempts}/3
+                        </div>
                         <div className="flex justify-center space-x-2">
                             {otp.map((digit, index) => (
                                 <input 
@@ -121,7 +204,3 @@ export default function EmailVerification() {
         </div>
     );
 }
-
-
-
-
