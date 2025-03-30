@@ -1,15 +1,21 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 import gallery_1 from "../assets/gallery_1.png";
 
 export default function EmailVerification() {
+    const navigate = useNavigate(); // Initialize navigate hook
     const [email, setEmail] = useState("");
     const [message, setMessage] = useState("");
     const [isVerified, setIsVerified] = useState(false);
     const [otp, setOtp] = useState(Array(6).fill(""));
     const [timeLeft, setTimeLeft] = useState(30);
     const [attempts, setAttempts] = useState(0);
+    const [isOtpVerified, setIsOtpVerified] = useState(false); // Add this new state for OTP verification status
     const otpRefs = useRef<(HTMLInputElement | null)[]>(Array(6).fill(null));
     const timerRef = useRef<NodeJS.Timeout | null>(null);
+    
+    // BACKEND INTEGRATION: Replace this hardcoded OTP with the one generated from backend
+    const hardcodedOtp = "123456"; // This should come from the backend
 
     // Validate email format
     const isValidEmail = (email: string): boolean => {
@@ -24,9 +30,21 @@ export default function EmailVerification() {
             return;
         }
 
-        // BACKEND CONNECTION NEEDED HERE
-        // This is where we would send a request to the backend to send an OTP to the user's email
-        // Example endpoint: POST /email-verification/verify/${email}
+        // BACKEND INTEGRATION: Replace this with actual API call
+        // const response = await fetch('your-backend-url/email-verification', {
+        //     method: 'POST',
+        //     headers: { 'Content-Type': 'application/json' },
+        //     body: JSON.stringify({ email })
+        // });
+        // const data = await response.json();
+        // if (data.success) {
+        //     setMessage("OTP sent to your email!");
+        //     setIsVerified(true);
+        //     setTimeLeft(60);
+        //     setAttempts(0);
+        // } else {
+        //     setMessage(data.message || "Failed to send OTP. Please try again.");
+        // }
         
         // Simulating successful OTP sending without backend
         setMessage("OTP sent to your email!");
@@ -91,14 +109,18 @@ export default function EmailVerification() {
     const handleOtpSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         
-        // BACKEND CONNECTION NEEDED HERE
-        // This is where we would send the OTP to the backend for verification
-        // Example endpoint: POST /email-verification/validate-otp with the OTP and email in the request body
-        
-        // Simulating OTP verification without backend
         if (otp.join("").length === 6) {
-            // In a real application, we would check if the OTP is correct here
-            const isOtpCorrect = false; // Simulating incorrect OTP for testing
+            // BACKEND INTEGRATION: Replace this with actual API call
+            // const response = await fetch('your-backend-url/validate-otp', {
+            //     method: 'POST',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     body: JSON.stringify({ email, otp: otp.join("") })
+            // });
+            // const data = await response.json();
+            // const isOtpCorrect = data.success;
+            
+            // Using hardcoded OTP comparison for now
+            const isOtpCorrect = otp.join("") === hardcodedOtp;
             
             if (isOtpCorrect) {
                 // Clear the timer when OTP is submitted successfully
@@ -106,10 +128,17 @@ export default function EmailVerification() {
                     clearInterval(timerRef.current);
                 }
                 setMessage("OTP verified successfully!");
-                // After successful verification, you might want to:
-                // - Store authentication token
-                // - Redirect user to another page
-                // - Update user verification status
+                setIsOtpVerified(true);
+                
+                // BACKEND INTEGRATION: Additional steps after verification
+                // - Store authentication token from response
+                // - Redirect user to appropriate page 
+                // - Set user verification status in your app state/context
+                
+                // Example redirect after successful verification
+                // setTimeout(() => {
+                //     window.location.href = '/dashboard';
+                // }, 1000);
             } else {
                 // Increment attempt counter
                 const newAttempts = attempts + 1;
@@ -138,6 +167,18 @@ export default function EmailVerification() {
         }
     };
 
+    // Handle OK button click after successful verification
+    const handleOkClick = () => {
+        // Navigate to UrgentMailTracking page using the correct route
+        navigate('/urgent-mail-tracking');
+        
+        // If the above doesn't work, you might need to use the exact path structure
+        // navigate('/pages/UrgentMailTracking');
+        
+        // For debugging
+        console.log("Navigating to UrgentMailTracking page");
+    };
+
     // Format time as MM:SS
     const formatTime = (seconds: number): string => {
         const mins = Math.floor(seconds / 60);
@@ -145,14 +186,78 @@ export default function EmailVerification() {
         return `${mins}:${secs < 10 ? '0' + secs : secs}`;
     };
 
+    // Progress bar component with updated state and colors
+    const ProgressBar = () => {
+        return (
+            <div className="w-3/4 mb-4">
+                <div className="flex items-center justify-between">
+                    {/* First step with label below */}
+                    <div className="flex flex-col items-center">
+                        <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold 
+                            ${isVerified ? 'bg-green-500 text-white' : 'bg-yellow-500 text-white'}`}>
+                            {isVerified ? '✓' : '1'}
+                        </div>
+                        <span className="text-xs mt-1">{isVerified ? 'Finished' : 'Email'}</span>
+                    </div>
+                    
+                    {/* Line connecting steps */}
+                    <div className="flex-1 h-1 mx-2">
+                        <div className={`h-full ${isVerified ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+                    </div>
+                    
+                    {/* Second step with label below */}
+                    <div className="flex flex-col items-center">
+                        <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold 
+                            ${isOtpVerified ? 'bg-green-500 text-white' : 
+                              attempts >= 3 ? 'bg-red-500 text-white' : 
+                              timeLeft === 0 ? 'bg-red-500 text-white' : 
+                              isVerified ? 'bg-yellow-500 text-white' : 
+                              'bg-blue-500 text-white'}`}>
+                            {isOtpVerified ? '✓' : 
+                             attempts >= 3 || timeLeft === 0 ? '!' : '2'}
+                        </div>
+                        <span className="text-xs mt-1">
+                            {isOtpVerified ? 'Finished' : 
+                             attempts >= 3 || timeLeft === 0 ? 'Failed' : 'OTP'}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
     return (
         <div className="flex flex-col items-center justify-center h-screen text-center" style={{ backgroundImage: `url(${gallery_1})` }}>
             <div 
-                className="w-[499px] h-[398px] border-2 p-4 bg-white opacity-65  
+                className="w-[550px] h-[500px] border-2 p-6 bg-white opacity-85  
                 flex flex-col items-center justify-center text-center rounded-xl  
-                shadow-lg shadow-black hover:opacity-95 transition-opacity duration-300">
-                <h2 className="text-lg font-bold">{isVerified ? "Enter OTP" : "Email Verification"}</h2>
-                {!isVerified ? (
+                shadow-lg shadow-black hover:opacity-100 transition-opacity duration-300">
+                <h2 className="text-lg font-bold">{isOtpVerified ? "Verification Complete" : isVerified ? "Enter OTP" : "Email Verification"}</h2>
+                
+                {/* Progress Bar */}
+                <ProgressBar />
+                
+                {isOtpVerified ? (
+                    <div className="w-80 mt-4 text-center">
+                        {/* Success message with OK symbol */}
+                        <div className="mb-4 flex flex-col items-center">
+                            <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mb-2">
+                                <svg className="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <p className="text-green-600 font-medium">Your email has been successfully verified!</p>
+                        </div>
+                        
+                        {/* OK Button (without using a separate component) */}
+                        <button
+                            className="text-white font-bold py-1 px-3 rounded-lg m-4 bg-green-500 hover:bg-green-600 w-full"
+                            onClick={handleOkClick}
+                        >
+                            OK
+                        </button>
+                    </div>
+                ) : !isVerified ? (
                     <form onSubmit={handleEmailSubmit} className="w-80 mt-4">
                         <input 
                             type="email" 
@@ -199,7 +304,11 @@ export default function EmailVerification() {
                         </button>
                     </form>
                 )}
-                {message && <p style={{ marginTop: "10px", color: message.includes("success") ? "green" : "red" }}>{message}</p>}
+                {!isOtpVerified && message && (
+                    <p style={{ marginTop: "10px", color: message.includes("success") ? "green" : "red" }}>
+                        {message}
+                    </p>
+                )}
             </div>
         </div>
     );
