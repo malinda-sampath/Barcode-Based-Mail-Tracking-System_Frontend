@@ -14,6 +14,7 @@ import { FaCodeBranch } from "react-icons/fa";
 import { FaUsers } from "react-icons/fa";
 import { MailCheck, MailIcon } from "lucide-react";
 import { RxAvatar } from "react-icons/rx";
+import path from "node:path";
 
 // Super Admin
 export const DASHBOARD_SIDEBAR_LINKS = [
@@ -25,15 +26,21 @@ export const DASHBOARD_SIDEBAR_LINKS = [
   },
   {
     key: "AdminManagement",
-    label: "Admin Management",
+    label: "Mail Handler",
     path: "adminmanagement",
     icon: <FaUsers className="text-[#F99C30]" />,
   },
   {
     key: "BranchManagement",
-    label: "Branch Management",
+    label: "Branch",
     path: "branchmanagement",
     icon: <FaCodeBranch className="text-[#F99C30]" />,
+  },
+  {
+    key: "Logs",
+    label: "Logs",
+    path: "logs",
+    icon: <HiOutlineDocumentText className="text-[#F99C30]" />,
   },
 ];
 

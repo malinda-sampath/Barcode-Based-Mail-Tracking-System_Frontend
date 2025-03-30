@@ -55,7 +55,7 @@ const BranchTable: React.FC = () => {
 
     try {
       const response = await fetchBranches();
-      console.log("Response:", response);
+      // console.log("Response:", response);
 
       if (response.data && Array.isArray(response.data.data)) {
         const branchesWithIndex = response.data.data.map(
@@ -68,7 +68,7 @@ const BranchTable: React.FC = () => {
         setBranches(branchesWithIndex);
       } else {
         setBranches([]);
-        setError("Unexpected response format.");
+        setError("No branches found.");
       }
     } catch (err) {
       console.error("Error fetching branches:", err);

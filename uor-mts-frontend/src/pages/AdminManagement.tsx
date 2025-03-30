@@ -5,6 +5,7 @@ import Table from "../components/table/Table";
 import DynamicForm from "../components/form/DynamicForm";
 import AdminDetails from "../components/table/AdminDetails";
 import AdminFormPopup from "../components/form/AdminFormPopup"; // Import the AdminFormPopup component
+import MailHandlerTable from "../components/pageComponent/superAdmin/mailHandler/MailHandlerTable";
 
 type Person = {
   firstName: string;
@@ -120,36 +121,25 @@ export default function AdminManagement() {
   return (
     <div className="ml-4 sm:ml-8 md:ml-16 px-4 sm:px-6 lg:px-8">
       <h1 className="text-xl sm:text-2xl font-semibold mt-2 text-[#611010]">
-        Mail Handle Management
+        Mail Handler Management
       </h1>
       <p className="text-xs sm:text-sm text-gray-500 ">{currentDate}</p>
 
-      <div className="flex flex-col sm:flex-row items-center justify-between mt-6 sm:mt-10">
-        <div className="flex items-center gap-2">{/* Search Button */}</div>
-
-        <div
-          className="mt-4 sm:mt-0 mr-0 sm:mr-10"
-          onClick={() => setFormType("add")}
-        >
-          <Button
-            text="+ ADD"
-            bgColor="bg-[#4B45DA]"
-            hoverColor="bg-[#2019de]"
-            height="h-8"
-            width="w-28"
-          />
+      <div className="flex px-8 items-center justify-end w-full">
+        <div className="flex items-end gap-4">
+          <div onClick={() => setFormType("add")}>
+            <Button
+              text="+ ADD USERS"
+              bgColor="bg-[#4B45DA]"
+              hoverColor="bg-[#2019de]"
+              height="h-8"
+              width="w-60 sm:w-55"
+            />
+          </div>
         </div>
       </div>
 
-      <div className="p-2 sm:p-4 mt-4 mr-0 sm:mr-8 overflow-x-auto">
-        <Table
-          columns={columns}
-          data={admins}
-          onViewClick={handleViewAdmin}
-          onEditClick={handleEditAdmin}
-          onDeleteClick={() => {}} //handleDeleteAdmin}
-        />
-      </div>
+      <MailHandlerTable />
 
       {formType === "add" && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
