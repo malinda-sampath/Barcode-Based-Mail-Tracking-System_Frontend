@@ -14,8 +14,8 @@ import {
   MailsIcon,
   Users2Icon,
 } from "lucide-react";
-import { Dataset } from "../../PagesComponents/dashboard/chart/SuperDataset";
-import { CalendarDemo } from "../../PagesComponents/dashboard/calender/CalendarDemo";
+import { Dataset } from "../../components/pageComponent/dashboard/chart/SuperDataset";
+import { CalendarDemo } from "../../components/pageComponent/dashboard/calender/CalendarDemo";
 
 export default function Dashboard() {
   return (

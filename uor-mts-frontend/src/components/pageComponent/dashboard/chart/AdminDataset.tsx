@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { TrendingUp } from "lucide-react"
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
+import { TrendingUp } from "lucide-react";
+import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 
 import {
   Card,
@@ -10,13 +10,13 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "../../../components/ui/card"
+} from "../../../ui/card";
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "../../../components/ui/chart"
+} from "../../../ui/chart";
 const chartData = [
   { month: "January", recieved: 186, reject: 80 },
   { month: "February", recieved: 305, reject: 200 },
@@ -24,7 +24,7 @@ const chartData = [
   { month: "April", recieved: 73, reject: 190 },
   { month: "May", recieved: 209, reject: 130 },
   { month: "June", recieved: 214, reject: 140 },
-]
+];
 
 const chartConfig = {
   recieved: {
@@ -35,7 +35,7 @@ const chartConfig = {
     label: "reject",
     color: "hsl(var(--chart-2))",
   },
-} satisfies ChartConfig
+} satisfies ChartConfig;
 
 export function AdminDataset() {
   return (
@@ -66,9 +66,9 @@ export function AdminDataset() {
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
         <div className="flex gap-2 font-medium leading-none">
-         ALL RECIEVED AND REJECTED MAILS
+          ALL RECIEVED AND REJECTED MAILS
         </div>
       </CardFooter>
     </Card>
-  )
+  );
 }
