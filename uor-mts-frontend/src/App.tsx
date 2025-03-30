@@ -1,24 +1,17 @@
 import React from "react";
-import "./App.css";
+import { Routes, Route } from "react-router-dom";
+import SuperAdminAppRouter from "./routes/SuperAdminAppRouter";
+import Login from "./pages/Login";
+import AdminAppRouter from "./routes/AdminAppRouter";
+import BranchAppRouter from "./routes/BranchRouter";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+const App: React.FC = () => (
+  <Routes>
+    <Route path="/" element={<Login />} />
+    <Route path="/admin/*" element={<SuperAdminAppRouter />} />
+    <Route path="/mail_handler/*" element={<AdminAppRouter />} />
+    <Route path="/branch/*" element={<BranchAppRouter />} />
+  </Routes>
+);
 
 export default App;
