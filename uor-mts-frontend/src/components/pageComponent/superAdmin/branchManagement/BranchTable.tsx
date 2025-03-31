@@ -3,7 +3,7 @@ import Table from "../../../table/Table";
 import {
   fetchBranches,
   deleteBranch,
-} from "../../../../services/BranchService";
+} from "../../../../services/superAdmin/BranchService";
 import { useToggleConfirmation } from "../../../ui/toggle/useToggleConfiremation";
 import ToggleConfirmation from "../../../ui/toggle/toggleConfiremation";
 import ToastContainer from "../../../ui/toast/toastContainer";
@@ -16,6 +16,11 @@ interface Branch {
   branchDescription: string;
   insertDate: string;
   updateDate: string;
+}
+
+interface WCResponse {
+  action: string;
+  branch: Branch;
 }
 
 const columns: { key: keyof Branch; label: string }[] = [
@@ -55,7 +60,6 @@ const BranchTable: React.FC = () => {
 
     try {
       const response = await fetchBranches();
-      // console.log("Response:", response);
 
       if (response.data && Array.isArray(response.data.data)) {
         const branchesWithIndex = response.data.data.map(
@@ -77,7 +81,7 @@ const BranchTable: React.FC = () => {
   };
 
   // Handle WebSocket messages
-  const handleWebSocketMessage = (message: any) => {
+  const handleWebSocketMessage = (message: WCResponse) => {
     if (message.action === "save") {
       setBranches((prevBranches) => {
         const existingIndex = prevBranches.findIndex(
@@ -97,7 +101,6 @@ const BranchTable: React.FC = () => {
           updatedList = [...prevBranches, { ...message.branch }];
         }
 
-        console.log("Updated list:", updatedList);
         return updatedList.map((b, index) => ({ ...b, index: index + 1 })); // Recalculate indices
       });
     } else if (message.action === "delete") {

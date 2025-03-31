@@ -1,4 +1,4 @@
-import { apiRequest } from "./api";
+import { apiRequest } from "../api";
 
 interface Branch {
   branchCode: string;
@@ -21,8 +21,8 @@ export const fetchBranches = async () => {
 export const saveBranch = async (
   branchName: string,
   branchDescription: string
-): Promise<{ status: number; data?: any }> => {
-  return apiRequest<any>("branch/save", "POST", {
+): Promise<{ status: number; data?: BranchResponse }> => {
+  return apiRequest<BranchResponse>("branch/save", "POST", {
     branchName,
     branchDescription,
   });
