@@ -4,8 +4,8 @@ interface MailHandler {
   name: string;
   contact: string;
   email: string;
-  insertDate: string;
-  updateDate: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface MailHandlerResponse {

@@ -7,8 +7,8 @@ interface MailHandler {
   name: string;
   email: string;
   contact: string;
-  insertDate: string;
-  updateDate: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 const columns: { key: keyof MailHandler; label: string }[] = [
@@ -16,8 +16,8 @@ const columns: { key: keyof MailHandler; label: string }[] = [
   { key: "name", label: "Name" },
   { key: "email", label: "Email" },
   { key: "contact", label: "Contact" },
-  { key: "insertDate", label: "Insert Date" },
-  { key: "updateDate", label: "Update Date" },
+  { key: "createdAt", label: "Insert Date" },
+  { key: "updatedAt", label: "Update Date" },
 ];
 
 const MailHandlerTable: React.FC = () => {
@@ -52,7 +52,6 @@ const MailHandlerTable: React.FC = () => {
   };
 
   //Handle WebSocket messages
-
   useEffect(() => {
     fetchMailHandlerData();
   }, []);
