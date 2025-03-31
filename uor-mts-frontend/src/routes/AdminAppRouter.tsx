@@ -2,10 +2,10 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import AdminLayout from "../layouts/AdminLayout";
 import AdminDashboard from "../pages/dashboard/AdminDashboard";
 import MailManagement from "../pages/MailManagement";
-import { ClaimMails } from "../pages/ClaimMails";
 import Help from "../pages/Help";
 import Settings from "../pages/Setting";
 import Profile1 from "../pages/Profile";
+import { ClaimMails } from '../pages/ClaimMails';
 
 function AdminAppRouter() {
   return (
