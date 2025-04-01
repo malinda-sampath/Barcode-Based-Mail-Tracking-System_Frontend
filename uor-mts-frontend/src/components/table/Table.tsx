@@ -13,8 +13,9 @@ type TableProps<T> = {
   data: T[];
   rowsPerPage?: number;
   onViewClick: (row: T) => void;
-  onEditClick: (row: T) => void;
+  onEditClick?: (row: T) => void;
   onDeleteClick: (row: T) => void;
+  hideEditButton?: boolean; 
   searchableKeys?: (keyof T)[]; // Optional: Define which keys to search
 };
 
@@ -25,6 +26,7 @@ const Table = <T,>({
   onViewClick,
   onEditClick,
   onDeleteClick,
+  hideEditButton,
   searchableKeys = [],
 }: TableProps<T>) => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -119,18 +121,18 @@ const Table = <T,>({
   };
 
   return (
-    <div className="overflow-x-auto w-full">
+    <div className="w-full overflow-x-auto">
       {/* Advanced Search Input */}
       <div className="relative w-1/2 mt-5 mb-5">
-        <div className="flex items-center border rounded-lg overflow-hidden shadow-sm transition-all duration-300">
+        <div className="flex items-center overflow-hidden transition-all duration-300 border rounded-lg shadow-sm">
           {/* Search Icon */}
           {!isSearchExpanded && (
             <button
               onClick={() => setIsSearchExpanded(true)}
-              className="p-2 hover:bg-gray-100 transition-colors"
+              className="p-2 transition-colors hover:bg-gray-100"
             >
               <FaSearch
-                className="text-gray-600 hover:text-blue-500 transition-transform hover:scale-110"
+                className="text-gray-600 transition-transform hover:text-blue-500 hover:scale-110"
                 size={20}
               />
             </button>
@@ -156,14 +158,14 @@ const Table = <T,>({
                   }, 200);
                 }}
                 autoFocus
-                className="w-full p-2 pl-2 outline-none text-gray-700 transition-all duration-300"
+                className="w-full p-2 pl-2 text-gray-700 transition-all duration-300 outline-none"
               />
 
               {/* Clear Button */}
               {searchQuery && (
                 <button
                   onClick={clearSearch}
-                  className="mr-2 ml-2 text-gray-500 hover:text-gray-700 transition-colors"
+                  className="ml-2 mr-2 text-gray-500 transition-colors hover:text-gray-700"
                 >
                   <FaTimesCircle size={20} />
                 </button>
@@ -179,9 +181,9 @@ const Table = <T,>({
               <div
                 key={index}
                 onClick={() => handleSuggestionClick(suggestion)}
-                className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center justify-between group"
+                className="flex items-center justify-between px-4 py-2 cursor-pointer hover:bg-gray-100 group"
               >
-                <span className="text-gray-700 group-hover:text-blue-600 transition-colors">
+                <span className="text-gray-700 transition-colors group-hover:text-blue-600">
                   {suggestion}
                 </span>
               </div>
@@ -191,7 +193,7 @@ const Table = <T,>({
       </div>
 
       {/* Rest of the table remains the same as before */}
-      <table className="table-auto border-collapse w-full text-left">
+      <table className="w-full text-left border-collapse table-auto">
         <thead className="bg-gray-100">
           <tr>
             {columns.map((column) => (
@@ -216,7 +218,7 @@ const Table = <T,>({
                     {String(row[column.key])}
                   </td>
                 ))}
-                <td className="px-4 py-2 flex space-x-2">
+                <td className="flex px-4 py-2 space-x-2">
                   {/* View Button */}
                   <button
                     type="button"
@@ -229,6 +231,7 @@ const Table = <T,>({
                   </button>
 
                   {/* Edit Button */}
+                  {!hideEditButton && onEditClick && (
                   <button
                     type="button"
                     className="p-2 text-sm bg-gray-200 rounded hover:bg-gray-300"
@@ -238,6 +241,7 @@ const Table = <T,>({
                     <FaEdit className="w-4 h-4 text-green-500" />
                     <span className="sr-only">Edit</span>
                   </button>
+                  )}
 
                   {/* Delete Button */}
                   <button
@@ -254,7 +258,7 @@ const Table = <T,>({
             ))
           ) : (
             <tr>
-              <td colSpan={columns.length + 1} className="text-center py-4">
+              <td colSpan={columns.length + 1} className="py-4 text-center">
                 No matching results found.
               </td>
             </tr>
@@ -263,7 +267,7 @@ const Table = <T,>({
       </table>
 
       {/* Pagination Controls */}
-      <div className="flex justify-between items-center mt-4">
+      <div className="flex items-center justify-between mt-4">
         <button
           type="button"
           className="p-2 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
