@@ -19,7 +19,7 @@ import { CalendarDemo } from "../../components/pageComponent/dashboard/calender/
 
 export default function Dashboard() {
   return (
-    <>
+    <div>
       {/* Dashboard Title */}
       <div className="px-4 ml-4 sm:ml-6 md:ml-16 sm:px-6 lg:px-8 ">
         <h1 className="text-xl sm:text-2xl font-semibold mt-2 text-[#611010]">
@@ -68,6 +68,6 @@ export default function Dashboard() {
           </div>{" "}
         </Card>
       </div>
-    </>
+    </div>
   );
 }
