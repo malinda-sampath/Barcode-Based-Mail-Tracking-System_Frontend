@@ -3,7 +3,7 @@ import Table from "../../../table/Table";
 import {
   fetchBranches,
   deleteBranch,
-} from "../../../../services/BranchService";
+} from "../../../../services/superAdmin/BranchService";
 import { useToggleConfirmation } from "../../../ui/toggle/useToggleConfiremation";
 import ToggleConfirmation from "../../../ui/toggle/toggleConfiremation";
 import ToastContainer from "../../../ui/toast/toastContainer";
@@ -16,6 +16,11 @@ interface Branch {
   branchDescription: string;
   insertDate: string;
   updateDate: string;
+}
+
+interface WCResponse {
+  action: string;
+  branch: Branch;
 }
 
 const columns: { key: keyof Branch; label: string }[] = [
@@ -34,6 +39,7 @@ const BranchTable: React.FC = () => {
     null
   );
   const [error, setError] = useState<string>("");
+  const [status, setStatus] = useState<number>(0);
 
   const { isVisible, confirmationConfig, showConfirmation, hideConfirmation } =
     useToggleConfirmation();
@@ -55,7 +61,6 @@ const BranchTable: React.FC = () => {
 
     try {
       const response = await fetchBranches();
-      // console.log("Response:", response);
 
       if (response.data && Array.isArray(response.data.data)) {
         const branchesWithIndex = response.data.data.map(
@@ -76,8 +81,35 @@ const BranchTable: React.FC = () => {
     }
   };
 
+  // Handle delete branch
+  const handleDeleteBranch = (branch: Branch) => {
+    setError("");
+    setStatus(0);
+
+    showConfirmation(
+      "Are you sure you want to delete this item?",
+      async () => {
+        try {
+          const response = await deleteBranch(branch.branchCode);
+          if (response.status >= 200 && response.status < 300) {
+            triggerToast("Branch deleted successfully!", "success");
+          } else {
+            triggerToast("Failed to delete branch. Try again!", "error");
+          }
+        } catch (error) {
+          console.error("Error deleting branch:", error);
+          triggerToast("An error occurred while deleting the branch!", "error");
+        }
+        hideConfirmation();
+      },
+      hideConfirmation,
+      "Delete",
+      "Cancel"
+    );
+  };
+
   // Handle WebSocket messages
-  const handleWebSocketMessage = (message: any) => {
+  const handleWebSocketMessage = (message: WCResponse) => {
     if (message.action === "save") {
       setBranches((prevBranches) => {
         const existingIndex = prevBranches.findIndex(
@@ -97,7 +129,6 @@ const BranchTable: React.FC = () => {
           updatedList = [...prevBranches, { ...message.branch }];
         }
 
-        console.log("Updated list:", updatedList);
         return updatedList.map((b, index) => ({ ...b, index: index + 1 })); // Recalculate indices
       });
     } else if (message.action === "delete") {
@@ -116,23 +147,6 @@ const BranchTable: React.FC = () => {
   useEffect(() => {
     fetchBranchData();
   }, []);
-
-  const handleDeleteBranch = (branch: Branch) => {
-    showConfirmation(
-      "Are you sure you want to delete this item?",
-      () => {
-        deleteBranch(branch.branchCode)
-          .then(() => triggerToast("Branch deleted successfully!", "success"))
-          .catch(() =>
-            triggerToast("Failed to delete branch. Try again!", "error")
-          );
-        hideConfirmation();
-      },
-      hideConfirmation,
-      "Delete",
-      "Cancel"
-    );
-  };
 
   return (
     <div>

@@ -1,122 +1,102 @@
 import React, { useState } from "react";
-//import { FaSearch } from "react-icons/fa";
+import PopupMenu from "../components/popupComponent/Popup";
+import { Eye, EyeOff } from "lucide-react";
+import ToastContainer from "../components/ui/toast/toastContainer";
 import Button from "../components/buttonComponents/Button";
-import Table from "../components/table/Table";
-import DynamicForm from "../components/form/DynamicForm";
-import AdminDetails from "../components/table/AdminDetails";
-import AdminFormPopup from "../components/form/AdminFormPopup"; // Import the AdminFormPopup component
 import MailHandlerTable from "../components/pageComponent/superAdmin/mailHandler/MailHandlerTable";
-
-type Person = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  mobileNo: string;
-  userName: string;
-  password: string;
-};
-
-const data: Person[] = [
-  {
-    firstName: "John",
-    lastName: "Doe",
-    email: "john.doe@example.com",
-    mobileNo: "071-1112223",
-    userName: "john_doe",
-    password: "1234",
-  },
-  {
-    firstName: "Jane",
-    lastName: "Smith",
-    email: "jane.smith@example.com",
-    mobileNo: "987-654-3210",
-    userName: "jane_smith",
-    password: "1234",
-  },
-  {
-    firstName: "Sam",
-    lastName: "Wilson",
-    email: "sam.wilson@example.com",
-    mobileNo: "456-789-1234",
-    userName: "sam_wilson",
-    password: "1234",
-  },
-];
-
-const columns: { key: keyof Person; label: string }[] = [
-  { key: "firstName", label: "First Name" },
-  { key: "lastName", label: "Last Name" },
-  { key: "email", label: "Email" },
-  { key: "mobileNo", label: "Mobile No" },
-];
-
-const formFields: {
-  label: string;
-  name: keyof Person;
-  type: "text" | "number" | "textarea" | "file" | "datetime-local" | "password";
-}[] = [
-  { label: "First Name", name: "firstName", type: "text" },
-  { label: "Last Name", name: "lastName", type: "text" },
-  { label: "Email", name: "email", type: "text" },
-  { label: "Mobile No", name: "mobileNo", type: "text" },
-  { label: "User Name", name: "userName", type: "text" },
-  { label: "Password", name: "password", type: "password" },
-];
+import { saveMailHandler } from "../services/superAdmin/MailHandlerService";
 
 export default function AdminManagement() {
-  const [showForm, setShowForm] = useState(false);
-  const [admins, setAdmins] = useState<Person[]>(data);
-  const [selectedAdmin, setSelectedAdmin] = useState<Person | null>(null);
-  const [formType, setFormType] = useState<"add" | "edit" | "view" | null>(
-    null
-  );
-  const [successMessage, setSuccessMessage] = useState(false);
-  const [searchTerm, setSearchTerm] = useState<string>("");
+  // Toast state
+  const [toasts, setToasts] = useState<
+    { message: string; type: "success" | "error" | "info" | "warning" }[]
+  >([]);
+
+  const triggerToast = (
+    message: string,
+    type: "success" | "error" | "info" | "warning"
+  ) => {
+    setToasts((prev) => [...prev, { message, type }]);
+  };
+
+  // User input
+  const [IsAddMailAdminPopupOpen, setIsAddMailAdminPopupOpen] = useState(false);
+  const [mailHandlerName, setMailHandlerName] = useState<string>("");
+  const [mailHandlerEmail, setMailHandlerEmail] = useState<string>("");
+  const [mailHandlerContact, setMailHandlerContact] = useState<string>("");
+  const [mailHandlerPassword, setMailHandlerPassword] = useState<string>("");
+  const [mailHandlerConfirmPassword, setMailHandlerConfirmPassword] =
+    useState<string>("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // API response
+  const [error, setError] = useState<string>("");
+  const [status, setStatus] = useState<number>(0);
+
+  const handleAddMailAdmin = () => {
+    handleClearBtn();
+    setIsAddMailAdminPopupOpen(true);
+  };
+
+  // Clear button function
+  const handleClearBtn = () => {
+    setMailHandlerName("");
+    setMailHandlerEmail("");
+    setMailHandlerContact("");
+    setMailHandlerPassword("");
+    setMailHandlerConfirmPassword("");
+  };
+
+  // Mail-Handler save function
+  const handleMailHandlerSaveBtn = async () => {
+    setError("");
+    setStatus(0);
+
+    if (
+      !mailHandlerName ||
+      !mailHandlerEmail ||
+      !mailHandlerContact ||
+      !mailHandlerPassword ||
+      !mailHandlerConfirmPassword
+    ) {
+      triggerToast("Please fill in all fields!", "error");
+      return;
+    }
+
+    if (mailHandlerPassword !== mailHandlerConfirmPassword) {
+      triggerToast("Passwords do not match!", "error");
+      return;
+    }
+
+    try {
+      const response = await saveMailHandler(
+        mailHandlerName,
+        mailHandlerEmail,
+        mailHandlerContact,
+        mailHandlerPassword
+      );
+
+      if (response.status >= 200 && response.status < 300) {
+        triggerToast("Mail-Handler saved successfully!", "success");
+        handleClearBtn();
+        setIsAddMailAdminPopupOpen(false);
+      } else if (response.status === 409) {
+        triggerToast("User already exists!", "error");
+      } else {
+        triggerToast("Failed to add Mail-Handler!", "error");
+      }
+    } catch (error) {
+      console.error("Error saving branch:", error);
+      triggerToast("An error occurred while saving!", "error");
+    }
+  };
 
   const currentDate = new Date().toLocaleDateString("en-GB", {
     day: "2-digit",
     month: "short",
     year: "numeric",
   });
-
-  const handleToggleForm = () => setShowForm((prev) => !prev);
-
-  const handleFormSubmit = (formData: Record<string, any>) => {
-    const updatedAdmin: Person = {
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      email: formData.email,
-      mobileNo: formData.mobileNo,
-      userName: formData.userName,
-      password: formData.password,
-    };
-    const updatedAdmins = admins.map((admin) =>
-      admin.userName === updatedAdmin.userName ? updatedAdmin : admin
-    );
-    setAdmins(updatedAdmins);
-    setSuccessMessage(true);
-
-    setTimeout(() => {
-      setSuccessMessage(false);
-    }, 3000);
-
-    setShowForm(false);
-  };
-
-  const handleEditAdmin = (admin: Person) => {
-    setSelectedAdmin(admin);
-    setFormType("edit");
-  };
-
-  const handleViewAdmin = (admin: Person) => {
-    setSelectedAdmin(admin);
-    setFormType("view");
-  };
-
-  const handleClosePopup = () => {
-    setSelectedAdmin(null);
-    setFormType(null);
-  };
 
   return (
     <div className="ml-4 sm:ml-8 md:ml-16 px-4 sm:px-6 lg:px-8">
@@ -127,7 +107,7 @@ export default function AdminManagement() {
 
       <div className="flex px-8 items-center justify-end w-full">
         <div className="flex items-end gap-4">
-          <div onClick={() => setFormType("add")}>
+          <div onClick={handleAddMailAdmin}>
             <Button
               text="+ ADD USERS"
               bgColor="bg-[#4B45DA]"
@@ -141,26 +121,135 @@ export default function AdminManagement() {
 
       <MailHandlerTable />
 
-      {formType === "add" && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-          <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg w-full max-w-md relative">
-            <button
-              className="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-xl"
-              onClick={handleClosePopup}
-            >
-              ✖
-            </button>
-            <DynamicForm
-              title="Admin"
-              fields={formFields}
-              onSubmit={handleFormSubmit}
-              onBack={handleClosePopup}
+      <PopupMenu
+        isOpen={IsAddMailAdminPopupOpen}
+        onClose={() => setIsAddMailAdminPopupOpen(false)}
+        topic={"Mail-Handler"}
+      >
+        {/* Popup content */}
+        <div className="space-y-6 pb-4 px-6">
+          <label className="block">
+            <span className="text-[#611010] font-medium">Full Name</span>
+            <input
+              type="text"
+              className="block w-full mt-2 px-4 py-2 text-gray-900 bg-white border border-gray-300 rounded-lg shadow-sm 
+        focus:border-indigo-500 focus:ring-2 focus:ring-indigo-300 focus:outline-none 
+        transition duration-300 ease-in-out hover:shadow-lg"
+              placeholder="Enter full name"
+              value={mailHandlerName}
+              onChange={(e) => setMailHandlerName(e.target.value)}
             />
-          </div>
-        </div>
-      )}
+          </label>
 
-      {formType === "view" && selectedAdmin && (
+          <label className="block">
+            <span className="text-[#611010] font-medium">Contact Number</span>
+            <input
+              type="tel"
+              className="block w-full mt-2 px-4 py-2 text-gray-900 bg-white border border-gray-300 rounded-lg shadow-sm 
+        focus:border-indigo-500 focus:ring-2 focus:ring-indigo-300 focus:outline-none 
+        transition duration-300 ease-in-out hover:shadow-lg"
+              placeholder="Enter contact number"
+              value={mailHandlerContact}
+              onChange={(e) => setMailHandlerContact(e.target.value)}
+            />
+          </label>
+
+          <label className="block">
+            <span className="text-[#611010] font-medium">Email Address</span>
+            <input
+              type="email"
+              className="block w-full mt-2 px-4 py-2 text-gray-900 bg-white border border-gray-300 rounded-lg shadow-sm 
+        focus:border-indigo-500 focus:ring-2 focus:ring-indigo-300 focus:outline-none 
+        transition duration-300 ease-in-out hover:shadow-lg"
+              placeholder="Enter email address"
+              value={mailHandlerEmail}
+              onChange={(e) => setMailHandlerEmail(e.target.value)}
+            />
+            {!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mailHandlerEmail) &&
+              mailHandlerEmail && (
+                <span className="text-red-500 text-sm">
+                  Invalid email format
+                </span>
+              )}
+          </label>
+
+          <label className="block relative">
+            <span className="text-[#611010] font-medium">Password</span>
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                className="block w-full mt-2 px-4 py-2 text-gray-900 bg-white border border-gray-300 rounded-lg shadow-sm 
+          focus:border-indigo-500 focus:ring-2 focus:ring-indigo-300 focus:outline-none 
+          transition duration-300 ease-in-out hover:shadow-lg"
+                placeholder="Enter password"
+                value={mailHandlerPassword}
+                onChange={(e) => setMailHandlerPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-3 flex items-center text-gray-600"
+                onClick={() => {
+                  setShowPassword(!showPassword);
+                  showConfirmPassword
+                    ? setShowConfirmPassword(!showConfirmPassword)
+                    : setShowConfirmPassword(showConfirmPassword);
+                }}
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
+          </label>
+
+          <label className="block relative">
+            <span className="text-[#611010] font-medium">Confirm Password</span>
+            <div className="relative">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                className="block w-full mt-2 px-4 py-2 text-gray-900 bg-white border border-gray-300 rounded-lg shadow-sm 
+          focus:border-indigo-500 focus:ring-2 focus:ring-indigo-300 focus:outline-none 
+          transition duration-300 ease-in-out hover:shadow-lg"
+                placeholder="Confirm password"
+                value={mailHandlerConfirmPassword}
+                onChange={(e) => setMailHandlerConfirmPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-3 flex items-center text-gray-600"
+                onClick={() => {
+                  setShowConfirmPassword(!showConfirmPassword);
+                  showPassword
+                    ? setShowPassword(!showPassword)
+                    : setShowPassword(showPassword);
+                }}
+              >
+                {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
+          </label>
+        </div>
+        <div className="flex gap-6 p-4 justify-end">
+          <button
+            onClick={handleClearBtn}
+            className="w-28 h-9 bg-cyan-500 text-white font-medium rounded-lg shadow-md 
+      transition-all duration-200 transform 
+      hover:bg-cyan-600 active:bg-cyan-700 active:scale-95
+      focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-400"
+          >
+            Clear
+          </button>
+          <button
+            onClick={handleMailHandlerSaveBtn}
+            className="w-28 h-9 bg-indigo-600 text-white font-medium rounded-lg shadow-md 
+      transition-all duration-200 transform 
+      hover:bg-indigo-700 active:bg-indigo-800 active:scale-95
+      focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400"
+          >
+            Save
+          </button>
+        </div>
+      </PopupMenu>
+
+      {/* {formType === "view" && selectedAdmin && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
           <AdminDetails
             admin={{
@@ -174,9 +263,9 @@ export default function AdminManagement() {
             onClose={handleClosePopup}
           />
         </div>
-      )}
+      )} */}
 
-      {formType === "edit" && selectedAdmin && (
+      {/* {formType === "edit" && selectedAdmin && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
           <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg w-full max-w-md relative">
             <button
@@ -194,7 +283,8 @@ export default function AdminManagement() {
             />
           </div>
         </div>
-      )}
+      )} */}
+      <ToastContainer toasts={toasts} />
     </div>
   );
 }

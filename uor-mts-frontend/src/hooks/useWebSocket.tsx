@@ -22,7 +22,7 @@ const useWebSocket = (
     });
 
     stomp.onConnect = () => {
-      console.log(`Connected to WebSocket: Subscribed to ${topic}`);
+      // console.log(`Connected to WebSocket: Subscribed to ${topic}`);
 
       // Subscribe to the provided topic
       stomp.subscribe(topic, (message) => {
@@ -41,7 +41,7 @@ const useWebSocket = (
     return () => {
       if (stomp) {
         stomp.deactivate();
-        console.log(`Disconnected from WebSocket: Unsubscribed from ${topic}`);
+        // console.log(`Disconnected from WebSocket: Unsubscribed from ${topic}`);
       }
     };
   }, [topic]); // Re-run effect only if the topic changes
