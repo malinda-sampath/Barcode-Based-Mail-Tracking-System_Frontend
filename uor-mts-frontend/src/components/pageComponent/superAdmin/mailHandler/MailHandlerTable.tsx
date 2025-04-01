@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from "react";
 import Table from "../../../table/Table";
-import { fetchMailHandlers } from "../../../../services/superAdmin/MailHandlerService";
+import {
+  deleteMailHandler,
+  fetchMailHandlers,
+} from "../../../../services/superAdmin/MailHandlerService";
+import ToggleConfirmation from "../../../ui/toggle/toggleConfiremation";
 import useWebSocket from "../../../../hooks/useWebSocket";
+import ToastContainer from "../../../ui/toast/toastContainer";
+import { useToggleConfirmation } from "../../../ui/toggle/useToggleConfiremation";
 
 interface MailHandler {
   index?: number;
@@ -34,6 +40,23 @@ const MailHandlerTable: React.FC = () => {
     useState<MailHandler | null>(null);
   const [error, setError] = useState<string>("");
 
+  const { isVisible, confirmationConfig, showConfirmation, hideConfirmation } =
+    useToggleConfirmation();
+
+  const [toasts, setToasts] = useState<
+    { message: string; type: "success" | "error" | "info" | "warning" }[]
+  >([]);
+
+  const triggerToast = (
+    message: string,
+    type: "success" | "error" | "info" | "warning"
+  ) => {
+    setToasts((prev) => [...prev, { message, type }]);
+  };
+
+  const [status, setStatus] = useState<number>(0);
+
+  // Fetch mail handler data
   const fetchMailHandlerData = async () => {
     setError("");
 
@@ -56,6 +79,36 @@ const MailHandlerTable: React.FC = () => {
       console.error("Error fetching mail handlers:", err);
       setError("Failed to fetch mail handlers.");
     }
+  };
+
+  // Handle delete confirmation
+  const handleDeleteMailHandler = (mailHandler: MailHandler) => {
+    setError("");
+    setStatus(0);
+
+    showConfirmation(
+      "Are you sure you want to delete this user?",
+      async () => {
+        try {
+          const response = await deleteMailHandler(mailHandler.userID);
+          if (response.status >= 200 && response.status < 300) {
+            triggerToast("Mail Handler deleted successfully", "success");
+          } else {
+            triggerToast("Failed to delete Mail Handler. Try again!", "error");
+          }
+        } catch (error) {
+          console.error("Error deleting Mail Handler:", error);
+          triggerToast(
+            "An error occurred while deleting the Mail Handler!",
+            "error"
+          );
+        }
+        hideConfirmation();
+      },
+      hideConfirmation,
+      "Delete",
+      "Cancel"
+    );
   };
 
   //Handle WebSocket messages
@@ -98,8 +151,6 @@ const MailHandlerTable: React.FC = () => {
     fetchMailHandlerData();
   }, []);
 
-  const handleDeleteMailHandler = () => {};
-
   return (
     <div>
       {error && <p style={{ color: "red" }}>{error}</p>}
@@ -111,6 +162,17 @@ const MailHandlerTable: React.FC = () => {
         onDeleteClick={handleDeleteMailHandler}
         searchableKeys={["userID", "name", "email", "contact"]}
       />
+      {isVisible && confirmationConfig && (
+        <ToggleConfirmation
+          visible={isVisible}
+          message={confirmationConfig.message}
+          onConfirm={confirmationConfig.onConfirm}
+          onCancel={confirmationConfig.onCancel || hideConfirmation}
+          confirmText={confirmationConfig.confirmText}
+          cancelText={confirmationConfig.cancelText}
+        />
+      )}
+      <ToastContainer toasts={toasts} />
     </div>
   );
 };

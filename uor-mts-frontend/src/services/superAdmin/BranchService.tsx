@@ -8,16 +8,19 @@ interface Branch {
   updateDate: string;
 }
 
+// Define the response structure for the API
 export interface BranchResponse {
   status: number;
   message: string;
   data: Branch[];
 }
 
+// Fetch all branches
 export const fetchBranches = async () => {
   return await apiRequest<BranchResponse>("branch/get-all", "GET");
 };
 
+// Save a new branch
 export const saveBranch = async (
   branchName: string,
   branchDescription: string
@@ -28,6 +31,7 @@ export const saveBranch = async (
   });
 };
 
+//Delete a branch by branchCode
 export const deleteBranch = async (branchCode: string) => {
   return await apiRequest(`branch/delete/${branchCode}`, "DELETE");
 };

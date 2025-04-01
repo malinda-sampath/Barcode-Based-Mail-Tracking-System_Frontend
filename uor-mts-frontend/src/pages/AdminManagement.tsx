@@ -35,6 +35,7 @@ export default function AdminManagement() {
   const [status, setStatus] = useState<number>(0);
 
   const handleAddMailAdmin = () => {
+    handleClearBtn();
     setIsAddMailAdminPopupOpen(true);
   };
 
@@ -141,6 +142,19 @@ export default function AdminManagement() {
           </label>
 
           <label className="block">
+            <span className="text-[#611010] font-medium">Contact Number</span>
+            <input
+              type="tel"
+              className="block w-full mt-2 px-4 py-2 text-gray-900 bg-white border border-gray-300 rounded-lg shadow-sm 
+        focus:border-indigo-500 focus:ring-2 focus:ring-indigo-300 focus:outline-none 
+        transition duration-300 ease-in-out hover:shadow-lg"
+              placeholder="Enter contact number"
+              value={mailHandlerContact}
+              onChange={(e) => setMailHandlerContact(e.target.value)}
+            />
+          </label>
+
+          <label className="block">
             <span className="text-[#611010] font-medium">Email Address</span>
             <input
               type="email"
@@ -157,19 +171,6 @@ export default function AdminManagement() {
                   Invalid email format
                 </span>
               )}
-          </label>
-
-          <label className="block">
-            <span className="text-[#611010] font-medium">Contact Number</span>
-            <input
-              type="tel"
-              className="block w-full mt-2 px-4 py-2 text-gray-900 bg-white border border-gray-300 rounded-lg shadow-sm 
-        focus:border-indigo-500 focus:ring-2 focus:ring-indigo-300 focus:outline-none 
-        transition duration-300 ease-in-out hover:shadow-lg"
-              placeholder="Enter contact number"
-              value={mailHandlerContact}
-              onChange={(e) => setMailHandlerContact(e.target.value)}
-            />
           </label>
 
           <label className="block relative">

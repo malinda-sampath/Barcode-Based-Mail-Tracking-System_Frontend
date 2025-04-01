@@ -39,6 +39,7 @@ const BranchTable: React.FC = () => {
     null
   );
   const [error, setError] = useState<string>("");
+  const [status, setStatus] = useState<number>(0);
 
   const { isVisible, confirmationConfig, showConfirmation, hideConfirmation } =
     useToggleConfirmation();
@@ -80,6 +81,33 @@ const BranchTable: React.FC = () => {
     }
   };
 
+  // Handle delete branch
+  const handleDeleteBranch = (branch: Branch) => {
+    setError("");
+    setStatus(0);
+
+    showConfirmation(
+      "Are you sure you want to delete this item?",
+      async () => {
+        try {
+          const response = await deleteBranch(branch.branchCode);
+          if (response.status >= 200 && response.status < 300) {
+            triggerToast("Branch deleted successfully!", "success");
+          } else {
+            triggerToast("Failed to delete branch. Try again!", "error");
+          }
+        } catch (error) {
+          console.error("Error deleting branch:", error);
+          triggerToast("An error occurred while deleting the branch!", "error");
+        }
+        hideConfirmation();
+      },
+      hideConfirmation,
+      "Delete",
+      "Cancel"
+    );
+  };
+
   // Handle WebSocket messages
   const handleWebSocketMessage = (message: WCResponse) => {
     if (message.action === "save") {
@@ -119,23 +147,6 @@ const BranchTable: React.FC = () => {
   useEffect(() => {
     fetchBranchData();
   }, []);
-
-  const handleDeleteBranch = (branch: Branch) => {
-    showConfirmation(
-      "Are you sure you want to delete this item?",
-      () => {
-        deleteBranch(branch.branchCode)
-          .then(() => triggerToast("Branch deleted successfully!", "success"))
-          .catch(() =>
-            triggerToast("Failed to delete branch. Try again!", "error")
-          );
-        hideConfirmation();
-      },
-      hideConfirmation,
-      "Delete",
-      "Cancel"
-    );
-  };
 
   return (
     <div>
