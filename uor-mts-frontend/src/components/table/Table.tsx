@@ -33,8 +33,6 @@ const Table = <T,>({
   const [sortKey, setSortKey] = useState<keyof T | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [searchQuery, setSearchQuery] = useState("");
-  const [suggestions, setSuggestions] = useState<string[]>([]);
-  const [isSearchExpanded, setIsSearchExpanded] = useState(true);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSort = (key: keyof T) => {
@@ -44,20 +42,6 @@ const Table = <T,>({
       setSortKey(key);
       setSortDirection("asc");
     }
-  };
-
-  const generateSuggestions = (query: string) => {
-    if (!query) return [];
-    const suggestionSet = new Set<string>();
-    data.forEach((row) => {
-      searchableKeys.forEach((key) => {
-        const value = row[key]?.toString().toLowerCase() ?? "";
-        if (value.includes(query.toLowerCase())) {
-          suggestionSet.add(value);
-        }
-      });
-    });
-    return Array.from(suggestionSet).slice(0, 5);
   };
 
   const filteredData = useMemo(() => {
@@ -92,32 +76,45 @@ const Table = <T,>({
     currentPage * rowsPerPage
   );
 
-  const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearchQuery(value);
-    setSuggestions(generateSuggestions(value));
-  };
-
-  const handleSuggestionClick = (suggestion: string) => {
-    setSearchQuery(suggestion);
-    setSuggestions([]);
-  };
-
   const clearSearch = () => {
     setSearchQuery("");
-    setSuggestions([]);
-    setIsSearchExpanded(true);
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
   };
 
   return (
     <div className="overflow-x-auto w-full">
-      {/* Search input section remains unchanged */}
-      <div className="relative w-1/2 mt-5 mb-5">
-        {/* ... existing search input code ... */}
-      </div>
-
       <table className="table-auto border-collapse w-full text-left">
         <thead className="bg-gray-100">
+          {/* Search row - added at the top of the table header */}
+          <tr>
+            <th colSpan={columns.length + (showActions ? 1 : 0)} className="px-4 py-2">
+              <div className="flex items-center">
+                <div className="relative flex-grow max-w-md">
+                  <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    placeholder="Search..."
+                    className="h-8 px-9 py-3 border border-gray-300 rounded-md w-44 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={clearSearch}
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    >
+                      <FaTimesCircle className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+              </div>
+            </th>
+          </tr>
+          
+          {/* Original header row */}
           <tr>
             {columns.map((column) => (
               <th
@@ -186,7 +183,7 @@ const Table = <T,>({
                 colSpan={columns.length + (showActions ? 1 : 0)} 
                 className="text-center py-4"
               >
-                No matching results found.
+                {searchQuery ? "No matching results found" : "No data available"}
               </td>
             </tr>
           )}
