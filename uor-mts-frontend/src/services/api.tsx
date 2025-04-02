@@ -4,24 +4,34 @@ export async function apiRequest<T>(
   body?: unknown
 ): Promise<{ status: number; data?: T }> {
   try {
-    const token = localStorage.getItem("token"); // Assuming JWT is stored in localStorage
+    const token = localStorage.getItem("token");
+
+    // Determine if we're sending FormData
+    const isFormData = body instanceof FormData;
+
+    const headers: HeadersInit = {
+      // Only set Content-Type for non-FormData requests
+      ...(!isFormData && { "Content-Type": "application/json" }),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    };
 
     const response = await fetch(`${process.env.REACT_APP_API_URL}/${url}`, {
       method,
-      headers: {
-        "Content-Type": "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {}), // Add JWT token if available
-      },
-      body: body ? JSON.stringify(body) : undefined,
+      headers,
+      body: isFormData
+        ? (body as FormData)
+        : body
+        ? JSON.stringify(body)
+        : undefined,
     });
 
-    // Check if response is JSON, otherwise handle it accordingly
+    // Handle response
     const contentType = response.headers.get("Content-Type");
     let data;
     if (contentType && contentType.includes("application/json")) {
       data = await response.json();
     } else {
-      data = await response.text(); // Handle non-JSON responses
+      data = await response.text();
     }
 
     return { status: response.status, data };
