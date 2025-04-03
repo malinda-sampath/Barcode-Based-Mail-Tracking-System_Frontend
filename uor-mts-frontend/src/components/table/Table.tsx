@@ -8,8 +8,14 @@ import {
   FaTimesCircle,
 } from "react-icons/fa";
 
+type TableColumn<T> = {
+  key: keyof T;
+  label: string;
+  render?: (value: any, row: T) => React.ReactNode; // Add this line
+};
+
 type TableProps<T> = {
-  columns: { key: keyof T; label: string }[];
+  columns: TableColumn<T>[];
   data: T[];
   rowsPerPage?: number;
   onViewClick: (row: T) => void;
@@ -213,7 +219,9 @@ const Table = <T,>({
               <tr key={rowIndex} className="border-t">
                 {columns.map((column) => (
                   <td key={column.key.toString()} className="px-4 py-2">
-                    {String(row[column.key])}
+                    {column.render
+                      ? column.render(row[column.key], row)
+                      : String(row[column.key])}
                   </td>
                 ))}
                 <td className="px-4 py-2 flex space-x-2">
