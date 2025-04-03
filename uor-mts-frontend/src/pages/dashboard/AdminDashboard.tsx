@@ -13,7 +13,7 @@ import {
   MailsIcon,
   Users2Icon,
 } from "lucide-react";
-import { Dataset } from "../../components/pageComponent/dashboard/chart/SuperDataset";
+import { SuperDataset } from "../../components/pageComponent/dashboard/chart/SuperDataset";
 import { CalendarDemo } from "../../components/pageComponent/dashboard/calender/CalendarDemo";
 
 export default function Dashboard() {
@@ -57,7 +57,7 @@ export default function Dashboard() {
         {/* Chart and Report Button Section */}
         <Card className="justify-center w-full p-5 mt-3 ml-3 align-middle">
           <div className="flex flex-wrap justify-center gap-10">
-            <Dataset />
+            <SuperDataset />
 
             <div className="flex flex-col justify-end ">
               <CalendarDemo />

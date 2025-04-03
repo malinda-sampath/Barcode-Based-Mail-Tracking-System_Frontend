@@ -13,12 +13,12 @@ const SuperLayout: React.FC = () => {
 
       {/* Content area, dynamically adjusting margin */}
       <div
-        className={`flex flex-col flex-1 transition-all duration-300 ${
-          isSidebarOpen ? "ml-60" : "ml-16"
-        }`}
+        className={`flex flex-col flex-1 transition-all duration-300 
+          ${isSidebarOpen ? "" : "ml-16"} 
+          sm:ml-16 md:ml-24 lg:ml-60`} // Add responsive margin classes
       >
         <Header />
-        <div className="h-full p-4 overflow-y-auto">
+        <div className="h-full p-3 overflow-y-auto">
           <Outlet />
         </div>
       </div>
