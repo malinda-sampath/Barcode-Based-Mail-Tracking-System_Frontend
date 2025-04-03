@@ -6,81 +6,91 @@ import {
   CardTitle,
   CardContent,
 } from "../../components/ui/card";
-import { Calendar, GitBranchIcon, MailsIcon, Users2Icon } from "lucide-react";
-import { Dataset } from "../../components/pageComponent/dashboard/chart/SuperDataset";
+import { GitBranchIcon, MailsIcon, Users2Icon } from "lucide-react";
+import { SuperDataset } from "../../components/pageComponent/dashboard/chart/SuperDataset";
 import { CalendarDemo } from "../../components/pageComponent/dashboard/calender/CalendarDemo";
 
 export default function Dashboard() {
+  const currentDate = new Date().toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+
   return (
-    <>
-      {/* Dashboard Title */}
-      <div className="px-4 ml-4 sm:ml-6 md:ml-16 sm:px-6 lg:px-8 ">
-        <h1 className="text-xl sm:text-2xl font-semibold mt-2 text-[#611010]">
-          Dashboard
-        </h1>
-        <p className="text-xs sm:text-sm text-gray-500]">Date</p>
-        {/* Card Section */}
-        <div className="flex justify-between gap-0 mt-3 ml-2 ">
-          {/* Branches Card */}
-          <Card className="w-2/4 p-4 m-1 ">
-            <CardHeader>
-              <CardTitle className="flex justify-start items-center gap-4 text-[#611010]">
-                <GitBranchIcon className="text-[40px] text-[#611010]" />
-                Branches
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <span className="text-[60px] text-[#F99C30] font-bold flex items-center justify-start">
-                24
-              </span>
-            </CardContent>
-          </Card>
+    <div className="ml-4 sm:ml-8 md:ml-16 px-4 sm:px-6 lg:px-8">
+      <h1 className="text-xl sm:text-2xl font-semibold mt-2 text-[#611010]">
+        Dashboard
+      </h1>
+      <p className="text-xs sm:text-sm text-gray-500">{currentDate}</p>
 
-          {/* Admins Card */}
-          <Card className="w-2/4 p-4 m-1 ">
-            <CardHeader>
-              <CardTitle className="flex justify-start items-center gap-4 text-[#611010]">
-                <Users2Icon className="text-[40px] text-[#611010]" />
-                Admins
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <span className="text-[60px] text-[#F99C30] font-bold flex items-center justify-start">
-                24
-              </span>
-            </CardContent>
-          </Card>
+      {/* Stats Cards - Responsive Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-4">
+        <StatCard
+          icon={<GitBranchIcon className="w-6 h-6 sm:w-8 sm:h-8" />}
+          title="Branches"
+          value="24"
+        />
+        <StatCard
+          icon={<Users2Icon className="w-6 h-6 sm:w-8 sm:h-8" />}
+          title="Admins"
+          value="24"
+        />
+        <StatCard
+          icon={<MailsIcon className="w-6 h-6 sm:w-8 sm:h-8" />}
+          title="Total Mails"
+          value="24"
+        />
+      </div>
 
-          {/* Received Mails Today Card */}
-          <Card className="w-2/4 p-4 m-1 xs:w-1/3 ">
-            <CardHeader>
-              <CardTitle className="flex justify-start items-center gap-4 text-[#611010]">
-                <MailsIcon className="text-[50px] text-[#611010]" />
-                Total Mails
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <span className="text-[60px] text-[#F99C30] font-bold flex items-center justify-start">
-                24
-              </span>
-            </CardContent>
-          </Card>
-        </div>
+      {/* Chart and Calendar Section */}
+      <div className="mt-4">
+        <Card className="w-full p-4">
+          <div className="flex flex-col lg:flex-row gap-6">
+            {/* Responsive Chart */}
+            <div className="w-full lg:w-2/3">
+              <SuperDataset />
+            </div>
 
-        {/* Chart and Report Button Section */}
-        <Card className="justify-center w-full p-5 mt-3 ml-3 align-middle">
-          <div className="flex flex-wrap justify-center gap-10">
-            <Dataset />
-
-            <div className="flex flex-col justify-end ">
-              <CalendarDemo />
-              <Button className="px-10 py-2 mt-4 mb-4 bg-black sm:mt-0 sm-py-5">
+            {/* Responsive Calendar */}
+            <div className="w-full lg:w-1/3 flex flex-col">
+              <div className="w-full max-w-xs mx-auto">
+                <CalendarDemo />
+              </div>
+              <Button className="w-full sm:w-auto px-6 py-3 mt-4 bg-black hover:bg-gray-800 transition-colors mx-auto">
                 View Report
               </Button>
             </div>
-          </div>{" "}
+          </div>
         </Card>
       </div>
-    </>
+    </div>
+  );
+}
+
+// Reusable Stat Card Component
+function StatCard({
+  icon,
+  title,
+  value,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  value: string;
+}) {
+  return (
+    <Card className="w-full p-4 hover:shadow-md transition-shadow">
+      <CardHeader className="p-2 sm:p-3">
+        <CardTitle className="flex items-center gap-3 text-[#611010] text-base sm:text-lg">
+          {icon}
+          {title}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="p-2 sm:p-3">
+        <span className="text-4xl sm:text-5xl text-[#F99C30] font-bold">
+          {value}
+        </span>
+      </CardContent>
+    </Card>
   );
 }
