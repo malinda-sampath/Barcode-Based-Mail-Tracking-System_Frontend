@@ -24,7 +24,6 @@
     "@testing-library/user-event": "^13.5.0",
     "@types/jest": "^27.5.2",
     "@types/node": "^16.18.24",
-    "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "ajv": "^8.17.1",
     "ajv-keywords": "^5.1.0",
@@ -79,6 +78,7 @@
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@types/jwt-decode": "^2.2.1",
+    "@types/react": "^18.3.20",
     "@types/recharts": "^1.8.29",
     "@types/sockjs-client": "^1.5.4",
     "autoprefixer": "^10.4.20",
