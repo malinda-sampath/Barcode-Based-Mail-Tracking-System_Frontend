@@ -5,6 +5,7 @@ const TrackingForm = () => {
   const [selectedMailType, setSelectedMailType] = useState<string | null>(null);
   const [registerCode, setRegisterCode] = useState("");
   const [trackingNumber, setTrackingNumber] = useState(""); // State for tracking number
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false); // State to control showing success message
 
   const handleMailTypeSelect = (type: string) => {
     setSelectedMailType(type);
@@ -64,12 +65,17 @@ const TrackingForm = () => {
       //     if (data.success) {
       //         // Handle successful response
       //         console.log("Successfully submitted tracking request");
+      //         // Show success message
+      //         setShowSuccessMessage(true);
       //     } else {
       //         console.error("Failed to submit tracking request");
       //     }
       // } catch (error) {
       //     console.error("Error submitting tracking request:", error);
       // }
+      
+      // For development, show success message directly
+      setShowSuccessMessage(true);
       
     } else if (selectedMailType === 'REGISTER POST MAIL') {
       // BACKEND INTEGRATION: Submit register post mail tracking
@@ -86,25 +92,164 @@ const TrackingForm = () => {
       //     if (data.success) {
       //         // Handle successful response
       //         console.log("Successfully submitted register post tracking request");
+      //         // Show success message
+      //         setShowSuccessMessage(true);
       //     } else {
       //         console.error("Failed to submit tracking request");
       //     }
       // } catch (error) {
       //     console.error("Error submitting tracking request:", error);
       // }
+      
+      // For development, show success message directly
+      setShowSuccessMessage(true);
     }
   };
+
+  // Handle continue button click after success
+  const handleContinue = () => {
+    // BACKEND INTEGRATION: Navigate to next step or reset form
+    console.log("Continue button clicked");
+    // Reset state for new tracking request
+    setSelectedMailType(null);
+    setRegisterCode("");
+    setTrackingNumber("");
+    setShowSuccessMessage(false);
+    
+    // BACKEND INTEGRATION: Navigate to next page or dashboard
+    // window.location.href = "/tracking/results";
+    // OR using React Router navigate
+    // navigate("/tracking/results");
+  };
+
+  // If showSuccessMessage is true, render success message
+  if (showSuccessMessage) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen text-center" 
+           style={{ backgroundImage: `url(${gallery_1})` }}>
+        <div className="w-[650px] h-[450px] border-2 p-8 bg-white opacity-85  
+                       flex flex-col items-center justify-center text-center rounded-xl  
+                       shadow-lg shadow-black hover:opacity-100 transition-opacity duration-300">
+          <div className="w-full flex flex-col items-center justify-center">
+            {/* Progress indicator for success page (step 4) */}
+            <div className="w-3/4 mb-6">
+              <div className="flex items-center justify-between">
+                <div className="flex flex-col items-center">
+                  <div className="w-5 h-5 rounded-full bg-green-500 text-white flex items-center justify-center text-xs font-bold">
+                    ✓
+                  </div>
+                  <span className="text-xs mt-1">Email</span>
+                </div>
+                
+                <div className="flex-1 h-1 mx-2 bg-green-500"></div>
+                
+                <div className="flex flex-col items-center">
+                  <div className="w-5 h-5 rounded-full bg-green-500 text-white flex items-center justify-center text-xs font-bold">
+                    ✓
+                  </div>
+                  <span className="text-xs mt-1">OTP</span>
+                </div>
+                
+                <div className="flex-1 h-1 mx-2 bg-green-500"></div>
+                
+                <div className="flex flex-col items-center">
+                  <div className="w-5 h-5 rounded-full bg-green-500 text-white flex items-center justify-center text-xs font-bold">
+                    ✓
+                  </div>
+                  <span className="text-xs mt-1">Form</span>
+                </div>
+                
+                <div className="flex-1 h-1 mx-2 bg-green-500"></div>
+                
+                <div className="flex flex-col items-center">
+                  <div className="w-5 h-5 rounded-full bg-yellow-500 text-white flex items-center justify-center text-xs font-bold">
+                    4
+                  </div>
+                  <span className="text-xs mt-1">Done</span>
+                </div>
+              </div>
+            </div>
+            
+            {/* Success message with check icon */}
+            <div className="mb-6 flex flex-col items-center">
+              <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mb-4">
+                <svg className="w-12 h-12 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+              </div>
+              <h2 className="text-xl font-bold text-gray-800 mb-2">Success!</h2>
+              <p className="text-green-600 font-medium mb-2">
+                {selectedMailType === 'REGULAR MAIL' 
+                  ? `Your tracking request for ${trackingNumber} has been submitted.` 
+                  : `Your tracking request for register code ${registerCode} has been submitted.`}
+              </p>
+              <p className="text-gray-600 mb-8">
+                You will receive updates about your mail status.
+              </p>
+              
+              {/* Continue Button */}
+              <button
+                onClick={handleContinue}
+                className="text-white font-bold py-2 px-4 rounded-lg bg-green-500 hover:bg-green-600 w-48"
+              >
+                Continue
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col items-center justify-center h-screen text-center" 
          style={{ backgroundImage: `url(${gallery_1})` }}>
       <div 
-          className="w-[650px] h-[450px] border-2 p-8 bg-white opacity-95  
+          className="w-[650px] h-[450px] border-2 p-8 bg-white opacity-85  
           flex flex-col items-center justify-center text-center rounded-xl  
           shadow-lg shadow-black hover:opacity-100 transition-opacity duration-300">
           
           {/* Container for aligned content - centered vertically and horizontally */}
           <div className="w-full flex flex-col items-center justify-center">
+              {/* Progress indicator - step 3 in progress */}
+              <div className="w-3/4 mb-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex flex-col items-center">
+                    <div className="w-5 h-5 rounded-full bg-green-500 text-white flex items-center justify-center text-xs font-bold">
+                      ✓
+                    </div>
+                    <span className="text-xs mt-1">Email</span>
+                  </div>
+                  
+                  <div className="flex-1 h-1 mx-2 bg-green-500"></div>
+                  
+                  <div className="flex flex-col items-center">
+                    <div className="w-5 h-5 rounded-full bg-green-500 text-white flex items-center justify-center text-xs font-bold">
+                      ✓
+                    </div>
+                    <span className="text-xs mt-1">OTP</span>
+                  </div>
+                  
+                  <div className="flex-1 h-1 mx-2 bg-green-500"></div>
+                  
+                  <div className="flex flex-col items-center">
+                    <div className="w-5 h-5 rounded-full bg-yellow-500 text-white flex items-center justify-center text-xs font-bold">
+                      3
+                    </div>
+                    <span className="text-xs mt-1">Form</span>
+                  </div>
+                  
+                  <div className="flex-1 h-1 mx-2 bg-gray-300"></div>
+                  
+                  <div className="flex flex-col items-center">
+                    <div className="w-5 h-5 rounded-full bg-gray-300 text-white flex items-center justify-center text-xs font-bold">
+                      4
+                    </div>
+                    <span className="text-xs mt-1">Done</span>
+                  </div>
+                </div>
+              </div>
+
               {/* Text header - centered */}
               <div className="w-full flex mb-5">
                   <div className="w-[520px] text-left ml-16">

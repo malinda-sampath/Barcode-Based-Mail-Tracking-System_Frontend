@@ -70,6 +70,24 @@ const TrackingEmailEnter = () => {
               </div>
               <span className="text-xs mt-1">OTP</span>
             </div>
+            
+            <div className="flex-1 h-1 mx-2 bg-gray-300"></div>
+            
+            <div className="flex flex-col items-center">
+              <div className="w-5 h-5 rounded-full bg-gray-300 text-white flex items-center justify-center text-xs font-bold">
+                3
+              </div>
+              <span className="text-xs mt-1">Form</span>
+            </div>
+            
+            <div className="flex-1 h-1 mx-2 bg-gray-300"></div>
+            
+            <div className="flex flex-col items-center">
+              <div className="w-5 h-5 rounded-full bg-gray-300 text-white flex items-center justify-center text-xs font-bold">
+                4
+              </div>
+              <span className="text-xs mt-1">Done</span>
+            </div>
           </div>
         </div>
         
