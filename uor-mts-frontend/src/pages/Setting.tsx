@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from "react";
 import Button from "../components/buttonComponents/Button";
-import { FaDownload, FaTrash, FaUpload, FaClock, FaCog, FaExclamationTriangle, FaArchive } from "react-icons/fa";
+import {
+  FaDownload,
+  FaTrash,
+  FaUpload,
+  FaClock,
+  FaCog,
+  FaExclamationTriangle,
+  FaArchive,
+} from "react-icons/fa";
 import ToggleSetting from "../components/popupComponent/ToggleSetting";
 
 interface BackupData {
@@ -34,9 +42,21 @@ const Settings = () => {
       totalSize: "156.4 MB",
       lastUpdated: "2023-11-15 14:30:45",
       backups: [
-        { id: "b001", name: "full_backup_20231115", size: "78.2 MB", createdAt: "2023-11-15 14:30:45", type: "Full" },
-        { id: "b002", name: "incremental_20231114", size: "12.5 MB", createdAt: "2023-11-14 09:15:22", type: "Incremental" },
-      ]
+        {
+          id: "b001",
+          name: "full_backup_20231115",
+          size: "78.2 MB",
+          createdAt: "2023-11-15 14:30:45",
+          type: "Full",
+        },
+        {
+          id: "b002",
+          name: "incremental_20231114",
+          size: "12.5 MB",
+          createdAt: "2023-11-14 09:15:22",
+          type: "Incremental",
+        },
+      ],
     };
   };
 
@@ -44,7 +64,7 @@ const Settings = () => {
     return {
       storageUsed: "142.7 MB",
       accountCreated: "2021-03-10",
-      storageLimit: "500 MB"
+      storageLimit: "500 MB",
     };
   };
 
@@ -53,7 +73,7 @@ const Settings = () => {
       try {
         const [backupData, accountInfo] = await Promise.all([
           fetchBackupData(),
-          fetchAccountInfo()
+          fetchAccountInfo(),
         ]);
         setBackupData(backupData);
         setAccountInfo(accountInfo);
@@ -72,7 +92,9 @@ const Settings = () => {
   };
 
   const handleDownloadAll = () => {
-    alert(`Downloading all ${backupData?.totalFiles} backups (${backupData?.totalSize})...`);
+    alert(
+      `Downloading all ${backupData?.totalFiles} backups (${backupData?.totalSize})...`
+    );
   };
 
   const handleDeleteAccount = () => {
@@ -84,7 +106,9 @@ const Settings = () => {
   }
 
   if (!backupData || !accountInfo) {
-    return <div className="p-8 text-center text-red-500">Failed to load data</div>;
+    return (
+      <div className="p-8 text-center text-red-500">Failed to load data</div>
+    );
   }
 
   const currentDate = new Date().toLocaleDateString("en-GB", {
@@ -94,10 +118,12 @@ const Settings = () => {
   });
 
   return (
-    <div className="m-12">
-      <div className="mb-8">
-        <h1 className="text-xl sm:text-2xl font-semibold mt-2 text-[#611010] ml-12">Settings</h1>
-        <p className="text-xs sm:text-sm text-gray-500 ml-12">{currentDate}</p>
+    <div className="ml-4 sm:ml-8 md:ml-16 px-4 sm:px-6 lg:px-8">
+      <div className="mb-6">
+        <h1 className="text-xl sm:text-2xl font-semibold mt-2 text-[#611010]">
+          Setting
+        </h1>
+        <p className="text-xs sm:text-sm text-gray-500 ">{currentDate}</p>
       </div>
 
       {/* Backup Summary Section */}
@@ -131,19 +157,35 @@ const Settings = () => {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Size</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Name
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Type
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Size
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Created
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {backupData.backups.map((backup) => (
                 <tr key={backup.id}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{backup.name}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{backup.type}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{backup.size}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    {backup.name}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {backup.type}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {backup.size}
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {new Date(backup.createdAt).toLocaleString()}
                   </td>
@@ -169,7 +211,10 @@ const Settings = () => {
         dialogTitle="Download All Backups"
         dialogDescription={
           <>
-            <p>This will download all {backupData.totalFiles} backups ({backupData.totalSize}) as a single archive.</p>
+            <p>
+              This will download all {backupData.totalFiles} backups (
+              {backupData.totalSize}) as a single archive.
+            </p>
             <ul className="list-disc list-inside pl-4 text-blue-500 space-y-1 mt-2">
               <li>Large download (may take several minutes)</li>
               <li>Archive will be in ZIP format</li>
@@ -178,7 +223,12 @@ const Settings = () => {
           </>
         }
         onConfirm={handleDownloadAll}
-        icon={<FaDownload className="absolute left-5 top-1/2 transform -translate-y-1/2 text-white "size={14} />}
+        icon={
+          <FaDownload
+            className="absolute left-5 top-1/2 transform -translate-y-1/2 text-white "
+            size={14}
+          />
+        }
       />
 
       {/* Delete Account Section */}
@@ -197,7 +247,12 @@ const Settings = () => {
           </>
         }
         onConfirm={handleDeleteAccount}
-        icon={<FaTrash className="absolute left-7 top-1/2 transform -translate-y-1/2 text-white " size={14} />}
+        icon={
+          <FaTrash
+            className="absolute left-7 top-1/2 transform -translate-y-1/2 text-white "
+            size={14}
+          />
+        }
       />
     </div>
   );
