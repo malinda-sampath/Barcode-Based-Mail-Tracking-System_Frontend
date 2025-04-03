@@ -38,7 +38,11 @@ const columns: { key: keyof Mail; label: string }[] = [
 ];
 
 // Define form fields for the DynamicForm component
-const formFields: { label: string; name: keyof Mail; type: "text" | "textarea" }[] = [
+const formFields: {
+  label: string;
+  name: keyof Mail;
+  type: "text" | "textarea";
+}[] = [
   { label: "Mail Id", name: "mailId", type: "text" },
   { label: "Sender", name: "sender", type: "text" },
   { label: "Recipient", name: "recipient", type: "text" },
@@ -50,7 +54,9 @@ const formFields: { label: string; name: keyof Mail; type: "text" | "textarea" }
 export default function MailManagement() {
   const [mailData, setMailData] = useState<Mail[]>([]); // State to hold mail data
   const [selectedMail, setSelectedMail] = useState<Mail | null>(null);
-  const [formType, setFormType] = useState<"add" | "edit" | "view" | null>(null);
+  const [formType, setFormType] = useState<"add" | "edit" | "view" | null>(
+    null
+  );
   const [showPopup, setShowPopup] = useState(false);
 
   // Fetch data from the backend on component mount
@@ -70,7 +76,7 @@ export default function MailManagement() {
 
   // Handle form submission
   const handleFormSubmit = (formData: Record<string, any>) => {
-    console.log('Submitted Data:', formData);
+    console.log("Submitted Data:", formData);
 
     // Here, you can send the form data to the backend or handle it as needed
     // For example, you might make an API call to add the data to the backend
@@ -111,7 +117,9 @@ export default function MailManagement() {
 
   // Handle delete icon click
   const handleDeleteClick = (mail: Mail) => {
-    setMailData((prev) => prev.filter((m) => m.dailyMailId !== mail.dailyMailId));
+    setMailData((prev) =>
+      prev.filter((m) => m.dailyMailId !== mail.dailyMailId)
+    );
   };
   const currentDate = new Date().toLocaleDateString("en-GB", {
     day: "2-digit",
@@ -121,7 +129,9 @@ export default function MailManagement() {
 
   return (
     <div className="m-12">
-      <h1 className="text-xl sm:text-2xl font-semibold mt-2 text-[#611010] ml-12">Mail Management</h1>
+      <h1 className="text-xl sm:text-2xl font-semibold mt-2 text-[#611010] ml-12">
+        Mail Management
+      </h1>
       <p className="text-xs sm:text-sm text-gray-500 ml-12">{currentDate}</p>
       <br></br>
       {/* Table Container */}
@@ -138,14 +148,14 @@ export default function MailManagement() {
       </div>
 
       {/* Transfer Button (Outside the Table Container) */}
-    <div className="mt-4 ml-12 flex justify-end">
-      <button
-        onClick={() => console.log("Transfer button clicked")}
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-      >
-        Transfer
-      </button>
-    </div>
+      <div className="mt-4 ml-12 flex justify-end">
+        <button
+          onClick={() => console.log("Transfer button clicked")}
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        >
+          Transfer
+        </button>
+      </div>
 
       {/* Add Mail Form */}
       <div className="mt-4 ml-12">
@@ -161,7 +171,12 @@ export default function MailManagement() {
       {showPopup && selectedMail && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
           <div className="bg-white p-4 sm:p-6 rounded-lg shadow-lg w-full max-w-md relative">
-            <button className="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-xl" onClick={handleClosePopup}>✖</button>
+            <button
+              className="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-xl"
+              onClick={handleClosePopup}
+            >
+              ✖
+            </button>
             <AdminFormPopup
               title={formType === "view" ? "View Mail" : "Edit Mail"}
               fields={formFields}
