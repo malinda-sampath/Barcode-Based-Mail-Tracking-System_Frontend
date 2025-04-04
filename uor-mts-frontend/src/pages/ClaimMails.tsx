@@ -39,6 +39,50 @@ type Mail = {
 };
 
 export const ClaimMails = () => {
+  // Temporary sample data
+  const sampleBranches: BranchInfo[] = [
+    { code: "BR001", name: "Faculty of Science" },
+    { code: "BR002", name: "Faculty of Science" },
+    { code: "BR003", name: "Faculty of Science" },
+  ];
+
+  const sampleMailCounts: MailCount[] = [
+    { branchCode: "BR001", count: 5 },
+    { branchCode: "BR002", count: 3 },
+    { branchCode: "BR003", count: 7 },
+  ];
+
+  const sampleMailDetails: Mail[] = [
+    {
+      dailyMailId: 1,
+      branchCode: "BR001",
+      branchName: "Faculty of Science",
+      senderName: "John Doe",
+      receiverName: "Jane Smith",
+      mailType: "Parcel",
+      trackingNumber: "TRK123456",
+      barcodeId: "BC001",
+      insertDateTime: "2023-05-15T10:30:00",
+      updateDateTime: "2023-05-15T10:30:00",
+      mailId: "ML001",
+      description: "Important documents",
+    },
+    {
+      dailyMailId: 2,
+      branchCode: "BR001",
+      branchName: "Faculty of Science",
+      senderName: "Acme Corp",
+      receiverName: "XYZ Ltd",
+      mailType: "Package",
+      trackingNumber: "TRK789012",
+      barcodeId: "BC002",
+      insertDateTime: "2023-05-16T14:45:00",
+      updateDateTime: "2023-05-16T14:45:00",
+      mailId: "ML002",
+      description: "Product samples",
+    },
+  ];
+
   const [branches, setBranches] = useState<BranchInfo[]>([]);
   const [mailCounts, setMailCounts] = useState<MailCount[]>([]);
   const [filter, setFilter] = useState("");
@@ -51,9 +95,9 @@ export const ClaimMails = () => {
   useEffect(() => {
     setLoading(true);
     const timer = setTimeout(() => {
-      // Simulate empty API responses
-      setBranches([]);
-      setMailCounts([]);
+      // Use sample data instead of empty arrays
+      setBranches(sampleBranches);
+      setMailCounts(sampleMailCounts);
       setLoading(false);
     }, 500);
     return () => clearTimeout(timer);
@@ -64,8 +108,11 @@ export const ClaimMails = () => {
     setLoading(true);
     setError(null);
     const timer = setTimeout(() => {
-      // Simulate empty mail details response
-      setMailDetails([]);
+      // Use sample data for the selected branch
+      const details = sampleMailDetails.filter(
+        (mail) => mail.branchCode === branchCode
+      );
+      setMailDetails(details);
       setLoading(false);
     }, 500);
     return () => clearTimeout(timer);
@@ -100,7 +147,8 @@ export const ClaimMails = () => {
     return branches
       .map((branch) => ({
         ...branch,
-        count: mailCounts.find((mc) => mc.branchCode === branch.code)?.count || 0,
+        count:
+          mailCounts.find((mc) => mc.branchCode === branch.code)?.count || 0,
       }))
       .filter(
         (branch) =>
@@ -131,17 +179,29 @@ export const ClaimMails = () => {
         ) : error ? (
           <div className="text-red-500 p-4 border rounded">Error: {error}</div>
         ) : mailDetails.length === 0 ? (
-          <div className="text-gray-500 p-4 border rounded">No data available</div>
+          <div className="ml-12">
+            <div className="text-gray-500 p-4 border rounded">
+              No data available for this branch
+            </div>
+            <div className="p-4 bg-white">
+              <Button
+                onClick={handleBackClick}
+                className="bg-[#F93058] hover:bg-[#f60f3d] text-white h-8 w-28"
+              >
+                Back
+              </Button>
+            </div>
+          </div>
         ) : (
           <div className="ml-12">
             <div className="bg-white p-6 rounded-lg shadow-md">
-              <Table
+              {/* <Table
                 columns={mailColumns}
                 data={mailDetails}
                 rowsPerPage={5}
                 searchableKeys={["mailId", "senderName", "receiverName", "trackingNumber"]}
                 showActions={false}
-              />
+              /> */}
             </div>
             <div className="p-4 bg-white">
               <Button
@@ -159,7 +219,9 @@ export const ClaimMails = () => {
 
   return (
     <div className="m-12">
-      <h1 className="text-xl sm:text-2xl font-semibold mt-2 text-[#611010] ml-12">Claim Mails</h1>
+      <h1 className="text-xl sm:text-2xl font-semibold mt-2 text-[#611010] ml-12">
+        Claim Mails
+      </h1>
       <p className="text-sm text-gray-500 ml-12">{currentDate}</p>
       <br />
 
@@ -175,9 +237,13 @@ export const ClaimMails = () => {
           <p className="animate-pulse">Loading branches...</p>
         </div>
       ) : error ? (
-        <div className="text-red-500 p-4 border rounded ml-12">Error: {error}</div>
+        <div className="text-red-500 p-4 border rounded ml-12">
+          Error: {error}
+        </div>
       ) : filteredBranches.length === 0 ? (
-        <div className="text-gray-600 p-4  ml-12">No branches available</div>
+        <div className="text-gray-600 p-4  ml-12">
+          No branches match your filter
+        </div>
       ) : (
         <div className="flex flex-wrap gap-5 ml-12">
           {filteredBranches.map((branch) => (
