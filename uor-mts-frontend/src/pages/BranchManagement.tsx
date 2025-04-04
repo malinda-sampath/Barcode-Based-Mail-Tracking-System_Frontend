@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import Button from "../components/buttonComponents/Button";
-import Search from "../components/searchBar/Search";
 import PopupMenu from "../components/popupComponent/Popup";
-import ToastContainer from "../components/ui/toastContainer";
-import { saveBranch } from "../../src/services/BranchService";
+import ToastContainer from "../components/ui/toast/toastContainer";
+import { saveBranch } from "../services/superAdmin/BranchService";
 import BranchTable from "../components/pageComponent/superAdmin/branchManagement/BranchTable";
 
 export default function AdminManagement() {
@@ -117,7 +116,11 @@ export default function AdminManagement() {
 
       <BranchTable />
 
-      <PopupMenu isOpen={isPopupOpen} onClose={() => setIsPopupOpen(false)}>
+      <PopupMenu
+        isOpen={isPopupOpen}
+        onClose={() => setIsPopupOpen(false)}
+        topic={"Branch"}
+      >
         {/* Popup content */}
         <div className="space-y-4 px-6 py-4">
           <label className="block">
@@ -207,6 +210,7 @@ export default function AdminManagement() {
       <PopupMenu
         isOpen={isAddbranchPopupOpen}
         onClose={() => setIsAddBranchPopupOpen(false)}
+        topic={"Branch Manager"}
       >
         {/* Popup content */}
         <div className="space-y-6 pb-4 px-6">
