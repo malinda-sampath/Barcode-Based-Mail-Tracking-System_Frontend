@@ -72,4 +72,31 @@ export const fetchMails = async () => {
   return await apiRequest<MailFetchResponse>("daily-mail/get-all", "GET");
 };
 
+export const deleteMail = async (barcodeId: string) => {
+  return await apiRequest(`daily-mail/delete/${barcodeId}`, "DELETE");
+};
+
+export const updateMailDetails = async (
+  barcodeId: string,
+  branchCode: string,
+  senderName: string,
+  receiverName: string,
+  mailType: string,
+  trackingNumber: string,
+  mailDescription: string
+) => {
+  return await apiRequest<MailEneterResponse>(
+    `daily-mail/update/${barcodeId}`,
+    "PUT",
+    {
+      branchCode,
+      senderName,
+      receiverName,
+      mailType,
+      trackingNumber,
+      mailDescription,
+    }
+  );
+};
+
 export const transferMails = async () => {};

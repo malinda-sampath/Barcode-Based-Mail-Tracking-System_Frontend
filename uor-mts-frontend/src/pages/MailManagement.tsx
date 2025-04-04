@@ -4,12 +4,15 @@ import {
   saveMailDetails,
   fetchBranches,
   fetchMails,
-  transferMails,
+  deleteMail,
+  updateMailDetails,
 } from "../services/mailHandler/MailService";
 import ToastContainer from "../components/ui/toast/toastContainer";
 import Button from "../components/buttonComponents/Button";
 import MailDetailsPopup from "../components/pageComponent/mailHandler/MailDetailsPopup";
 import useWebSocket from "../hooks/useWebSocket";
+import ToggleConfirmation from "../components/ui/toggle/toggleConfiremation";
+import { useToggleConfirmation } from "../components/ui/toggle/useToggleConfiremation";
 
 interface Mail {
   index?: number;
@@ -83,6 +86,7 @@ const MailManagement: React.FC = () => {
   const [popupOpen, setPopupOpen] = React.useState(false);
   const [barcodeImage, setBarcodeImage] = useState<File | null>(null);
   const [error, setError] = useState<string>("");
+  const [status, setStatus] = useState<number>(0);
   const [branches, setBranches] = useState<Branch[]>([]);
   const [mails, setMails] = useState<Mail[]>([]);
   const [isFormVisible, setIsFormVisible] = useState(false);
@@ -99,6 +103,9 @@ const MailManagement: React.FC = () => {
     { message: string; type: "success" | "error" | "info" | "warning" }[]
   >([]);
   const [isTransferring, setIsTransferring] = useState(false);
+
+  const { isVisible, confirmationConfig, showConfirmation, hideConfirmation } =
+    useToggleConfirmation();
 
   // Create branchCodeMap from branches data
   const branchCodeMap = branches.reduce<Record<string, string>>(
@@ -243,25 +250,53 @@ const MailManagement: React.FC = () => {
       return;
     }
     try {
-      const response = await saveMailDetails(
-        formData.branchCode || "",
-        formData.senderName,
-        formData.receiverName,
-        formData.mailType,
-        formData.trackingNumber || "",
-        formData.mailDescription || ""
-      );
-      console.log(formData as MailInput);
+      let response;
+      if (selectedMail) {
+        // Update existing mail
+        response = await updateMailDetails(
+          selectedMail.barcodeId,
+          formData.branchCode || "",
+          formData.senderName,
+          formData.receiverName,
+          formData.mailType,
+          formData.trackingNumber || "",
+          formData.mailDescription || ""
+        );
+      } else {
+        // Create new mail
+        response = await saveMailDetails(
+          formData.branchCode || "",
+          formData.senderName,
+          formData.receiverName,
+          formData.mailType,
+          formData.trackingNumber || "",
+          formData.mailDescription || ""
+        );
+      }
       if (response.status >= 200 && response.status < 300) {
-        triggerToast("Mail saved successfully!", "success");
+        triggerToast(
+          selectedMail
+            ? "Mail updated successfully!"
+            : "Mail saved successfully!",
+          "success"
+        );
         handleClearForm();
+        setSelectedMail(null);
         fetchMailData(); // Refresh the mail list
       } else {
-        triggerToast("Failed to save mail!", "error");
+        triggerToast(
+          selectedMail ? "Failed to update mail!" : "Failed to save mail!",
+          "error"
+        );
       }
     } catch (error) {
       console.error("Error saving mail:", error);
-      triggerToast("An error occurred while saving mail!", "error");
+      triggerToast(
+        selectedMail
+          ? "An error occurred while updating mail!"
+          : "An error occurred while saving mail!",
+        "error"
+      );
     }
   };
 
@@ -269,6 +304,63 @@ const MailManagement: React.FC = () => {
   const handleViewClick = (mail: Mail) => {
     setSelectedMail(mail);
     setPopupOpen(true);
+  };
+
+  // Handle Delete button click
+  const handleDeleteClick = async (mail: Mail) => {
+    setError("");
+    setStatus(0);
+
+    showConfirmation(
+      "Are you sure you want to delete this mail?",
+      async () => {
+        try {
+          const response = await deleteMail(mail.barcodeId);
+          if (response.status >= 200 && response.status < 300) {
+            triggerToast("Mail deleted successfully!", "success");
+            fetchMailData(); // Refresh the mail list
+          } else {
+            triggerToast("Failed to delete mail!", "error");
+          }
+        } catch (error) {
+          console.error("Error deleting mail:", error);
+          triggerToast("An error occurred while deleting mail!", "error");
+        }
+        hideConfirmation();
+      },
+      hideConfirmation,
+      "Delete",
+      "Cancel"
+    );
+  };
+
+  // Handle Edit button click
+  const handleEditClick = (mail: Mail) => {
+    // Find the corresponding branch name for the mail's branch code
+    const branch = branches.find((b) => b.branchCode === mail.branchCode);
+
+    setFormData({
+      branchName: branch?.branchName || "",
+      branchCode: mail.branchCode,
+      senderName: mail.senderName,
+      receiverName: mail.receiverName,
+      mailType: mail.mailType,
+      trackingNumber: mail.trackingNumber,
+      mailDescription: mail.mailDescription,
+    });
+
+    // Store the barcodeId of the mail being edited
+    setSelectedMail(mail);
+
+    // Show the form if it's not already visible
+    if (!isFormVisible) {
+      setIsFormVisible(true);
+      setTimeout(() => {
+        document
+          .getElementById("mail-form")
+          ?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    }
   };
 
   const handleTransferMails = async () => {
@@ -309,31 +401,34 @@ const MailManagement: React.FC = () => {
         Mail Management
       </h1>
       <p className="text-xs sm:text-sm text-gray-500 ">{currentDate}</p>
-
-      <div className="flex px-8 items-center justify-end w-full mt-4">
-        <Button
-          text={isFormVisible ? "CANCEL ADD MAIL" : "+ ADD MAILS"}
-          bgColor={isFormVisible ? "bg-gray-500" : "bg-[#4B45DA]"}
-          hoverColor={isFormVisible ? "bg-gray-600" : "bg-[#2019de]"}
-          height="h-10"
-          width="w-40 sm:w-48"
-          onClick={() => {
-            setIsFormVisible(!isFormVisible);
-            if (!isFormVisible) {
-              setTimeout(() => {
-                document
-                  .getElementById("mail-form")
-                  ?.scrollIntoView({ behavior: "smooth" });
-              }, 100);
-            }
-          }}
-        />
-      </div>
+      {selectedMail ? (
+        ""
+      ) : (
+        <div className="flex px-8 items-center justify-end w-full mt-4">
+          <Button
+            text={isFormVisible ? "CANCEL ADD MAIL" : "+ ADD MAILS"}
+            bgColor={isFormVisible ? "bg-gray-500" : "bg-[#4B45DA]"}
+            hoverColor={isFormVisible ? "bg-gray-600" : "bg-[#2019de]"}
+            height="h-10"
+            width="w-40 sm:w-48"
+            onClick={() => {
+              setIsFormVisible(!isFormVisible);
+              if (!isFormVisible) {
+                setTimeout(() => {
+                  document
+                    .getElementById("mail-form")
+                    ?.scrollIntoView({ behavior: "smooth" });
+                }, 100);
+              }
+            }}
+          />
+        </div>
+      )}
 
       {isFormVisible && (
         <div id="mail-form" className="bg-white p-6 rounded-lg shadow-md mt-6">
           <h2 className="text-lg font-semibold text-[#611010] mb-4">
-            Add New Mail
+            {selectedMail ? "Edit Mail" : "Add New Mail"}
           </h2>
           <form onSubmit={handleSaveMail} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -411,6 +506,7 @@ const MailManagement: React.FC = () => {
                 >
                   <option value="">Select Type</option>
                   <option value="Registered">Registered</option>
+                  <option value="Regular">Regular</option>
                   <option value="Express">Express</option>
                   <option value="Parcel">Parcel</option>
                   <option value="Document">Document</option>
@@ -445,19 +541,37 @@ const MailManagement: React.FC = () => {
             </div>
 
             <div className="flex justify-end gap-4 pt-4">
-              <button
-                type="button"
-                onClick={handleClearForm}
-                className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500"
-              >
-                Clear
-              </button>
+              {selectedMail ? (
+                ""
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleClearForm}
+                  className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                >
+                  Clear
+                </button>
+              )}
+
               <button
                 type="submit"
                 className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
-                Save Mail
+                {selectedMail ? "Update Mail" : "Save Mail"}
               </button>
+              {selectedMail && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleClearForm();
+                    setIsFormVisible(false);
+                    setSelectedMail(null);
+                  }}
+                  className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
+                >
+                  Cancel Edit
+                </button>
+              )}
             </div>
           </form>
         </div>
@@ -468,10 +582,8 @@ const MailManagement: React.FC = () => {
           columns={columns}
           data={mails}
           onViewClick={handleViewClick}
-          onEditClick={(mail) => console.log("Edit clicked", mail)}
-          onDeleteClick={(mail) => {
-            console.log("Delete clicked", mail);
-          }}
+          onEditClick={handleEditClick}
+          onDeleteClick={handleDeleteClick}
           rowsPerPage={10}
           searchableKeys={[
             "branchCode",
@@ -508,6 +620,16 @@ const MailManagement: React.FC = () => {
         open={popupOpen}
         onClose={handleClosePopup}
       />
+      {isVisible && confirmationConfig && (
+        <ToggleConfirmation
+          visible={isVisible}
+          message={confirmationConfig.message}
+          onConfirm={confirmationConfig.onConfirm}
+          onCancel={confirmationConfig.onCancel || hideConfirmation}
+          confirmText={confirmationConfig.confirmText}
+          cancelText={confirmationConfig.cancelText}
+        />
+      )}
     </div>
   );
 };
