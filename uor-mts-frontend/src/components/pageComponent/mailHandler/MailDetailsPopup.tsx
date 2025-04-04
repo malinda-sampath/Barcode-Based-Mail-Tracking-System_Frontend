@@ -252,18 +252,6 @@ const MailDetailsPopup = ({
                     minute: "2-digit",
                   })}</span>
                 </div>
-                <div class="detail-row">
-                  <span class="detail-label">Last Updated</span>
-                  <span class="detail-value">${new Date(
-                    mail.updateDateTime
-                  ).toLocaleString("en-US", {
-                    year: "numeric",
-                    month: "short",
-                    day: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}</span>
-                </div>
               </div>
               
               <div class="footer">
@@ -377,7 +365,7 @@ const MailDetailsPopup = ({
                 <div>
                   <p className="text-sm font-medium text-gray-600">Updated</p>
                   <p className="text-gray-900 text-sm">
-                    {formatDate(mail.updateDateTime)}
+                    {formatDate(mail.updateDateTime) || "Not updated yet"}
                   </p>
                 </div>
               </div>
