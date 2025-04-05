@@ -84,7 +84,6 @@ interface Branch {
 const MailManagement: React.FC = () => {
   const [selectedMail, setSelectedMail] = React.useState<Mail | null>(null);
   const [popupOpen, setPopupOpen] = React.useState(false);
-  const [barcodeImage, setBarcodeImage] = useState<File | null>(null);
   const [error, setError] = useState<string>("");
   const [status, setStatus] = useState<number>(0);
   const [branches, setBranches] = useState<Branch[]>([]);
