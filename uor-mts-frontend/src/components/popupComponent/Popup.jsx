@@ -1,6 +1,6 @@
 import React from "react";
 
-const Popup = ({ isOpen, onClose, children }) => {
+const Popup = ({ isOpen, onClose, children, topic }) => {
   if (!isOpen) return null;
 
   return (
@@ -17,7 +17,7 @@ const Popup = ({ isOpen, onClose, children }) => {
 
         {/* Popup Content */}
         <h2 className="mb-5 text-2xl font-bold text-center text-[#611010] uppercase tracking-wide">
-          Branch
+          {topic}
         </h2>
         <div className="space-y-4">{children}</div>
       </div>
