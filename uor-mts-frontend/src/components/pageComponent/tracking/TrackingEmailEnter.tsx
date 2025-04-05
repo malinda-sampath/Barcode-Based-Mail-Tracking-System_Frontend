@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import gallery_1 from "../../../assets/gallery_1.png"; // Import the background image
 import TrackingOTP from "./TrackingOTP"; // Import the OTP component
+import { sendVerificationEmail } from "../../../services/Tracking/TrackingEmailService"; // Import the service
 
 const TrackingEmailEnter = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [showOTP, setShowOTP] = useState(false); // State to control which component is shown
+  const [isLoading, setIsLoading] = useState(false); // Add loading state
 
   // Validate email format
   const isValidEmail = (email: string): boolean => {
@@ -22,14 +24,28 @@ const TrackingEmailEnter = () => {
       return;
     }
 
-    // Simulating successful OTP sending without backend
-    setMessage("OTP sent to your email!");
-    
-    // Instead of navigation, set state to show OTP component
-    setShowOTP(true);
-    
-    // For debugging
-    console.log("Showing OTP verification for email:", email);
+    // Set loading state
+    setIsLoading(true);
+    setMessage("Sending verification email...");
+
+    try {
+      // Call the API through our service
+      const response = await sendVerificationEmail(email);
+      
+      // Handle the response based on status
+      if (response.status === 200) {
+        setMessage("OTP sent to your email!");
+        setShowOTP(true); // Show OTP component on success
+      } else {
+        // Handle error based on response status
+        setMessage(response.data?.message || "Failed to send verification email. Please try again.");
+      }
+    } catch (error) {
+      setMessage("An error occurred. Please try again later.");
+      console.error("Email verification error:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Return to email form (for use in TrackingOTP component)
@@ -104,18 +120,19 @@ const TrackingEmailEnter = () => {
               placeholder="example@usci.ruh.ac.lk" 
               required
               className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              disabled={isLoading}
             />
           </div>
           
           <button 
             type="submit" 
-            disabled={!isValidEmail(email)}
+            disabled={!isValidEmail(email) || isLoading}
             className={`w-full p-2 mt-4 rounded font-medium
-              ${isValidEmail(email) 
+              ${isValidEmail(email) && !isLoading
                 ? "bg-black text-white hover:bg-gray-800" 
                 : "bg-gray-400 cursor-not-allowed"}`}
           >
-            Proceed
+            {isLoading ? "Processing..." : "Proceed"}
           </button>
         </form>
         

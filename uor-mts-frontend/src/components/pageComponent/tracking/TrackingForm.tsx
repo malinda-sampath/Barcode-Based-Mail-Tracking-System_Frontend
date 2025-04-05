@@ -22,22 +22,6 @@ const TrackingForm = () => {
     const newTrackingNumber = "M" + Math.floor(100000 + Math.random() * 900000);
     setTrackingNumber(newTrackingNumber);
     
-    // BACKEND INTEGRATION: Replace with actual API call
-    // try {
-    //     const response = await fetch('your-api-endpoint/generate-tracking-number', {
-    //         method: 'POST',
-    //         headers: { 'Content-Type': 'application/json' },
-    //         body: JSON.stringify({ mailType: 'REGULAR' })
-    //     });
-    //     const data = await response.json();
-    //     if (data.success) {
-    //         setTrackingNumber(data.trackingNumber);
-    //     } else {
-    //         console.error("Failed to generate tracking number");
-    //     }
-    // } catch (error) {
-    //     console.error("Error generating tracking number:", error);
-    // }
   };
 
   const handleNext = async (e: React.FormEvent) => {
@@ -54,27 +38,7 @@ const TrackingForm = () => {
       // BACKEND INTEGRATION: Submit regular mail tracking
       console.log(`Proceeding with Regular Mail, tracking number: ${trackingNumber}`);
       
-      // BACKEND INTEGRATION: Replace with actual API call
-      // try {
-      //     const response = await fetch('your-api-endpoint/track-regular-mail', {
-      //         method: 'POST',
-      //         headers: { 'Content-Type': 'application/json' },
-      //         body: JSON.stringify({ trackingNumber })
-      //     });
-      //     const data = await response.json();
-      //     if (data.success) {
-      //         // Handle successful response
-      //         console.log("Successfully submitted tracking request");
-      //         // Show success message
-      //         setShowSuccessMessage(true);
-      //     } else {
-      //         console.error("Failed to submit tracking request");
-      //     }
-      // } catch (error) {
-      //     console.error("Error submitting tracking request:", error);
-      // }
-      
-      // For development, show success message directly
+  
       setShowSuccessMessage(true);
       
     } else if (selectedMailType === 'REGISTER POST MAIL') {

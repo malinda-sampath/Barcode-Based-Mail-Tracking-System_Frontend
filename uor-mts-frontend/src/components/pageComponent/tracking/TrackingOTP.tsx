@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import gallery_1 from "../../../assets/gallery_1.png"; // Import the background image
 import TrackingForm from "./TrackingForm"; // Import TrackingForm component
+import { verifyOTP } from "../../../services/Tracking/TrackingEmailService"; // Import the OTP verification service
 
 // Define props interface
 interface TrackingOTPProps {
@@ -17,13 +18,11 @@ const TrackingOTP = ({ email, onReturn, onVerificationSuccess }: TrackingOTPProp
   const [attempts, setAttempts] = useState(0);
   const [message, setMessage] = useState("");
   const [showTrackingForm, setShowTrackingForm] = useState(false); // Add state to control showing TrackingForm
+  const [isVerifying, setIsVerifying] = useState(false); // Add loading state for verification
   
   const otpRefs = useRef<(HTMLInputElement | null)[]>(Array(6).fill(null));
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   
-  // BACKEND INTEGRATION: Replace this hardcoded OTP with the one generated from backend
-  const hardcodedOtp = "123456"; // This should come from the backend
-
   // Effect to focus on first OTP input and start timer
   useEffect(() => {
     // Focus on the first OTP input
@@ -77,67 +76,79 @@ const TrackingOTP = ({ email, onReturn, onVerificationSuccess }: TrackingOTPProp
   };
 
   // Handle OTP submission
-  const handleOtpSubmit = (e: React.FormEvent) => {
+  const handleOtpSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (otp.join("").length === 6) {
-      // BACKEND INTEGRATION: Replace this with actual API call
-      // const response = await fetch('your-backend-url/validate-otp', {
-      //     method: 'POST',
-      //     headers: { 'Content-Type': 'application/json' },
-      //     body: JSON.stringify({ email, otp: otp.join("") })
-      // });
-      // const data = await response.json();
-      // const isOtpCorrect = data.success;
+      setIsVerifying(true); // Set loading state
+      setMessage(""); // Clear any previous messages
       
-      // Using hardcoded OTP comparison for now
-      const isOtpCorrect = otp.join("") === hardcodedOtp;
-      
-      if (isOtpCorrect) {
-        // Clear the timer when OTP is submitted successfully
-        if (timerRef.current) {
-          clearInterval(timerRef.current);
-        }
-        
-        // Immediately show the TrackingForm
-        setShowTrackingForm(true);
-        
-        // If parent provided a success callback, call it
-        if (onVerificationSuccess) {
-          onVerificationSuccess();
-        }
+      try {
+        // Call the OTP verification service
+        const response = await verifyOTP(email, otp.join(""));
         
         // For debugging
-        console.log("OTP verified successfully! Navigating to TrackingForm");
+        console.log("OTP verification response:", response);
         
-        // BACKEND INTEGRATION: Additional steps after verification
-        // - Store authentication token from response
-        // - Set user verification status in your app state/context
-      } else {
-        // Increment attempt counter
-        const newAttempts = attempts + 1;
-        setAttempts(newAttempts);
-        
-        if (newAttempts >= 3) {
-          // Maximum attempts reached, reset to email page
+        // Check if verification was successful (status 200 OK)
+        if (response.status === 200) {
+          // Clear the timer when OTP is submitted successfully
           if (timerRef.current) {
             clearInterval(timerRef.current);
           }
-          setMessage("Maximum attempts reached. Please try again with a new OTP.");
           
-          // Return to email page after max attempts
+          setMessage("OTP verified successfully!");
+          
+          // Show the TrackingForm after a brief delay to show success message
           setTimeout(() => {
-            onReturn();
-          }, 3000);
+            setShowTrackingForm(true);
+            
+            // If parent provided a success callback, call it
+            if (onVerificationSuccess) {
+              onVerificationSuccess();
+            }
+          }, 1000);
+        } else if (response.status === 400) {
+          // Bad request - usually means invalid OTP
+          // Increment attempt counter
+          const newAttempts = attempts + 1;
+          setAttempts(newAttempts);
+          
+          if (newAttempts >= 3) {
+            // Maximum attempts reached, reset to email page
+            if (timerRef.current) {
+              clearInterval(timerRef.current);
+            }
+            setMessage("Maximum attempts reached. Please try again with a new OTP.");
+            
+            // Return to email page after max attempts
+            setTimeout(() => {
+              onReturn();
+            }, 3000);
+          } else {
+            // Still have attempts left
+            setOtp(Array(6).fill(""));
+            setMessage(`Invalid OTP. ${3 - newAttempts} attempts remaining.`);
+            // Focus on first input after clearing
+            setTimeout(() => {
+              otpRefs.current[0]?.focus();
+            }, 50);
+          }
+        } else if (response.status === 500) {
+          // Server error - provide a more helpful message
+          const errorMsg = response.data?.message || "Server error occurred. Please try again later.";
+          setMessage(errorMsg);
+          console.error("Server error during OTP verification:", response);
         } else {
-          // Still have attempts left
-          setOtp(Array(6).fill(""));
-          setMessage(`Invalid OTP. ${3 - newAttempts} attempts remaining.`);
-          // Focus on first input after clearing
-          setTimeout(() => {
-            otpRefs.current[0]?.focus();
-          }, 50);
+          // Other status codes
+          setMessage("Verification failed. Please try again.");
+          console.error("Unexpected response during OTP verification:", response);
         }
+      } catch (error) {
+        console.error("Error verifying OTP:", error);
+        setMessage("Connection error. Please check your internet and try again.");
+      } finally {
+        setIsVerifying(false); // Clear loading state
       }
     } else {
       setMessage("Please enter all 6 digits of the OTP.");
@@ -239,10 +250,10 @@ const TrackingOTP = ({ email, onReturn, onVerificationSuccess }: TrackingOTPProp
           </div>
           
           <button type="submit" 
-            disabled={otp.join("").length !== 6}
+            disabled={otp.join("").length !== 6 || isVerifying}
             className={`w-full p-2 rounded font-medium 
-              ${otp.join("").length === 6 ? "bg-black text-white hover:bg-gray-800" : "bg-gray-400 cursor-not-allowed"}`}>
-            Verify OTP
+              ${otp.join("").length === 6 && !isVerifying ? "bg-black text-white hover:bg-gray-800" : "bg-gray-400 cursor-not-allowed"}`}>
+            {isVerifying ? "Verifying..." : "Verify OTP"}
           </button>
         </form>
         
