@@ -7,7 +7,7 @@ import {
 import { useToggleConfirmation } from "../../../ui/toggle/useToggleConfiremation";
 import ToggleConfirmation from "../../../ui/toggle/toggleConfiremation";
 import ToastContainer from "../../../ui/toast/toastContainer";
-import useWebSocket from "../../../../hooks/useWebSocket"; // Import WebSocket hook
+import useWebSocket from "../../../../hooks/useWebSocket";
 
 interface Branch {
   index?: number;
@@ -23,6 +23,11 @@ interface WCResponse {
   branch: Branch;
 }
 
+interface BranchTableProps {
+  branches?: Branch[]; // Optional prop for initial branches
+  refreshBranches?: () => void; // Callback to refresh branches in parent
+}
+
 const columns: { key: keyof Branch; label: string }[] = [
   { key: "index", label: "ID" },
   { key: "branchCode", label: "Branch Code" },
@@ -32,14 +37,18 @@ const columns: { key: keyof Branch; label: string }[] = [
   { key: "updateDate", label: "Update Date" },
 ];
 
-const BranchTable: React.FC = () => {
-  const [branches, setBranches] = useState<Branch[]>([]);
+const BranchTable: React.FC<BranchTableProps> = ({
+  branches: initialBranches,
+  refreshBranches,
+}) => {
+  const [branches, setBranches] = useState<Branch[]>(initialBranches || []);
   const [selectedBranch, setSelectedBranch] = useState<Branch | null>(null);
   const [formType, setFormType] = useState<"add" | "edit" | "view" | null>(
     null
   );
   const [error, setError] = useState<string>("");
   const [status, setStatus] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const { isVisible, confirmationConfig, showConfirmation, hideConfirmation } =
     useToggleConfirmation();
@@ -55,9 +64,12 @@ const BranchTable: React.FC = () => {
     setToasts((prev) => [...prev, { message, type }]);
   };
 
-  // Fetch branch data
+  // Fetch branch data if not provided via props
   const fetchBranchData = async () => {
+    if (initialBranches) return; // Skip if branches are provided via props
+
     setError("");
+    setIsLoading(true);
 
     try {
       const response = await fetchBranches();
@@ -69,7 +81,6 @@ const BranchTable: React.FC = () => {
             index: index + 1,
           })
         );
-
         setBranches(branchesWithIndex);
       } else {
         setBranches([]);
@@ -78,6 +89,8 @@ const BranchTable: React.FC = () => {
     } catch (err) {
       console.error("Error fetching branches:", err);
       setError("Failed to fetch branches.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -87,12 +100,18 @@ const BranchTable: React.FC = () => {
     setStatus(0);
 
     showConfirmation(
-      "Are you sure you want to delete this item?",
+      "Are you sure you want to delete this branch?",
       async () => {
         try {
           const response = await deleteBranch(branch.branchCode);
           if (response.status >= 200 && response.status < 300) {
             triggerToast("Branch deleted successfully!", "success");
+            // If we have a refresh callback, use it, otherwise fetch locally
+            if (refreshBranches) {
+              refreshBranches();
+            } else {
+              fetchBranchData();
+            }
           } else {
             triggerToast("Failed to delete branch. Try again!", "error");
           }
@@ -131,13 +150,23 @@ const BranchTable: React.FC = () => {
 
         return updatedList.map((b, index) => ({ ...b, index: index + 1 })); // Recalculate indices
       });
+
+      // Notify parent component if needed
+      if (refreshBranches) {
+        refreshBranches();
+      }
     } else if (message.action === "delete") {
       setBranches((prevBranches) => {
         const updatedList = prevBranches.filter(
           (b) => b.branchCode !== message.branch.branchCode
         );
-        return updatedList.map((b, index) => ({ ...b, index: index + 1 })); // Recalculate indices after deletion
+        return updatedList.map((b, index) => ({ ...b, index: index + 1 }));
       });
+
+      // Notify parent component if needed
+      if (refreshBranches) {
+        refreshBranches();
+      }
     }
   };
 
@@ -145,12 +174,27 @@ const BranchTable: React.FC = () => {
   useWebSocket("/topic/branch-updates", handleWebSocketMessage);
 
   useEffect(() => {
-    fetchBranchData();
-  }, []);
+    // If initial branches are provided, use them
+    if (initialBranches) {
+      setBranches(
+        initialBranches.map((b, index) => ({ ...b, index: index + 1 }))
+      );
+    } else {
+      fetchBranchData();
+    }
+  }, [initialBranches]);
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div>
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p className="text-red-500 p-2">{error}</p>}
       <Table
         columns={columns}
         data={branches}

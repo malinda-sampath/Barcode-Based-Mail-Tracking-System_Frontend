@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import PopupMenu from "../components/popupComponent/Popup";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Check, X } from "lucide-react";
 import ToastContainer from "../components/ui/toast/toastContainer";
 import Button from "../components/buttonComponents/Button";
 import MailHandlerTable from "../components/pageComponent/superAdmin/mailHandler/MailHandlerTable";
@@ -225,6 +225,21 @@ export default function AdminManagement() {
                 {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
+            {mailHandlerPassword && mailHandlerConfirmPassword && (
+              <div className="text-xs mt-1 flex items-center">
+                {mailHandlerPassword === mailHandlerConfirmPassword ? (
+                  <>
+                    <Check className="w-3 h-3 text-green-500 mr-1" />
+                    <span className="text-green-500">Passwords match</span>
+                  </>
+                ) : (
+                  <>
+                    <X className="w-3 h-3 text-red-500 mr-1" />
+                    <span className="text-red-500">Passwords don't match</span>
+                  </>
+                )}
+              </div>
+            )}
           </label>
         </div>
         <div className="flex gap-6 p-4 justify-end">
