@@ -52,7 +52,7 @@ const ClaimMailTable = <T,>({
   const [isClaimModalOpen, setIsClaimModalOpen] = useState(false);
   const [dateFilter, setDateFilter] = useState("all");
   const [mailTypeFilter, setMailTypeFilter] = useState("all");
-  const [selectedStatus, setSelectedStatus] = useState<string>("all");
+  const [selectedStatus, setSelectedStatus] = useState<string>("pending");
 
   // Auto-generate ID from current date and time
   const generateClaimId = () => {
