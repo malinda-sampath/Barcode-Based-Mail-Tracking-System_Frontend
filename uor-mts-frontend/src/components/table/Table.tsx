@@ -124,6 +124,16 @@ const Table = <T,>({
     setIsSearchExpanded(true);
   };
 
+  const formatDate = (dateString: string) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  };
+
   return (
     <div className="overflow-x-auto w-auto">
       {/* Advanced Search Input */}
@@ -215,48 +225,56 @@ const Table = <T,>({
         </thead>
         <tbody>
           {paginatedData.length > 0 ? (
-            paginatedData.map((row, rowIndex) => (
-              <tr key={rowIndex} className="border-t">
+            paginatedData.map((row: any, rowIndex) => (
+              <tr key={rowIndex} className="border-t hover:bg-gray-50">
                 {columns.map((column) => (
-                  <td key={column.key.toString()} className="px-4 py-2">
-                    {column.render
-                      ? column.render(row[column.key], row)
-                      : String(row[column.key])}
+                  <td key={column.key.toString()} className="px-3 py-2">
+                    {column.key === "insertDateTime" ? (
+                      formatDate(row[column.key])
+                    ) : column.key === "barcodeImage" ? (
+                      row[column.key] ? (
+                        <img
+                          src={`data:image/png;base64,${row[column.key]}`}
+                          alt="Barcode"
+                          className="h-8 w-auto"
+                        />
+                      ) : null
+                    ) : column.render ? (
+                      column.render(row[column.key], row)
+                    ) : (
+                      <span className="truncate max-w-xs inline-block">
+                        {String(row[column.key])}
+                      </span>
+                    )}
                   </td>
                 ))}
-                <td className="px-4 py-2 flex space-x-2">
-                  {/* View Button */}
-                  <button
-                    type="button"
-                    className="p-2 text-sm bg-gray-200 rounded hover:bg-gray-300"
-                    onClick={() => onViewClick(row)}
-                    title="View"
-                  >
-                    <FaEye className="w-4 h-4 text-blue-500" />
-                    <span className="sr-only">View</span>
-                  </button>
-
-                  {/* Edit Button */}
-                  <button
-                    type="button"
-                    className="p-2 text-sm bg-gray-200 rounded hover:bg-gray-300"
-                    onClick={() => onEditClick(row)}
-                    title="Edit"
-                  >
-                    <FaEdit className="w-4 h-4 text-green-500" />
-                    <span className="sr-only">Edit</span>
-                  </button>
-
-                  {/* Delete Button */}
-                  <button
-                    type="button"
-                    className="p-2 text-sm bg-gray-200 rounded hover:bg-gray-300"
-                    onClick={() => onDeleteClick(row)}
-                    title="Delete"
-                  >
-                    <FaTrash className="w-4 h-4 text-red-500" />
-                    <span className="sr-only">Delete</span>
-                  </button>
+                <td className="px-3 py-2">
+                  <div className="flex space-x-1">
+                    <button
+                      type="button"
+                      className="p-1.5 text-sm bg-gray-100 rounded hover:bg-gray-200"
+                      onClick={() => onViewClick(row)}
+                      title="View"
+                    >
+                      <FaEye className="w-3.5 h-3.5 text-blue-500" />
+                    </button>
+                    <button
+                      type="button"
+                      className="p-1.5 text-sm bg-gray-100 rounded hover:bg-gray-200"
+                      onClick={() => onEditClick(row)}
+                      title="Edit"
+                    >
+                      <FaEdit className="w-3.5 h-3.5 text-green-500" />
+                    </button>
+                    <button
+                      type="button"
+                      className="p-1.5 text-sm bg-gray-100 rounded hover:bg-gray-200"
+                      onClick={() => onDeleteClick(row)}
+                      title="Delete"
+                    >
+                      <FaTrash className="w-3.5 h-3.5 text-red-500" />
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))
