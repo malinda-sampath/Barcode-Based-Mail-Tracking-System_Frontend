@@ -28,11 +28,17 @@ export const DASHBOARD_SIDEBAR_LINKS = [
     key: "AdminManagement",
     label: "Mail Handler",
     path: "adminmanagement",
-    icon: <FaUsers className="text-[#F99C30]" />,
+    icon: <HiOutlineUsers className="text-[#F99C30]" />,
+  },
+  {
+    key: "mailrecord",
+    label: "Main Mail Cart",
+    path: "mainmailcart",
+    icon: <HiOutlineShoppingCart className="text-[#F99C30]" />,
   },
   {
     key: "BranchManagement",
-    label: "Branch",
+    label: "Branches",
     path: "branchmanagement",
     icon: <FaCodeBranch className="text-[#F99C30]" />,
   },
@@ -74,11 +80,18 @@ export const ADMIN_DASHBOARD_SIDEBAR_LINKS = [
     path: "/mail_handler",
     icon: <HiOutlineViewGrid className="text-[#F99C30]" />,
   },
+
+  {
+    key: "mailrecord",
+    label: "Main Mail Cart",
+    path: "mainmailcart",
+    icon: <HiOutlineShoppingCart className="text-[#F99C30]" />,
+  },
   {
     key: "MailManagement",
-    label: "Mail Management",
-    path: "mailmanagement",
-    icon: <MailIcon className="text-[#F99C30]" />,
+    label: "Daily Mail Cart",
+    path: "dailymailcart",
+    icon: <HiOutlineCube className="text-[#F99C30]" />,
   },
   {
     key: "claimmails",
@@ -118,9 +131,16 @@ export const BRANCH_DASHBOARD_SIDEBAR_LINKS = [
     path: "/branch",
     icon: <HiOutlineViewGrid className="text-[#F99C30]" />,
   },
+
+  {
+    key: "pending",
+    label: "Pending Mails",
+    path: "pending",
+    icon: <HiOutlineAnnotation className="text-[#F99C30]" />,
+  },
   {
     key: "allmails",
-    label: "All Mails",
+    label: "Branch Mail Cart",
     path: "allmails",
     icon: <MailIcon className="text-[#F99C30]" />,
   },
