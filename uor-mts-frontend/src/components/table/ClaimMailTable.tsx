@@ -8,6 +8,7 @@ import {
   FaCheck,
   FaUserCheck,
 } from "react-icons/fa";
+import ToastContainer from "../ui/toast/toastContainer";
 
 type TableColumn<T> = {
   key: keyof T;
@@ -36,13 +37,22 @@ const ClaimMailTable = <T,>({
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isSearchExpanded, setIsSearchExpanded] = useState(true);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [toasts, setToasts] = useState<
+    { message: string; type: "success" | "error" | "info" | "warning" }[]
+  >([]);
 
+  const triggerToast = (
+    message: string,
+    type: "success" | "error" | "info" | "warning"
+  ) => {
+    setToasts((prev) => [...prev, { message, type }]);
+  };
   // Filter states
   const [selectedMails, setSelectedMails] = useState<T[]>([]);
   const [isClaimModalOpen, setIsClaimModalOpen] = useState(false);
   const [dateFilter, setDateFilter] = useState("all");
   const [mailTypeFilter, setMailTypeFilter] = useState("all");
-  const [selectedStatus, setSelectedStatus] = useState<string>("pending");
+  const [selectedStatus, setSelectedStatus] = useState<string>("all");
 
   // Auto-generate ID from current date and time
   const generateClaimId = () => {
@@ -162,7 +172,10 @@ const ClaimMailTable = <T,>({
 
   // Handle bulk claim
   const handleBulkClaim = () => {
-    if (selectedMails.length === 0) return;
+    if (selectedMails.length === 0) {
+      triggerToast("Please select at least one mail to claim.", "warning");
+      return;
+    }
     setClaimantDetails((prev) => ({ ...prev, id: generateClaimId() }));
     setIsClaimModalOpen(true);
   };
@@ -491,7 +504,7 @@ const ClaimMailTable = <T,>({
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Contact Number
+                    Contact Number (Optional)
                   </label>
                   <input
                     type="tel"
@@ -526,7 +539,7 @@ const ClaimMailTable = <T,>({
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Status
+                    Status<span className="text-red-500">*</span>
                   </label>
                   <select
                     value={claimantDetails.status}
@@ -538,6 +551,9 @@ const ClaimMailTable = <T,>({
                     }
                     className="w-full p-2 border rounded-md"
                   >
+                    <option value="" disabled>
+                      Select status
+                    </option>
                     <option value="claimed">Claimed</option>
                     <option value="returned">Returned</option>
                     <option value="picked">Branch Pickup</option>
@@ -545,7 +561,7 @@ const ClaimMailTable = <T,>({
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Note
+                    Note (Optional)
                   </label>
                   <textarea
                     className="w-full p-2 border rounded-md"
@@ -569,7 +585,11 @@ const ClaimMailTable = <T,>({
                 </button>
                 <button
                   onClick={confirmClaim}
-                  disabled={!claimantDetails.name || !claimantDetails.idNumber}
+                  disabled={
+                    !claimantDetails.name ||
+                    !claimantDetails.idNumber ||
+                    !claimantDetails.status
+                  }
                   className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 flex items-center gap-2"
                 >
                   <FaCheck /> Confirm Claim
@@ -579,6 +599,7 @@ const ClaimMailTable = <T,>({
           </div>
         </div>
       )}
+      <ToastContainer toasts={toasts} />
     </div>
   );
 };
