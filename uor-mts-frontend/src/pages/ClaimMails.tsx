@@ -6,121 +6,172 @@ import {
   CardHeader,
   CardTitle,
 } from "../components/ui/card";
+import {
+  fetchBranches,
+  fetchPendingBranchMails,
+} from "../services/mailHandler/ClaimMailsService";
 import { Input } from "../components/ui/input";
 import { BranchCard } from "../components/pageComponent/BranchCard";
 import { Button } from "../components/ui/button";
 import Table from "../components/table/Table";
+import ToastContainer from "../components/ui/toast/toastContainer";
 
-type BranchInfo = {
-  code: string;
-  name: string;
-};
+interface Branch {
+  branchCode: string;
+  branchName: string;
+  branchDescription: string;
+  insertDate: string;
+  updateDate: string;
+}
 
 type MailCount = {
   branchCode: string;
   count: number;
 };
 
-type Branch = BranchInfo & { count: number };
-
-type Mail = {
-  dailyMailId: number;
-  branchCode: string;
-  branchName: string;
+interface MailDetails {
+  index?: number;
   senderName: string;
   receiverName: string;
   mailType: string;
   trackingNumber: string;
   barcodeId: string;
+  // mailDescription: string;
+  barcodeImage: string;
+  BranchName: string;
+  location: string;
+  status: string;
+  referenceNumber: string;
   insertDateTime: string;
-  updateDateTime: string;
-  mailId: string;
-  description: string;
-};
+  // updateDateTime: String;
+}
+
+const columns: {
+  key: keyof MailDetails;
+  label: string;
+  render?: (value: any) => JSX.Element | null;
+}[] = [
+  { key: "index", label: "ID" },
+  { key: "barcodeId", label: "Barcode ID" },
+  { key: "senderName", label: "Sender" },
+  { key: "receiverName", label: "Receiver" },
+  { key: "BranchName", label: "Branch Name" },
+  { key: "mailType", label: "Type" },
+  { key: "trackingNumber", label: "Tracking No." },
+  // { key: "mailDescription", label: "Description" },
+
+  {
+    key: "barcodeImage",
+    label: "Barcode",
+    render: (value: string) =>
+      value ? (
+        <img
+          src={`data:image/png;base64,${value}`}
+          alt="Barcode"
+          className="h-12 w-auto"
+        />
+      ) : null,
+  },
+  { key: "location", label: "Location" },
+  { key: "status", label: "Status" },
+  { key: "referenceNumber", label: "Reference No." },
+  // { key: "mailDescription", label: "Description" },
+  { key: "insertDateTime", label: "Insert Date" },
+  // { key: "updateDateTime", label: "Update Date" },
+];
 
 export const ClaimMails = () => {
-  // Temporary sample data
-  const sampleBranches: BranchInfo[] = [
-    { code: "BR001", name: "Faculty of Science" },
-    { code: "BR002", name: "Faculty of Science" },
-    { code: "BR003", name: "Faculty of Science" },
-  ];
-
   const sampleMailCounts: MailCount[] = [
     { branchCode: "BR001", count: 5 },
     { branchCode: "BR002", count: 3 },
     { branchCode: "BR003", count: 7 },
   ];
 
-  const sampleMailDetails: Mail[] = [
-    {
-      dailyMailId: 1,
-      branchCode: "BR001",
-      branchName: "Faculty of Science",
-      senderName: "John Doe",
-      receiverName: "Jane Smith",
-      mailType: "Parcel",
-      trackingNumber: "TRK123456",
-      barcodeId: "BC001",
-      insertDateTime: "2023-05-15T10:30:00",
-      updateDateTime: "2023-05-15T10:30:00",
-      mailId: "ML001",
-      description: "Important documents",
-    },
-    {
-      dailyMailId: 2,
-      branchCode: "BR001",
-      branchName: "Faculty of Science",
-      senderName: "Acme Corp",
-      receiverName: "XYZ Ltd",
-      mailType: "Package",
-      trackingNumber: "TRK789012",
-      barcodeId: "BC002",
-      insertDateTime: "2023-05-16T14:45:00",
-      updateDateTime: "2023-05-16T14:45:00",
-      mailId: "ML002",
-      description: "Product samples",
-    },
-  ];
-
-  const [branches, setBranches] = useState<BranchInfo[]>([]);
+  const [branches, setBranches] = useState<Branch[]>([]);
   const [mailCounts, setMailCounts] = useState<MailCount[]>([]);
   const [filter, setFilter] = useState("");
   const [selectedBranch, setSelectedBranch] = useState<Branch | null>(null);
-  const [mailDetails, setMailDetails] = useState<Mail[]>([]);
+  const [mailDetails, setMailDetails] = useState<MailDetails[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const triggerToast = (
+    message: string,
+    type: "success" | "error" | "info" | "warning"
+  ) => {
+    setToasts((prev) => [...prev, { message, type }]);
+  };
+  const [toasts, setToasts] = useState<
+    { message: string; type: "success" | "error" | "info" | "warning" }[]
+  >([]);
 
   // Simulate initial data loading
   useEffect(() => {
     setLoading(true);
     const timer = setTimeout(() => {
       // Use sample data instead of empty arrays
-      setBranches(sampleBranches);
+      fetchBranchData();
       setMailCounts(sampleMailCounts);
       setLoading(false);
     }, 500);
     return () => clearTimeout(timer);
   }, []);
 
-  // Simulate fetching mail details
-  const fetchMailDetails = async (branchCode: string) => {
-    setLoading(true);
-    setError(null);
-    const timer = setTimeout(() => {
-      // Use sample data for the selected branch
-      const details = sampleMailDetails.filter(
-        (mail) => mail.branchCode === branchCode
-      );
-      setMailDetails(details);
-      setLoading(false);
-    }, 500);
-    return () => clearTimeout(timer);
+  //Fetch Branch Data
+  const fetchBranchData = async () => {
+    setError("");
+    try {
+      const response = await fetchBranches();
+      if (response.data && Array.isArray(response.data.data)) {
+        setBranches(
+          response.data.data.map((branch: Branch) => ({
+            branchCode: branch.branchCode,
+            branchName: branch.branchName,
+            branchDescription: branch.branchDescription,
+            insertDate: branch.insertDate,
+            updateDate: branch.updateDate,
+          }))
+        );
+      } else {
+        setBranches([]);
+        setError("No branches found.");
+        triggerToast("No branches found.", "warning");
+      }
+    } catch (err) {
+      console.error("Error fetching branches:", err);
+      setError("Failed to fetch branches.");
+      triggerToast("Failed to fetch branches", "error");
+    }
+  };
+
+  //Fetch Mail Data
+  const fetchBranchMailData = async (branchCode: string) => {
+    setError("");
+    try {
+      const response = await fetchPendingBranchMails(branchCode); // Example branch code
+      if (response.data && Array.isArray(response.data.data)) {
+        const mailDetailsWithIndex = response.data.data.map(
+          (mail: any, index: number) => ({
+            ...mail,
+            index: index + 1,
+          })
+        );
+        setMailDetails(mailDetailsWithIndex);
+      } else {
+        setMailDetails([]);
+        setError("No mail details found.");
+        triggerToast("No mail details found.", "warning");
+      }
+    } catch (err) {
+      console.error("Error fetching mail details:", err);
+      setError("Failed to fetch mail details.");
+      triggerToast("Failed to fetch mail details", "error");
+    }
   };
 
   const handleBranchClick = (branch: Branch) => {
     setSelectedBranch(branch);
-    fetchMailDetails(branch.code);
+    fetchBranchMailData(branch.branchCode);
   };
 
   const handleBackClick = () => {
@@ -128,32 +179,18 @@ export const ClaimMails = () => {
     setMailDetails([]);
   };
 
-  // Define columns for the Table component
-  const mailColumns: { key: keyof Mail; label: string }[] = [
-    { key: "mailId", label: "Mail ID" },
-    { key: "branchCode", label: "Branch Code" },
-    { key: "branchName", label: "Branch Name" },
-    { key: "senderName", label: "Sender" },
-    { key: "receiverName", label: "Receiver" },
-    { key: "mailType", label: "Mail Type" },
-    { key: "trackingNumber", label: "Tracking Number" },
-    { key: "barcodeId", label: "Barcode ID" },
-    { key: "insertDateTime", label: "Insert Date" },
-    { key: "updateDateTime", label: "Update Date" },
-    { key: "description", label: "Description" },
-  ];
-
   const filteredBranches = useMemo(() => {
     return branches
       .map((branch) => ({
         ...branch,
         count:
-          mailCounts.find((mc) => mc.branchCode === branch.code)?.count || 0,
+          mailCounts.find((mc) => mc.branchCode === branch.branchCode)?.count ||
+          0,
       }))
       .filter(
         (branch) =>
-          branch.code.toLowerCase().includes(filter.toLowerCase()) ||
-          branch.name.toLowerCase().includes(filter.toLowerCase())
+          branch.branchCode.toLowerCase().includes(filter.toLowerCase()) ||
+          branch.branchName.toLowerCase().includes(filter.toLowerCase())
       );
   }, [filter, branches, mailCounts]);
 
@@ -165,12 +202,12 @@ export const ClaimMails = () => {
 
   if (selectedBranch) {
     return (
-      <div className="m-12">
-        <div className="flex items-center mb-6 ml-12">
-          <h2 className="text-lg font-semibold">
-            Mail Details for {selectedBranch.name} ({selectedBranch.code})
-          </h2>
-        </div>
+      <div className="ml-4 sm:ml-6 md:ml-16 px-4 sm:px-6 lg:px-8">
+        <h1 className="text-xl sm:text-2xl font-semibold mt-2 text-[#611010]">
+          Pending Mails for {selectedBranch.branchName} - (
+          {selectedBranch.branchCode})
+        </h1>
+        <p className="text-xs sm:text-sm text-gray-500 ">{currentDate}</p>
 
         {loading ? (
           <div className="flex justify-center items-center h-64">
@@ -195,13 +232,24 @@ export const ClaimMails = () => {
         ) : (
           <div className="ml-12">
             <div className="bg-white p-6 rounded-lg shadow-md">
-              {/* <Table
-                columns={mailColumns}
+              <Table
+                columns={columns}
+                onEditClick={() => {}}
+                onDeleteClick={() => {}}
+                onViewClick={() => {}}
                 data={mailDetails}
-                rowsPerPage={5}
-                searchableKeys={["mailId", "senderName", "receiverName", "trackingNumber"]}
-                showActions={false}
-              /> */}
+                rowsPerPage={10}
+                searchableKeys={[
+                  "barcodeId",
+                  "senderName",
+                  "receiverName",
+                  "mailType",
+                  "senderName",
+                  "receiverName",
+                  "trackingNumber",
+                ]}
+                // showActions={false}
+              />
             </div>
             <div className="p-4 bg-white">
               <Button
@@ -218,43 +266,46 @@ export const ClaimMails = () => {
   }
 
   return (
-    <div className="m-12">
-      <h1 className="text-xl sm:text-2xl font-semibold mt-2 text-[#611010] ml-12">
-        Claim Mails
+    <div className="ml-4 sm:ml-6 md:ml-16 px-4 sm:px-6 lg:px-8">
+      <h1 className="text-xl sm:text-2xl font-semibold mt-2 text-[#611010]">
+        Daily Mail Cart
       </h1>
-      <p className="text-sm text-gray-500 ml-12">{currentDate}</p>
-      <br />
+      <p className="text-xs sm:text-sm text-gray-500 ">{currentDate}</p>
+      <div className="bg-white p-6 rounded-lg shadow-md mt-6">
+        <Input
+          placeholder="Filter Branch..."
+          className="max-w-sm mb-4 ml-6"
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+        />
 
-      <Input
-        placeholder="Filter Branch..."
-        className="max-w-sm mb-4 ml-12"
-        value={filter}
-        onChange={(e) => setFilter(e.target.value)}
-      />
-
-      {loading ? (
-        <div className="flex justify-center items-center h-64 ml-12">
-          <p className="animate-pulse">Loading branches...</p>
-        </div>
-      ) : error ? (
-        <div className="text-red-500 p-4 border rounded ml-12">
-          Error: {error}
-        </div>
-      ) : filteredBranches.length === 0 ? (
-        <div className="text-gray-600 p-4  ml-12">
-          No branches match your filter
-        </div>
-      ) : (
-        <div className="flex flex-wrap gap-5 ml-12">
-          {filteredBranches.map((branch) => (
-            <BranchCard
-              key={branch.code}
-              {...branch}
-              onClick={() => handleBranchClick(branch)}
-            />
-          ))}
-        </div>
-      )}
+        {loading ? (
+          <div className="flex justify-center items-center h-64 ml-6">
+            <p className="animate-pulse">Loading branches...</p>
+          </div>
+        ) : error ? (
+          <div className="text-red-500 p-4 border rounded ml-6">
+            Error: {error}
+          </div>
+        ) : filteredBranches.length === 0 ? (
+          <div className="text-gray-600 p-4  ml-6">
+            No branches match your filter
+          </div>
+        ) : (
+          <div className="flex flex-wrap gap-5 ml-6">
+            {filteredBranches.map((branch) => (
+              <BranchCard
+                key={branch.branchCode}
+                code={branch.branchCode}
+                name={branch.branchName}
+                description={branch.branchDescription}
+                count={branch.count}
+                onClick={() => handleBranchClick(branch)}
+              />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

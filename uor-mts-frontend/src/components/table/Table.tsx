@@ -125,7 +125,7 @@ const Table = <T,>({
   };
 
   return (
-    <div className="overflow-x-auto w-full">
+    <div className="overflow-x-auto w-auto">
       {/* Advanced Search Input */}
       <div className="relative w-1/2 mt-5 mb-5">
         <div className="flex items-center border rounded-lg overflow-hidden shadow-sm transition-all duration-300">
