@@ -32,7 +32,7 @@ export const DASHBOARD_SIDEBAR_LINKS = [
   },
   {
     key: "mailrecord",
-    label: "Main Mail Cart",
+    label: "All Mail Records",
     path: "mainmailcart",
     icon: <HiOutlineShoppingCart className="text-[#F99C30]" />,
   },
@@ -83,7 +83,7 @@ export const ADMIN_DASHBOARD_SIDEBAR_LINKS = [
 
   {
     key: "mailrecord",
-    label: "Main Mail Cart",
+    label: "All Mail Records",
     path: "mainmailcart",
     icon: <HiOutlineShoppingCart className="text-[#F99C30]" />,
   },
