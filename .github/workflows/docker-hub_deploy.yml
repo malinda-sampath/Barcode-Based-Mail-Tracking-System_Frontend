@@ -1,4 +1,4 @@
-name: Deploy to Docker-Hub 
+name: Deploy to Docker Hub
 
 on:
   push:
@@ -6,18 +6,37 @@ on:
       - main
 
 jobs:
+  checkout:
+    runs-on: ubuntu-latest
+    outputs:
+      sha: ${{ steps.get_sha.outputs.sha }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Get commit SHA (optional)
+        id: get_sha
+        run: echo "::set-output name=sha::$(git rev-parse --short HEAD)"
+
   build:
     runs-on: ubuntu-latest
+    needs: checkout
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Build Docker image
+        run: |
+          docker build -t malinda116/mail_tracking-frontend:latest ./uor-mts-frontend
+
+  push:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
 
-      - name: Build and push frontend image
-        run: |
-          docker build -t malinda116/mail_tracking-frontend:latest ./uor-mts-frontend
-          docker push malinda116/mail_tracking-frontend:latest
-
+      - name: Push Docker image
+        run: docker push malinda116/mail_tracking-frontend:latest
