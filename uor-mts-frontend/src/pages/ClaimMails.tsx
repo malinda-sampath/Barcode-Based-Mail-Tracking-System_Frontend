@@ -347,6 +347,7 @@ export const ClaimMails = () => {
           </div>
         )}
       </div>
+      <ToastContainer toasts={toasts} />
     </div>
   );
 };
