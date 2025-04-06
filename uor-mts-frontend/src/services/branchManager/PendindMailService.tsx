@@ -41,9 +41,9 @@ export const fetchBranches = async () => {
 };
 
 // Fetch pending branch mails
-export const fetchPendingBranchMails = async (branchCode: string) => {
+export const fetchPendingBranchMails = async () => {
   return await apiRequest<MailDetailsResponse>(
-    `mailRecord/get-by-branch/${branchCode}`,
+    `mailRecord/get-by-branch`,
     "GET"
   );
 };

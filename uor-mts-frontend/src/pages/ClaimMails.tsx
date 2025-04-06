@@ -94,6 +94,8 @@ export const ClaimMails = () => {
   const [mailDetails, setMailDetails] = useState<MailDetails[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [isMailLoading, setIsMailLoading] = useState(false);
 
   const triggerToast = (
     message: string,
@@ -107,15 +109,21 @@ export const ClaimMails = () => {
 
   // Simulate initial data loading
   useEffect(() => {
-    setLoading(true);
-    const timer = setTimeout(() => {
-      // Use sample data instead of empty arrays
-      fetchBranchData();
-      setMailCounts(sampleMailCounts);
-      setLoading(false);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, []);
+    const loadInitialData = async () => {
+      setIsInitialLoading(true);
+      try {
+        await fetchBranchData();
+        setMailCounts(sampleMailCounts);
+      } catch (error) {
+        console.error("Initialization error:", error);
+        setError("Failed to initialize application");
+      } finally {
+        setIsInitialLoading(false);
+      }
+    };
+
+    loadInitialData();
+  }, [selectedBranch]);
 
   //Fetch Branch Data
   const fetchBranchData = async () => {
@@ -200,67 +208,97 @@ export const ClaimMails = () => {
     year: "numeric",
   });
 
+  const renderLoadingSkeleton = (count: number) => (
+    <div className="flex flex-wrap gap-5 ml-6">
+      {Array.from({ length: count }).map((_, index) => (
+        <div
+          key={index}
+          className="w-64 h-40 bg-gray-100 rounded-lg animate-pulse"
+        />
+      ))}
+    </div>
+  );
+
+  const renderMailDetails = () => {
+    if (isMailLoading) {
+      return (
+        <div className="flex flex-col items-center justify-center h-64 gap-4">
+          <div className="w-12 h-12 border-4 border-red-400 border-t-transparent rounded-full animate-spin" />
+          <p className="text-gray-600">Loading mail details...</p>
+        </div>
+      );
+    }
+
+    if (error) {
+      return (
+        <div className="p-6 mt-6 bg-red-50 border border-red-200 rounded-lg text-center">
+          <p className="text-red-600 font-medium">{error}</p>
+          <Button
+            onClick={handleBackClick}
+            className="mt-4 bg-red-500 hover:bg-red-600 text-white"
+          >
+            Back to Branches
+          </Button>
+        </div>
+      );
+    }
+
+    if (mailDetails.length === 0) {
+      return (
+        <div className="p-6 mt-6 bg-gray-50 border border-gray-200 rounded-lg text-center">
+          <p className="text-gray-600">
+            No pending mails found for this branch
+          </p>
+          <Button
+            onClick={handleBackClick}
+            className="mt-4 bg-red-500 hover:bg-red-600 text-white"
+          >
+            Back to Branches
+          </Button>
+        </div>
+      );
+    }
+
+    return (
+      <>
+        <div className="bg-white p-6 mt-5 rounded-lg shadow-md">
+          <Table
+            columns={columns}
+            data={mailDetails}
+            onEditClick={() => {}}
+            onDeleteClick={() => {}}
+            onViewClick={() => {}}
+            rowsPerPage={10}
+            searchableKeys={[
+              "barcodeId",
+              "senderName",
+              "receiverName",
+              "mailType",
+              "trackingNumber",
+            ]}
+          />
+        </div>
+        <div className="mt-4 flex justify-end">
+          <Button
+            onClick={handleBackClick}
+            className="bg-red-500 hover:bg-red-600 text-white"
+          >
+            Back to Branches
+          </Button>
+        </div>
+      </>
+    );
+  };
+
   if (selectedBranch) {
     return (
       <div className="ml-4 sm:ml-6 md:ml-16 px-4 sm:px-6 lg:px-8">
         <h1 className="text-xl sm:text-2xl font-semibold mt-2 text-[#611010]">
-          Pending Mails for {selectedBranch.branchName} - (
+          Pending Mails for {selectedBranch.branchName} (
           {selectedBranch.branchCode})
         </h1>
-        <p className="text-xs sm:text-sm text-gray-500 ">{currentDate}</p>
-
-        {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <p className="animate-pulse">Loading mail details...</p>
-          </div>
-        ) : error ? (
-          <div className="text-red-500 p-4 border rounded">Error: {error}</div>
-        ) : mailDetails.length === 0 ? (
-          <div className="ml-12">
-            <div className="text-gray-500 p-4 border rounded">
-              No data available for this branch
-            </div>
-            <div className="p-4 bg-white">
-              <Button
-                onClick={handleBackClick}
-                className="bg-[#F93058] hover:bg-[#f60f3d] text-white h-8 w-28"
-              >
-                Back
-              </Button>
-            </div>
-          </div>
-        ) : (
-          <div className="ml-12">
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <Table
-                columns={columns}
-                onEditClick={() => {}}
-                onDeleteClick={() => {}}
-                onViewClick={() => {}}
-                data={mailDetails}
-                rowsPerPage={10}
-                searchableKeys={[
-                  "barcodeId",
-                  "senderName",
-                  "receiverName",
-                  "mailType",
-                  "senderName",
-                  "receiverName",
-                  "trackingNumber",
-                ]}
-                // showActions={false}
-              />
-            </div>
-            <div className="p-4 bg-white">
-              <Button
-                onClick={handleBackClick}
-                className="bg-[#F93058] hover:bg-[#f60f3d] text-white h-8 w-28"
-              >
-                Back
-              </Button>
-            </div>
-          </div>
-        )}
+        <p className="text-xs sm:text-sm text-gray-500">{currentDate}</p>
+        {renderMailDetails()}
       </div>
     );
   }
@@ -270,7 +308,8 @@ export const ClaimMails = () => {
       <h1 className="text-xl sm:text-2xl font-semibold mt-2 text-[#611010]">
         Daily Mail Cart
       </h1>
-      <p className="text-xs sm:text-sm text-gray-500 ">{currentDate}</p>
+      <p className="text-xs sm:text-sm text-gray-500">{currentDate}</p>
+
       <div className="bg-white p-6 rounded-lg shadow-md mt-6">
         <Input
           placeholder="Filter Branch..."
@@ -279,17 +318,19 @@ export const ClaimMails = () => {
           onChange={(e) => setFilter(e.target.value)}
         />
 
-        {loading ? (
-          <div className="flex justify-center items-center h-64 ml-6">
-            <p className="animate-pulse">Loading branches...</p>
-          </div>
+        {isInitialLoading ? (
+          renderLoadingSkeleton(3)
         ) : error ? (
-          <div className="text-red-500 p-4 border rounded ml-6">
-            Error: {error}
-          </div>
+          ""
         ) : filteredBranches.length === 0 ? (
-          <div className="text-gray-600 p-4  ml-6">
-            No branches match your filter
+          <div className="ml-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+            <p className="text-gray-600">No branches match your search</p>
+            <Button
+              onClick={() => setFilter("")}
+              className="mt-2 bg-gray-200 hover:bg-gray-300"
+            >
+              Clear Search
+            </Button>
           </div>
         ) : (
           <div className="flex flex-wrap gap-5 ml-6">
@@ -306,6 +347,7 @@ export const ClaimMails = () => {
           </div>
         )}
       </div>
+      <ToastContainer toasts={toasts} />
     </div>
   );
 };
