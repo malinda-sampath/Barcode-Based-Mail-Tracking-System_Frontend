@@ -77,7 +77,7 @@ const BranchManagerTable: React.FC = () => {
         setBranchManagers(BranchManagersWithIndex);
       } else {
         setBranchManagers([]);
-        setError("No Mail-Handlers found.");
+        setError("No Branch Managers found.");
       }
     } catch (err) {
       console.error("Error fetching Branch Managers:", err);

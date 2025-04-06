@@ -1,4 +1,3 @@
-import exp from "constants";
 import { apiRequest } from "../api";
 
 // Define the response structure for the API
@@ -99,4 +98,6 @@ export const updateMailDetails = async (
   );
 };
 
-export const transferMails = async () => {};
+export const transferMails = async () => {
+  return await apiRequest("mailRecord/transfer", "POST");
+};

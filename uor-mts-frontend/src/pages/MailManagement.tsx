@@ -6,6 +6,7 @@ import {
   fetchMails,
   deleteMail,
   updateMailDetails,
+  transferMails,
 } from "../services/mailHandler/MailService";
 import ToastContainer from "../components/ui/toast/toastContainer";
 import Button from "../components/buttonComponents/Button";
@@ -362,6 +363,7 @@ const MailManagement: React.FC = () => {
     }
   };
 
+  // Handle transfer mails button click
   const handleTransferMails = async () => {
     if (mails.length === 0) {
       triggerToast("No mails to transfer!", "warning");
@@ -369,23 +371,35 @@ const MailManagement: React.FC = () => {
     }
 
     setIsTransferring(true);
-    // try {
-    //   const response = await transferMails();
-    //   if (response.status >= 200 && response.status < 300) {
-    //     triggerToast(
-    //       `${mails.length} mails transferred successfully!`,
-    //       "success"
-    //     );
-    //     setMails([]);
-    //   } else {
-    //     triggerToast("Failed to transfer mails!", "error");
-    //   }
-    // } catch (error) {
-    //   console.error("Error transferring mails:", error);
-    //   triggerToast("An error occurred while transferring mails!", "error");
-    // } finally {
-    //   setIsTransferring(false);
-    // }
+    setError("");
+    setStatus(0);
+
+    showConfirmation(
+      "Are you sure you want to transfer all mails?",
+      async () => {
+        try {
+          const response = await transferMails();
+          if (response.status >= 200 && response.status < 300) {
+            triggerToast(
+              `${mails.length} mails transferred successfully!`,
+              "success"
+            );
+            setMails([]);
+          } else {
+            triggerToast("Failed to transfer mails!", "error");
+          }
+        } catch (error) {
+          console.error("Error transferring mails:", error);
+          triggerToast("An error occurred while transferring mails!", "error");
+        } finally {
+          setIsTransferring(false);
+        }
+        hideConfirmation();
+      },
+      hideConfirmation,
+      "Delete",
+      "Cancel"
+    );
   };
 
   const currentDate = new Date().toLocaleDateString("en-GB", {
@@ -397,7 +411,7 @@ const MailManagement: React.FC = () => {
   return (
     <div className="ml-4 sm:ml-8 md:ml-16 px-4 sm:px-6 lg:px-8">
       <h1 className="text-xl sm:text-2xl font-semibold mt-2 text-[#611010]">
-        Mail Management
+        Daily Mail Cart
       </h1>
       <p className="text-xs sm:text-sm text-gray-500 ">{currentDate}</p>
       {selectedMail ? (

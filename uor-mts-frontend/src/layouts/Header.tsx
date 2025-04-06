@@ -2,8 +2,7 @@ import React, { useState, useEffect } from "react";
 import { HiOutlineBell } from "react-icons/hi";
 import { ProfileMenu } from "../components/headerComponents/ProfileMenu";
 import { fetchHeader } from "../services/HeaderService";
-import { Skeleton } from "../components/ui/skeleton"; // Assuming you have a skeleton component
-import { Tooltip } from "../components/ui/tooltip"; // Assuming you have a tooltip component
+import { Skeleton } from "../components/ui/skeleton"; // Assuming you have a skeleton component// Assuming you have a tooltip component
 
 interface HeaderData {
   name?: string;

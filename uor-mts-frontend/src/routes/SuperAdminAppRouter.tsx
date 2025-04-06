@@ -7,6 +7,7 @@ import Help from "../pages/Help";
 import Settings from "../pages/Setting";
 import Profile from "../pages/Profile";
 import Logs from "../pages/Logs";
+import MailRecord from "../pages/MailRecord";
 
 function SuperAdminAppRouter() {
   return (
@@ -15,6 +16,7 @@ function SuperAdminAppRouter() {
         <Route index element={<SuperAdminDashboard />} /> {/* Default route */}
         <Route path="adminmanagement" element={<AdminManagement />} />
         <Route path="branchmanagement" element={<BranchManagement />} />
+        <Route path="mainmailcart" element={<MailRecord />} />
         <Route path="logs" element={<Logs />} />
         <Route path="Profile" element={<Profile />} />
         <Route path="settings" element={<Settings />} />
