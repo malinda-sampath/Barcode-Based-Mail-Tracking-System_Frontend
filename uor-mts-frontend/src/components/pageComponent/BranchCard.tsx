@@ -26,7 +26,7 @@ export const BranchCard = ({
   address,
 }: BranchCardProps) => {
   return (
-    <div className="w-full sm:w-[300px] h-full min-h-[300px] p-2">
+    <div className="w-full sm:w-[300px] h-full p-2">
       <button
         onClick={onClick}
         className="transition-all duration-300 hover:scale-[1.02] focus:outline-none w-full h-full

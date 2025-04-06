@@ -397,7 +397,7 @@ const MailManagement: React.FC = () => {
         hideConfirmation();
       },
       hideConfirmation,
-      "Delete",
+      "Transfer",
       "Cancel"
     );
   };

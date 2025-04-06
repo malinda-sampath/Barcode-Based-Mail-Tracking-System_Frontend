@@ -15,6 +15,26 @@ export interface BranchResponse {
   data: Branch[];
 }
 
+export interface MailDetailsResponse {
+  status: number;
+  message: string;
+  data: {
+    senderName: string;
+    receiverName: string;
+    mailType: string;
+    trackingNumber: string;
+    barcodeId: string;
+    mailDescription: string;
+    barcodeImage: string;
+    BranchName: string;
+    location: string;
+    status: string;
+    referenceNumber: string;
+    insertDateTime: string;
+    updateDateTime: String;
+  };
+}
+
 // Fetch all branches
 export const fetchBranches = async () => {
   return await apiRequest<BranchResponse>("branch/get-all", "GET");
@@ -22,7 +42,7 @@ export const fetchBranches = async () => {
 
 // Fetch pending branch mails
 export const fetchPendingBranchMails = async (branchCode: string) => {
-  return await apiRequest<BranchResponse>(
+  return await apiRequest<MailDetailsResponse>(
     `mailRecord/get-by-branch/${branchCode}`,
     "GET"
   );
