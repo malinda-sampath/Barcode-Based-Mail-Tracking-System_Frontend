@@ -35,6 +35,7 @@ const columns: {
   { key: "BranchName", label: "Branch Name" },
   { key: "mailType", label: "Type" },
   { key: "trackingNumber", label: "Tracking No." },
+  { key: "insertDateTime", label: "Insert Date" },
   // { key: "mailDescription", label: "Description" },
 
   {
@@ -51,9 +52,8 @@ const columns: {
   },
   { key: "location", label: "Location" },
   { key: "status", label: "Status" },
-  { key: "referenceNumber", label: "Reference No." },
+  // { key: "referenceNumber", label: "Reference No." },
   // { key: "mailDescription", label: "Description" },
-  { key: "insertDateTime", label: "Insert Date" },
   // { key: "updateDateTime", label: "Update Date" },
 ];
 

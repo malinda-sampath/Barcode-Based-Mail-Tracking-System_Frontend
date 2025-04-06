@@ -306,7 +306,7 @@ export const ClaimMails = () => {
   return (
     <div className="ml-4 sm:ml-6 md:ml-16 px-4 sm:px-6 lg:px-8">
       <h1 className="text-xl sm:text-2xl font-semibold mt-2 text-[#611010]">
-        Daily Mail Cart
+        Claim Mails
       </h1>
       <p className="text-xs sm:text-sm text-gray-500">{currentDate}</p>
 
