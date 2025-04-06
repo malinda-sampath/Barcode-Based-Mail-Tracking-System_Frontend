@@ -4,7 +4,7 @@ import { fetchMainMailCart } from "../services/mailHandler/MainMailCartService";
 import ToastContainer from "../components/ui/toast/toastContainer";
 import { useState, useEffect } from "react";
 import MailCartTable from "../components/table/MailCartTable";
-import { FaTimes } from "react-icons/fa";
+import { FaTimesCircle } from "react-icons/fa";
 
 interface MainMailCart {
   index?: number;
@@ -105,16 +105,14 @@ export default function MailRecord() {
       "px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1";
 
     switch (status?.toLowerCase()) {
-      case "delivered":
+      case "claimed":
         return `${baseStyle} bg-green-100 text-green-800`;
       case "pending":
         return `${baseStyle} bg-yellow-100 text-yellow-800`;
       case "returned":
         return `${baseStyle} bg-red-100 text-red-800`;
-      case "in transit":
+      case "picked":
         return `${baseStyle} bg-blue-100 text-blue-800`;
-      case "received":
-        return `${baseStyle} bg-purple-100 text-purple-800`;
       default:
         return `${baseStyle} bg-gray-100 text-gray-800`;
     }
@@ -169,7 +167,7 @@ export default function MailRecord() {
   return (
     <div className="ml-4 sm:ml-8 md:ml-16 px-4 sm:px-6 lg:px-8">
       <h1 className="text-xl sm:text-2xl font-semibold mt-2 text-[#611010]">
-        Main Mail Cart
+        All Mail Records
       </h1>
       <p className="text-xs sm:text-sm text-gray-500 ">{currentDate}</p>
       <div className="bg-white p-6 rounded-lg shadow-md mt-6">
@@ -202,7 +200,7 @@ export default function MailRecord() {
                   className="text-gray-400 hover:text-gray-600 transition-colors"
                   aria-label="Close modal"
                 >
-                  <FaTimes size={20} />
+                  <FaTimesCircle size={20} />
                 </button>
               </div>
 

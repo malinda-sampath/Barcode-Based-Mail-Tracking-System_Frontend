@@ -13,7 +13,7 @@ import {
 import { Input } from "../components/ui/input";
 import { BranchCard } from "../components/pageComponent/BranchCard";
 import { Button } from "../components/ui/button";
-import Table from "../components/table/Table";
+import ClaimMailTable from "../components/table/ClaimMailTable";
 import ToastContainer from "../components/ui/toast/toastContainer";
 
 interface Branch {
@@ -58,6 +58,7 @@ const columns: {
   { key: "BranchName", label: "Branch Name" },
   { key: "mailType", label: "Type" },
   { key: "trackingNumber", label: "Tracking No." },
+  { key: "insertDateTime", label: "Insert Date" },
   // { key: "mailDescription", label: "Description" },
 
   {
@@ -74,9 +75,8 @@ const columns: {
   },
   { key: "location", label: "Location" },
   { key: "status", label: "Status" },
-  { key: "referenceNumber", label: "Reference No." },
+  // { key: "referenceNumber", label: "Reference No." },
   // { key: "mailDescription", label: "Description" },
-  { key: "insertDateTime", label: "Insert Date" },
   // { key: "updateDateTime", label: "Update Date" },
 ];
 
@@ -262,12 +262,10 @@ export const ClaimMails = () => {
     return (
       <>
         <div className="bg-white p-6 mt-5 rounded-lg shadow-md">
-          <Table
+          <ClaimMailTable
             columns={columns}
             data={mailDetails}
-            onEditClick={() => {}}
-            onDeleteClick={() => {}}
-            onViewClick={() => {}}
+            // onViewClick={() => {}}
             rowsPerPage={10}
             searchableKeys={[
               "barcodeId",
