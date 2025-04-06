@@ -115,24 +115,24 @@ export default function MailRecord() {
         Main Mail Cart
       </h1>
       <p className="text-xs sm:text-sm text-gray-500 ">{currentDate}</p>
-      {/* <div className="bg-white p-6 rounded-lg shadow-md mt-6"> */}
-      <Table
-        columns={columns}
-        data={mails}
-        onViewClick={handleViewClick}
-        onEditClick={handleEditClick}
-        onDeleteClick={handleDeleteClick}
-        rowsPerPage={10}
-        searchableKeys={[
-          "BranchName",
-          "mailType",
-          "barcodeId",
-          "senderName",
-          "receiverName",
-          "trackingNumber",
-        ]}
-      />
-      {/* </div> */}
+      <div className="bg-white p-6 rounded-lg shadow-md mt-6">
+        <Table
+          columns={columns}
+          data={mails}
+          onViewClick={handleViewClick}
+          onEditClick={handleEditClick}
+          onDeleteClick={handleDeleteClick}
+          rowsPerPage={10}
+          searchableKeys={[
+            "BranchName",
+            "mailType",
+            "barcodeId",
+            "senderName",
+            "receiverName",
+            "trackingNumber",
+          ]}
+        />
+      </div>
       <ToastContainer toasts={toasts} />
     </div>
   );

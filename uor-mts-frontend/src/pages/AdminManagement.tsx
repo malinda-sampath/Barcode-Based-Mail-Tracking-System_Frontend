@@ -119,7 +119,12 @@ export default function AdminManagement() {
         </div>
       </div>
 
-      <MailHandlerTable />
+      <div className="bg-white p-6 rounded-lg shadow-md mt-6">
+        <h2 className="text-lg font-semibold text-[#611010] mb-5">
+          Mail Handler Details
+        </h2>
+        <MailHandlerTable />
+      </div>
 
       <PopupMenu
         isOpen={IsAddMailAdminPopupOpen}

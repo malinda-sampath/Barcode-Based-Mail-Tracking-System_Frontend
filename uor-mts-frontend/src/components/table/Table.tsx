@@ -271,28 +271,31 @@ const Table = <T,>({
       </table>
 
       {/* Pagination Controls */}
-      <div className="flex justify-between items-center mt-4">
-        <button
-          type="button"
-          className="p-2 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
-        >
-          Previous
-        </button>
-        <span>
-          Page {currentPage} of {totalPages}
-        </span>
-        <button
-          type="button"
-          className="p-2 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
-          onClick={() =>
-            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-          }
-          disabled={currentPage >= totalPages}
-        >
-          Next
-        </button>
+      <div className="flex flex-col sm:flex-row justify-between items-center mt-4 gap-4">
+        <div className="text-sm text-gray-600">
+          Showing {paginatedData.length} of {filteredData.length} results
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+          >
+            Previous
+          </button>
+          <span className="px-4 py-2 bg-gray-100 rounded">
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
+            disabled={currentPage >= totalPages}
+            className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
       </div>
     </div>
   );
