@@ -266,7 +266,8 @@ export default function AdminManagement() {
           >
             Save
           </button>
-        </div>
+        </div>{" "}
+        <ToastContainer toasts={toasts} />
       </PopupMenu>
 
       {/* {formType === "view" && selectedAdmin && (
@@ -304,7 +305,6 @@ export default function AdminManagement() {
           </div>
         </div>
       )} */}
-      <ToastContainer toasts={toasts} />
     </div>
   );
 }
