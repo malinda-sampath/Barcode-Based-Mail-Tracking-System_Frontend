@@ -9,6 +9,7 @@ import {
   FaUserCheck,
 } from "react-icons/fa";
 import ToastContainer from "../ui/toast/toastContainer";
+import { claimMailSave } from "../../services/mailHandler/ClaimMailsService";
 
 type TableColumn<T> = {
   key: keyof T;
@@ -181,21 +182,61 @@ const ClaimMailTable = <T,>({
   };
 
   // Confirm claim for single or multiple mails
-  const confirmClaim = () => {
-    console.log("Claiming mail(s):", selectedMails);
-    console.log("Claimant details:", claimantDetails);
+  const confirmClaim = async () => {
+    if (
+      !claimantDetails.name ||
+      !claimantDetails.idNumber ||
+      !claimantDetails.status
+    ) {
+      triggerToast("Please fill in all required fields.", "warning");
+      return;
+    }
+    if (selectedMails.length === 0) {
+      triggerToast("Please select at least one mail to claim.", "warning");
+      return;
+    }
 
-    // Reset after claiming
-    setSelectedMails([]);
-    setIsClaimModalOpen(false);
-    setClaimantDetails({
-      id: generateClaimId(),
-      name: "",
-      contactNumber: "",
-      idNumber: "",
-      status: "",
-      note: "",
-    });
+    // Ensure barcodeId is correctly retrieved from selectedMails
+    const selectedBarcodeIds = selectedMails
+      .map((mail: any) => mail?.barcodeId)
+      .filter(Boolean);
+
+    if (selectedBarcodeIds.length === 0) {
+      triggerToast(
+        "No valid barcode IDs found for the selected mails.",
+        "error"
+      );
+      return;
+    }
+
+    console.log("Selected barcode IDs:", selectedBarcodeIds);
+
+    const response = await claimMailSave(
+      selectedBarcodeIds,
+      "branchCode", // Replace with actual branch code
+      claimantDetails.id,
+      claimantDetails.name,
+      claimantDetails.contactNumber,
+      claimantDetails.status,
+      claimantDetails.idNumber,
+      claimantDetails.note
+    );
+
+    if (response.status === 200) {
+      triggerToast("Claim saved successfully!", "success");
+      setSelectedMails([]);
+      setIsClaimModalOpen(false);
+      setClaimantDetails({
+        id: generateClaimId(),
+        name: "",
+        contactNumber: "",
+        idNumber: "",
+        status: "",
+        note: "",
+      });
+    } else {
+      triggerToast("Failed to save claim.", "error");
+    }
   };
 
   // Sort and paginate data
@@ -282,6 +323,22 @@ const ClaimMailTable = <T,>({
               </>
             )}
           </div>
+
+          {suggestions.length > 0 && (
+            <div className="absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg animate-fade-in">
+              {suggestions.map((suggestion, index) => (
+                <div
+                  key={index}
+                  onClick={() => handleSuggestionClick(suggestion)}
+                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center justify-between group"
+                >
+                  <span className="text-gray-700 group-hover:text-blue-600 transition-colors">
+                    {suggestion}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Date Filter */}

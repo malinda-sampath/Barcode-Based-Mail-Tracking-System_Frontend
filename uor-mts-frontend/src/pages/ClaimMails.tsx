@@ -158,12 +158,12 @@ export const ClaimMails = () => {
     try {
       const response = await fetchPendingBranchMails(branchCode); // Example branch code
       if (response.data && Array.isArray(response.data.data)) {
-        const mailDetailsWithIndex = response.data.data.map(
-          (mail: any, index: number) => ({
+        const mailDetailsWithIndex = response.data.data
+          .filter((mail: any) => mail.status?.toLowerCase() === "pending")
+          .map((mail: any, index: number) => ({
             ...mail,
             index: index + 1,
-          })
-        );
+          }));
         setMailDetails(mailDetailsWithIndex);
       } else {
         setMailDetails([]);
