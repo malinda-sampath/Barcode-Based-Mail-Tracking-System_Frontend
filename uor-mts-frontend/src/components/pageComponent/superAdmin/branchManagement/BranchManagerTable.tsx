@@ -168,7 +168,14 @@ const BranchManagerTable: React.FC = () => {
         onViewClick={(BranchManager) => setSelectedBranchManager(BranchManager)}
         onEditClick={(BranchManager) => setSelectedBranchManager(BranchManager)}
         onDeleteClick={handleDeleteBranchManager}
-        searchableKeys={["userID", "name", "email", "contact"]}
+        searchableKeys={[
+          "userID",
+          "name",
+          "email",
+          "contact",
+          "createdAt",
+          "updatedAt",
+        ]}
       />
       {isVisible && confirmationConfig && (
         <ToggleConfirmation
