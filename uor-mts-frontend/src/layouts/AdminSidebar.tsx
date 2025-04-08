@@ -86,12 +86,12 @@ const AdminSidebar: React.FC<SidebarProps> = ({ setIsSidebarOpen }) => {
         {ADMIN_DASHBOARD_SIDEBAR_BOTTOM_LINKS .map((item) => (
           <SidebarLink key={item.key} item={item} isOpen={isOpen} />
         ))}
-        <div className={classNames("text-[#F99C30]", linkClass)}>
+        {/* <div className={classNames("text-[#F99C30]", linkClass)}>
           <span className="text-xl">
             <HiOutlineLogout />
           </span>
           {isOpen && "Logout"}
-        </div>
+        </div> */}
       </div>
     </div>
   );

@@ -70,6 +70,12 @@ export const DASHBOARD_SIDEBAR_BOTTOM_LINKS = [
     path: "help",
     icon: <HiOutlineQuestionMarkCircle className="text-[#F99C30]" />,
   },
+  {
+    key: "logout",
+    label: "Logout",
+    path: "logout",
+    icon: <HiOutlineQuestionMarkCircle className="text-[#F99C30]" />,
+  },
 ];
 
 // Mail Handler
@@ -121,6 +127,13 @@ export const ADMIN_DASHBOARD_SIDEBAR_BOTTOM_LINKS = [
     path: "help",
     icon: <HiOutlineQuestionMarkCircle className="text-[#F99C30]" />,
   },
+
+  {
+    key: "logout",
+    label: "Logout",
+    path: "logout",
+    icon: <HiOutlineQuestionMarkCircle className="text-[#F99C30]" />,
+  },
 ];
 
 //Branch Manager
@@ -165,4 +178,10 @@ export const BRANCH_DASHBOARD_SIDEBAR_BOTTOM_LINKS = [
     path: "help",
     icon: <HiOutlineQuestionMarkCircle className="text-[#F99C30]" />,
   },
+  {
+    key: "logout",
+    label: "Logout",
+    path: "logout",
+    icon: <HiOutlineQuestionMarkCircle className="text-[#F99C30]" />,
+  }
 ];

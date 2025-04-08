@@ -7,6 +7,7 @@ import Settings from "../pages/Setting";
 import Profile1 from "../pages/Profile";
 import { ClaimMails } from "../pages/ClaimMails";
 import MailRecord from "../pages/MailRecord";
+import LogoutButton from "../pages/LogOut";
 
 function AdminAppRouter() {
   return (
@@ -20,6 +21,7 @@ function AdminAppRouter() {
         <Route path="profile" element={<Profile1 />} />
         <Route path="settings" element={<Settings />} />
         <Route path="help" element={<Help />} />
+        <Route path="logout" element={<LogoutButton />} />
       </Route>
     </Routes>
   );
