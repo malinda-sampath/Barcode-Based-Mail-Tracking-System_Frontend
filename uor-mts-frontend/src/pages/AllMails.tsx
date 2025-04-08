@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import Search from "../components/searchBar/Search";
-import Table from "../components/branch/AllMailsTable";
 import ViewPopup from "../components/popupComponent/ViewPopup";
 import DeleteConfirmation from "../components/popupComponent/DeleteConfirmation";
-import AllMailsTable from "../components/branch/AllMailsTable";
 
 const currentDate = new Date().toLocaleDateString("en-GB", {
   day: "2-digit",
@@ -53,7 +51,7 @@ export default function AllMails() {
       <p className="text-xs sm:text-sm text-gray-500 ">{currentDate}</p>
 
       <div className="bg-white p-6 rounded-lg shadow-md mt-6">
-        <div className="my-16 mx-28">
+        {/* <div className="my-16 mx-28">
           <AllMailsTable<MailData> // Explicitly specify MailData type for Table component
             columns={columns}
             data={mailData}
@@ -62,7 +60,7 @@ export default function AllMails() {
             hideEditButton={true}
             searchableKeys={["sender", "recipient"]}
           />
-        </div>
+        </div> */}
 
         {showViewPopup && selectedMail && (
           <ViewPopup onClose={() => setShowViewPopup(false)} />

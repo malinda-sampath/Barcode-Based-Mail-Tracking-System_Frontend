@@ -27,7 +27,7 @@ type TableProps<T> = {
   statusFilter?: string[]; // Add status filter option
 };
 
-const MailCartTable = <T,>({
+const BranchPendingTable = <T,>({
   columns,
   data,
   rowsPerPage = 10,
@@ -41,7 +41,7 @@ const MailCartTable = <T,>({
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isSearchExpanded, setIsSearchExpanded] = useState(true);
-  const [selectedStatus, setSelectedStatus] = useState<string>("all");
+  const [selectedDateFilter, setSelectedDateFilter] = useState<string>("all");
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSort = (key: keyof T) => {
@@ -82,15 +82,29 @@ const MailCartTable = <T,>({
       );
     }
 
-    // Apply status filter if not "all"
-    if (selectedStatus !== "all") {
-      result = result.filter(
-        (row: any) => row.status?.toLowerCase() === selectedStatus.toLowerCase()
-      );
+    // Apply date filter
+    if (selectedDateFilter !== "all") {
+      const now = new Date();
+      result = result.filter((row: any) => {
+        const rowDate = new Date(row.insertDateTime);
+        if (selectedDateFilter === "today") {
+          return rowDate.toDateString() === now.toDateString();
+        } else if (selectedDateFilter === "week") {
+          const weekAgo = new Date();
+          weekAgo.setDate(now.getDate() - 7);
+          return rowDate >= weekAgo && rowDate <= now;
+        } else if (selectedDateFilter === "month") {
+          return (
+            rowDate.getMonth() === now.getMonth() &&
+            rowDate.getFullYear() === now.getFullYear()
+          );
+        }
+        return true;
+      });
     }
 
     return result;
-  }, [data, searchQuery, searchableKeys, selectedStatus]);
+  }, [data, searchQuery, searchableKeys, selectedDateFilter]);
 
   const sortedData = useMemo(() => {
     if (!sortKey) return filteredData;
@@ -259,19 +273,17 @@ const MailCartTable = <T,>({
           )}
         </div>
 
-        {/* Status Filter */}
+        {/* Date Filter */}
         <div className="w-full md:w-64">
           <select
-            value={selectedStatus}
-            onChange={(e) => setSelectedStatus(e.target.value)}
-            className="w-full p-2 border rounded-lg shadow-sm outline-none text-gray-700"
+            value={selectedDateFilter}
+            onChange={(e) => setSelectedDateFilter(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-700"
           >
-            <option value="all">All Statuses</option>
-            {statusOptions.map((status) => (
-              <option key={status} value={status}>
-                {status}
-              </option>
-            ))}
+            <option value="all">All Dates</option>
+            <option value="today">Today</option>
+            <option value="week">This Week</option>
+            <option value="month">This Month</option>
           </select>
         </div>
       </div>
@@ -316,8 +328,6 @@ const MailCartTable = <T,>({
                           className="h-8 w-auto"
                         />
                       ) : null
-                    ) : column.key === "branch" ? (
-                      row[column.key] || "N/A" // Ensure branch name is displayed or fallback to "N/A"
                     ) : column.render ? (
                       column.render(row[column.key], row)
                     ) : (
@@ -380,4 +390,4 @@ const MailCartTable = <T,>({
   );
 };
 
-export default MailCartTable;
+export default BranchPendingTable;
