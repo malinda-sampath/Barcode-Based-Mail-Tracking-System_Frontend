@@ -30,7 +30,6 @@
     "@types/react-dom": "^18.3.5",
     "ajv": "^8.17.1",
     "ajv-keywords": "^5.1.0",
-    "axios": "^1.8.4",
     "chart.js": "^4.4.7",
     "class-variance-authority": "^0.7.1",
     "classnames": "^2.5.1",

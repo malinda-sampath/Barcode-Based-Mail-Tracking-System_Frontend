@@ -201,13 +201,7 @@ const BranchTable: React.FC<BranchTableProps> = ({
         onViewClick={(branch) => setSelectedBranch(branch)}
         onEditClick={(branch) => setSelectedBranch(branch)}
         onDeleteClick={handleDeleteBranch}
-        searchableKeys={[
-          "branchCode",
-          "branchName",
-          "branchDescription",
-          "insertDate",
-          "updateDate",
-        ]}
+        searchableKeys={["branchCode", "branchName", "branchDescription"]}
       />
       {isVisible && confirmationConfig && (
         <ToggleConfirmation

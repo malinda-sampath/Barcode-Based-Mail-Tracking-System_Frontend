@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef, useEffect } from "react";
+import React, { useState, useMemo, useRef } from "react";
 import {
   FaSort,
   FaEye,
@@ -66,6 +66,7 @@ const MailCartTable = <T,>({
         }
       });
     });
+
     return Array.from(suggestionSet).slice(0, 5);
   };
 
@@ -150,14 +151,16 @@ const MailCartTable = <T,>({
       "px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1";
 
     switch (status?.toLowerCase()) {
-      case "claimed":
+      case "delivered":
         return `${baseStyle} bg-green-100 text-green-800`;
       case "pending":
         return `${baseStyle} bg-yellow-100 text-yellow-800`;
       case "returned":
         return `${baseStyle} bg-red-100 text-red-800`;
-      case "picked":
+      case "in transit":
         return `${baseStyle} bg-blue-100 text-blue-800`;
+      case "received":
+        return `${baseStyle} bg-purple-100 text-purple-800`;
       default:
         return `${baseStyle} bg-gray-100 text-gray-800`;
     }
@@ -165,16 +168,18 @@ const MailCartTable = <T,>({
 
   const getStatusIcon = (status: string) => {
     switch (status?.toLowerCase()) {
-      case "claimed":
-        return <FaCheckCircle className="text-green-500" />;
+      case "delivered":
+        return <FaCheckCircle className="inline" />;
       case "pending":
-        return <FaClock className="text-yellow-500" />;
+        return <FaClock className="inline" />;
       case "returned":
-        return <FaUndo className="text-red-500" />;
-      case "picked":
-        return <FaTruck className="text-blue-500" />;
+        return <FaUndo className="inline" />;
+      case "in transit":
+        return <FaTruck className="inline" />;
+      case "received":
+        return <FaBoxOpen className="inline" />;
       default:
-        return <FaBoxOpen className="text-gray-500" />;
+        return null;
     }
   };
 
@@ -316,8 +321,6 @@ const MailCartTable = <T,>({
                           className="h-8 w-auto"
                         />
                       ) : null
-                    ) : column.key === "branch" ? (
-                      row[column.key] || "N/A" // Ensure branch name is displayed or fallback to "N/A"
                     ) : column.render ? (
                       column.render(row[column.key], row)
                     ) : (

@@ -1,12 +1,11 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import BranchLayout from "../layouts/BranchLayout";
-import AllMails from "../pages/BranchMail";
+import AllMails from "../pages/AllMails";
 import Help from "../pages/Help";
 import Settings from "../pages/Setting";
 import BranchDashboard from "../pages/dashboard/BranchDashboard";
 import Profile from "../pages/Profile";
 import PendingMails from "../pages/PendingMails";
-import LogoutButton from "../pages/LogOut";
 
 function BranchAppRouter() {
   return (
@@ -18,7 +17,6 @@ function BranchAppRouter() {
         <Route path="profile" element={<Profile />} />
         <Route path="settings" element={<Settings />} />
         <Route path="help" element={<Help />} />
-        <Route path="logout" element={<LogoutButton />} />
       </Route>
     </Routes>
   );
