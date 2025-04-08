@@ -16,7 +16,6 @@ interface MailDetails {
   barcodeId: string;
   // mailDescription: string;
   barcodeImage: string;
-  BranchName: string;
   location: string;
   status: string;
   referenceNumber: string;
@@ -33,7 +32,6 @@ const columns: {
   { key: "barcodeId", label: "Barcode ID" },
   { key: "senderName", label: "Sender" },
   { key: "receiverName", label: "Receiver" },
-  { key: "BranchName", label: "Branch Name" },
   { key: "mailType", label: "Type" },
   { key: "trackingNumber", label: "Tracking No." },
   { key: "insertDateTime", label: "Insert Date" },
@@ -86,15 +84,15 @@ const AllMails = () => {
     setError("");
     try {
       const response = await fetchBranchMails(); // Example branch code
-      console.log("Branch mail data response:", response);
       if (response.data && Array.isArray(response.data.data)) {
-        const mailDetailsWithIndex = response.data.data
-          .filter((mail: any) => mail.status?.toLowerCase() === "")
-          .map((mail: any, index: number) => ({
+        const mailDetailsWithIndex = response.data.data.map(
+          (mail: any, index: number) => ({
             ...mail,
             index: index + 1,
-          }));
+          })
+        );
         setMailDetails(mailDetailsWithIndex);
+        console.log("Mail details:", mailDetailsWithIndex);
       } else {
         setMailDetails([]);
         setError("No mail details found.");

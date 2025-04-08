@@ -1,10 +1,14 @@
 import React, { useState, useMemo, useRef } from "react";
 import {
   FaSort,
+  FaEye,
   FaSearch,
   FaTimesCircle,
   FaCheckCircle,
+  FaTruck,
+  FaUndo,
   FaClock,
+  FaBoxOpen,
   FaCheck,
   FaUserCheck,
 } from "react-icons/fa";
@@ -69,6 +73,18 @@ const BranchAllMailTable = <T,>({
       .padStart(2, "0")}`;
   };
 
+  const statusOptions = useMemo(() => {
+    const statuses = new Set<string>();
+    data.forEach((row: any) => {
+      if (row.status) {
+        statuses.add(row.status.toLowerCase());
+      }
+    });
+    return Array.from(statuses).map(
+      (status) => status.charAt(0).toUpperCase() + status.slice(1)
+    );
+  }, [data]);
+
   const generateSuggestions = (query: string) => {
     if (!query) return [];
 
@@ -127,7 +143,6 @@ const BranchAllMailTable = <T,>({
           row.mailType?.toLowerCase() === mailTypeFilter.toLowerCase()
       );
     }
-
     // Apply status filter
     if (selectedStatus !== "all") {
       result = result.filter(
@@ -202,6 +217,11 @@ const BranchAllMailTable = <T,>({
 
   // Handle mail selection for bulk claim
   const toggleMailSelection = (mail: T) => {
+    // Prevent selection if mail is already claimed
+    if ((mail as any).status?.toLowerCase() === "claimed") {
+      return;
+    }
+
     setSelectedMails((prev) =>
       prev.includes(mail) ? prev.filter((m) => m !== mail) : [...prev, mail]
     );
@@ -282,11 +302,6 @@ const BranchAllMailTable = <T,>({
     currentPage * rowsPerPage
   );
 
-  // Status styling
-  const getStatusStyle = () => {
-    return "px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800";
-  };
-
   // Format date
   const formatDate = (dateString: string) => {
     if (!dateString) return "";
@@ -306,6 +321,50 @@ const BranchAllMailTable = <T,>({
       setSortDirection("asc");
     }
   }
+
+  const allSelectableMailsSelected = useMemo(() => {
+    const selectableMails = paginatedData.filter(
+      (mail: any) => mail.status?.toLowerCase() !== "claimed"
+    );
+    return (
+      selectableMails.length > 0 &&
+      selectableMails.every((mail) => selectedMails.includes(mail))
+    );
+  }, [paginatedData, selectedMails]);
+
+  // Status styling with icons
+  const getStatusStyle = (status: string) => {
+    const baseStyle =
+      "px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1";
+
+    switch (status?.toLowerCase()) {
+      case "claimed":
+        return `${baseStyle} bg-green-100 text-green-800`;
+      case "pending":
+        return `${baseStyle} bg-yellow-100 text-yellow-800`;
+      case "returned":
+        return `${baseStyle} bg-red-100 text-red-800`;
+      case "picked":
+        return `${baseStyle} bg-blue-100 text-blue-800`;
+      default:
+        return `${baseStyle} bg-gray-100 text-gray-800`;
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status?.toLowerCase()) {
+      case "claimed":
+        return <FaCheckCircle className="text-green-500" />;
+      case "pending":
+        return <FaClock className="text-yellow-500" />;
+      case "returned":
+        return <FaUndo className="text-red-500" />;
+      case "picked":
+        return <FaTruck className="text-blue-500" />;
+      default:
+        return <FaBoxOpen className="text-gray-500" />;
+    }
+  };
 
   return (
     <div className="overflow-x-auto w-auto">
@@ -407,6 +466,22 @@ const BranchAllMailTable = <T,>({
           </select>
         </div>
 
+        {/* Status Filter - Add this new dropdown */}
+        <div className="w-full md:w-48">
+          <select
+            value={selectedStatus}
+            onChange={(e) => setSelectedStatus(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-700"
+          >
+            <option value="all">All Statuses</option>
+            {statusOptions.map((status) => (
+              <option key={status} value={status.toLowerCase()}>
+                {status}
+              </option>
+            ))}
+          </select>
+        </div>
+
         {/* Bulk Claim Button */}
         {selectedMails.length > 0 && (
           <button
@@ -425,15 +500,19 @@ const BranchAllMailTable = <T,>({
             <th className="px-3 py-2 w-10">
               <input
                 type="checkbox"
-                checked={
-                  selectedMails.length === paginatedData.length &&
-                  paginatedData.length > 0
-                }
+                checked={allSelectableMailsSelected}
                 onChange={() => {
-                  if (selectedMails.length === paginatedData.length) {
+                  const selectableMails = paginatedData.filter(
+                    (mail: any) => mail.status?.toLowerCase() !== "claimed"
+                  );
+
+                  if (allSelectableMailsSelected) {
                     setSelectedMails([]);
                   } else {
-                    setSelectedMails([...paginatedData]);
+                    // Add only selectable mails that aren't already selected
+                    const newSelected = new Set(selectedMails);
+                    selectableMails.forEach((mail) => newSelected.add(mail));
+                    setSelectedMails(Array.from(newSelected));
                   }
                 }}
                 className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
@@ -467,16 +546,23 @@ const BranchAllMailTable = <T,>({
                     type="checkbox"
                     checked={selectedMails.includes(row)}
                     onChange={() => toggleMailSelection(row)}
-                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    disabled={(row as any).status?.toLowerCase() === "claimed"}
+                    className={`h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 ${
+                      (row as any).status?.toLowerCase() === "claimed"
+                        ? "opacity-50 cursor-not-allowed"
+                        : ""
+                    }`}
                   />
                 </td>
                 {columns.map((column) => (
                   <td key={column.key.toString()} className="px-3 py-2">
                     {column.key === "status" ? (
-                      <span className={getStatusStyle()}>
-                        <FaClock className="inline mr-1" />
+                      <span className={getStatusStyle(row[column.key])}>
+                        {getStatusIcon(row[column.key])}
                         {row[column.key]}
                       </span>
+                    ) : column.key === "insertDateTime" ? (
+                      formatDate(row[column.key])
                     ) : column.render ? (
                       column.render(row[column.key], row)
                     ) : (

@@ -695,7 +695,6 @@ const ClaimMailTable = <T,>({
                       Select status
                     </option>
                     <option value="claimed">Claimed</option>
-                    <option value="returned">Returned</option>
                     <option value="picked">Branch Pickup</option>
                   </select>
                 </div>
