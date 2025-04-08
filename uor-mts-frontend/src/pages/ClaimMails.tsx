@@ -38,7 +38,6 @@ interface MailDetails {
   barcodeId: string;
   // mailDescription: string;
   barcodeImage: string;
-  // BranchName: string;
   location: string;
   status: string;
   referenceNumber: string;
@@ -55,7 +54,6 @@ const columns: {
   { key: "barcodeId", label: "Barcode ID" },
   { key: "senderName", label: "Sender" },
   { key: "receiverName", label: "Receiver" },
-  // { key: "BranchName", label: "Branch Name" },
   { key: "mailType", label: "Type" },
   { key: "trackingNumber", label: "Tracking No." },
   { key: "insertDateTime", label: "Insert Date" },
@@ -108,7 +106,6 @@ export const ClaimMails = () => {
       setIsInitialLoading(true);
       try {
         await fetchBranchData();
-        // Removed fetchPendingMailCounts() from here
       } catch (error) {
         console.error("Initialization error:", error);
         setError("Failed to initialize application");
@@ -154,6 +151,7 @@ export const ClaimMails = () => {
     }
   };
 
+
   // Fetch pending mail counts for all branches
   const fetchPendingMailCounts = async () => {
     setError("");
@@ -177,7 +175,6 @@ export const ClaimMails = () => {
       triggerToast("Failed to fetch pending mail counts", "error");
     }
   };
-
   //Fetch Mail Data
   const fetchBranchMailData = async (branchCode: string) => {
     setError("");

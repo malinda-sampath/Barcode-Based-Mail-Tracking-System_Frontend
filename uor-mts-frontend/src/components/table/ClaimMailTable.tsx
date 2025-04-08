@@ -88,10 +88,10 @@ const ClaimMailTable = <T,>({
     return Array.from(suggestionSet).slice(0, 5);
   };
 
+
   useEffect(() => {
     console.log("Table data received:", data);
   }, [data]);
-
   const filteredData = useMemo(() => {
     let result = data;
 
@@ -111,6 +111,7 @@ const ClaimMailTable = <T,>({
         (row: any) => row.status?.toLowerCase() === selectedStatus.toLowerCase()
       );
     }
+
 
     // Apply mail type filter if not "all"
     if (mailTypeFilter !== "all") {
@@ -541,6 +542,7 @@ const ClaimMailTable = <T,>({
               <td colSpan={columns.length + 1} className="text-center py-4">
                 {filteredData.length === 0
                   ? "No mails available"
+
                   : "No matching records found"}
               </td>
             </tr>

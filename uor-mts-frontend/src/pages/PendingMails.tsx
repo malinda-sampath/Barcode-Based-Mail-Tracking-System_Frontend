@@ -166,7 +166,6 @@ export default function PendingMails() {
       year: "numeric",
     });
   };
-
   const currentDate = new Date().toLocaleDateString("en-GB", {
     day: "2-digit",
     month: "short",

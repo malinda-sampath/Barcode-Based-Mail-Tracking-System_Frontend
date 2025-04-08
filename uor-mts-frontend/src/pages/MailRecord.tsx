@@ -16,7 +16,6 @@ interface MainMailCart {
   BranchName: string;
   // mailDescription: string;
   barcodeImage: string;
-
   location: string;
   status: string;
   // referenceNumber: string;

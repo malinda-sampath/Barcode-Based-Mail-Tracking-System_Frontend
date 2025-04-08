@@ -20,4 +20,3 @@ jobs:
         run: |
           docker build -t malinda116/mail_tracking-frontend:latest ./uor-mts-frontend
           docker push malinda116/mail_tracking-frontend:latest
-
