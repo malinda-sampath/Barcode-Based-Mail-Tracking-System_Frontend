@@ -1,14 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import gallery_1 from "../../../assets/gallery_1.png";
-import TrackingForm from "./TrackingForm";
-import { verifyOTP, getCachedOtp } from "../../../services/Tracking/TrackingEmailService";
+import gallery_1 from "../../../assets/gallery_1.png"; // Import the background image
+import TrackingForm from "./TrackingForm"; // Import TrackingForm component
 
 // Define props interface
 interface TrackingOTPProps {
   email: string;
   onReturn: () => void;
-  onVerificationSuccess?: () => void;
+  onVerificationSuccess?: () => void; // Add optional callback prop
 }
 
 const TrackingOTP = ({ email, onReturn, onVerificationSuccess }: TrackingOTPProps) => {
@@ -17,30 +16,16 @@ const TrackingOTP = ({ email, onReturn, onVerificationSuccess }: TrackingOTPProp
   const [timeLeft, setTimeLeft] = useState(60);
   const [attempts, setAttempts] = useState(0);
   const [message, setMessage] = useState("");
-  const [showTrackingForm, setShowTrackingForm] = useState(false);
-  const [isVerifying, setIsVerifying] = useState(false);
-  const [backendOtp, setBackendOtp] = useState<string | null>(null);
+  const [showTrackingForm, setShowTrackingForm] = useState(false); // Add state to control showing TrackingForm
   
   const otpRefs = useRef<(HTMLInputElement | null)[]>(Array(6).fill(null));
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   
+  // BACKEND INTEGRATION: Replace this hardcoded OTP with the one generated from backend
+  const hardcodedOtp = "123456"; // This should come from the backend
+
+  // Effect to focus on first OTP input and start timer
   useEffect(() => {
-    // Get the already cached OTP from the service
-    const cachedOtp = getCachedOtp(email);
-    if (cachedOtp) {
-      console.log(`Retrieved cached OTP for ${email}`);
-      setBackendOtp(cachedOtp);
-    } else {
-      console.error("No OTP found for this email. Please go back and try again.");
-      setMessage("No OTP found for this email. Please go back and try again.");
-      
-      // Return to email page after a delay if no OTP is found
-      setTimeout(() => {
-        onReturn();
-      }, 3000);
-      return;
-    }
-    
     // Focus on the first OTP input
     setTimeout(() => {
       otpRefs.current[0]?.focus();
@@ -69,7 +54,7 @@ const TrackingOTP = ({ email, onReturn, onVerificationSuccess }: TrackingOTPProp
         clearInterval(timerRef.current);
       }
     };
-  }, [email, onReturn]);
+  }, [onReturn]);
 
   // Handle OTP input change
   const handleOtpChange = (index: number, value: string) => {
@@ -91,87 +76,68 @@ const TrackingOTP = ({ email, onReturn, onVerificationSuccess }: TrackingOTPProp
     }
   };
 
-  // Handle verification failure
-  const handleVerificationFailure = () => {
-    // Increment attempt counter
-    const newAttempts = attempts + 1;
-    setAttempts(newAttempts);
-    
-    if (newAttempts >= 3) {
-      // Maximum attempts reached, reset to email page
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-      }
-      setMessage("Maximum attempts reached. Please try again with a new OTP.");
-      
-      // Return to email page after max attempts
-      setTimeout(() => {
-        onReturn();
-      }, 3000);
-    } else {
-      // Still have attempts left
-      setOtp(Array(6).fill(""));
-      setMessage(`Invalid OTP. ${3 - newAttempts} attempts remaining.`);
-      // Focus on first input after clearing
-      setTimeout(() => {
-        otpRefs.current[0]?.focus();
-      }, 50);
-    }
-  };
-
   // Handle OTP submission
-  const handleOtpSubmit = async (e: React.FormEvent) => {
+  const handleOtpSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     if (otp.join("").length === 6) {
-      setIsVerifying(true);
-      setMessage("");
+      // BACKEND INTEGRATION: Replace this with actual API call
+      // const response = await fetch('your-backend-url/validate-otp', {
+      //     method: 'POST',
+      //     headers: { 'Content-Type': 'application/json' },
+      //     body: JSON.stringify({ email, otp: otp.join("") })
+      // });
+      // const data = await response.json();
+      // const isOtpCorrect = data.success;
       
-      try {
-        // We need the backend OTP to verify
-        if (!backendOtp) {
-          setMessage("Unable to verify OTP. Please try again later.");
-          setIsVerifying(false);
-          return;
+      // Using hardcoded OTP comparison for now
+      const isOtpCorrect = otp.join("") === hardcodedOtp;
+      
+      if (isOtpCorrect) {
+        // Clear the timer when OTP is submitted successfully
+        if (timerRef.current) {
+          clearInterval(timerRef.current);
         }
         
-        // Verify the OTP using the service
-        const response = await verifyOTP(email, otp.join(""), backendOtp);
+        // Immediately show the TrackingForm
+        setShowTrackingForm(true);
         
-        // Only log the response status, not the OTP details
-        if (process.env.NODE_ENV === 'development') {
-          console.log("OTP verification status:", response.status);
+        // If parent provided a success callback, call it
+        if (onVerificationSuccess) {
+          onVerificationSuccess();
         }
         
-        if (response.status === 200) {
-          // OTP verified successfully
+        // For debugging
+        console.log("OTP verified successfully! Navigating to TrackingForm");
+        
+        // BACKEND INTEGRATION: Additional steps after verification
+        // - Store authentication token from response
+        // - Set user verification status in your app state/context
+      } else {
+        // Increment attempt counter
+        const newAttempts = attempts + 1;
+        setAttempts(newAttempts);
+        
+        if (newAttempts >= 3) {
+          // Maximum attempts reached, reset to email page
           if (timerRef.current) {
             clearInterval(timerRef.current);
           }
+          setMessage("Maximum attempts reached. Please try again with a new OTP.");
           
-          setMessage("OTP verified successfully!");
-          
-          // Show the TrackingForm after a brief delay
+          // Return to email page after max attempts
           setTimeout(() => {
-            setShowTrackingForm(true);
-            
-            // If parent provided a success callback, call it
-            if (onVerificationSuccess) {
-              onVerificationSuccess();
-            }
-          }, 1000);
-        } else if (response.status === 400) {
-          // Invalid OTP
-          handleVerificationFailure();
+            onReturn();
+          }, 3000);
         } else {
-          // Other error (shouldn't happen with client-side verification)
-          setMessage("Verification failed. Please try again.");
+          // Still have attempts left
+          setOtp(Array(6).fill(""));
+          setMessage(`Invalid OTP. ${3 - newAttempts} attempts remaining.`);
+          // Focus on first input after clearing
+          setTimeout(() => {
+            otpRefs.current[0]?.focus();
+          }, 50);
         }
-      } catch (error) {
-        console.error("Error verifying OTP:", error);
-        setMessage("An unexpected error occurred. Please try again.");
-      } finally {
-        setIsVerifying(false);
       }
     } else {
       setMessage("Please enter all 6 digits of the OTP.");
@@ -273,10 +239,10 @@ const TrackingOTP = ({ email, onReturn, onVerificationSuccess }: TrackingOTPProp
           </div>
           
           <button type="submit" 
-            disabled={otp.join("").length !== 6 || isVerifying}
+            disabled={otp.join("").length !== 6}
             className={`w-full p-2 rounded font-medium 
-              ${otp.join("").length === 6 && !isVerifying ? "bg-black text-white hover:bg-gray-800" : "bg-gray-400 cursor-not-allowed"}`}>
-            {isVerifying ? "Verifying..." : "Verify OTP"}
+              ${otp.join("").length === 6 ? "bg-black text-white hover:bg-gray-800" : "bg-gray-400 cursor-not-allowed"}`}>
+            Verify OTP
           </button>
         </form>
         
