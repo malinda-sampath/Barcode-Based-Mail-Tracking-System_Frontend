@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import gallery_1 from "../../../assets/gallery_1.png"; // Import the background image
-import TrackingOTP from "./TrackingOTP"; // Import the OTP component
+import gallery_1 from "../../../assets/gallery_1.png"; 
+import TrackingOTP from "./TrackingOTP"; 
+import { sendVerificationEmail } from "../../../services/Tracking/TrackingEmailService"; 
 
 const TrackingEmailEnter = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
-  const [showOTP, setShowOTP] = useState(false); // State to control which component is shown
+  const [showOTP, setShowOTP] = useState(false); 
+  const [isLoading, setIsLoading] = useState(false); 
 
   // Validate email format
   const isValidEmail = (email: string): boolean => {
@@ -22,19 +24,40 @@ const TrackingEmailEnter = () => {
       return;
     }
 
-    // Simulating successful OTP sending without backend
-    setMessage("OTP sent to your email!");
-    
-    // Instead of navigation, set state to show OTP component
-    setShowOTP(true);
-    
-    // For debugging
-    console.log("Showing OTP verification for email:", email);
+    // Prevent multiple clicks
+    if (isLoading) return;
+
+    // Set loading state
+    setIsLoading(true);
+    setMessage("Sending verification email...");
+
+    try {
+      // Call the API through our service - now with duplicate protection
+      const response = await sendVerificationEmail(email);
+      
+      // Handle the response based on status
+      if (response.status === 200) {
+        setMessage("OTP sent to your email!");
+        // Short delay to show the message before transitioning
+        setTimeout(() => {
+          setShowOTP(true);
+        }, 1000);
+      } else {
+        // Handle error based on response status
+        setMessage(response.data?.message || "Failed to send verification email. Please try again.");
+      }
+    } catch (error) {
+      setMessage("An error occurred. Please try again later.");
+      console.error("Email verification error:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Return to email form (for use in TrackingOTP component)
   const handleReturnToEmail = () => {
     setShowOTP(false);
+    setMessage("");
   };
 
   // If showOTP is true, render the TrackingOTP component; otherwise, render the email form
@@ -104,18 +127,19 @@ const TrackingEmailEnter = () => {
               placeholder="example@usci.ruh.ac.lk" 
               required
               className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              disabled={isLoading}
             />
           </div>
           
           <button 
             type="submit" 
-            disabled={!isValidEmail(email)}
+            disabled={!isValidEmail(email) || isLoading}
             className={`w-full p-2 mt-4 rounded font-medium
-              ${isValidEmail(email) 
+              ${isValidEmail(email) && !isLoading
                 ? "bg-black text-white hover:bg-gray-800" 
                 : "bg-gray-400 cursor-not-allowed"}`}
           >
-            Proceed
+            {isLoading ? "Processing..." : "Proceed"}
           </button>
         </form>
         
