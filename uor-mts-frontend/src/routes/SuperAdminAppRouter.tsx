@@ -8,6 +8,7 @@ import Settings from "../pages/Setting";
 import Profile from "../pages/Profile";
 import Logs from "../pages/Logs";
 import MailRecord from "../pages/MailRecord";
+import LogoutButton from "../pages/LogOut";
 
 function SuperAdminAppRouter() {
   return (
@@ -21,6 +22,7 @@ function SuperAdminAppRouter() {
         <Route path="Profile" element={<Profile />} />
         <Route path="settings" element={<Settings />} />
         <Route path="help" element={<Help />} />
+        <Route path="logout" element={<LogoutButton />} />
       </Route>
     </Routes>
   );
