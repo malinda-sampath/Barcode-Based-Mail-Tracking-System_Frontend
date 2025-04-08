@@ -167,6 +167,8 @@ const MailTable: React.FC = () => {
           "receiverName",
           "trackingNumber",
           "branchName",
+          "insertDateTime",
+          "updateDateTime",
         ]}
       />
 

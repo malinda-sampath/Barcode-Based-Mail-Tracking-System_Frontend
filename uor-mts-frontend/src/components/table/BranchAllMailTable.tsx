@@ -1,13 +1,16 @@
-import React, { useState, useMemo, useRef, useEffect } from "react";
+import React, { useState, useMemo, useRef } from "react";
 import {
   FaSort,
+  FaEye,
   FaSearch,
   FaTimesCircle,
   FaCheckCircle,
+  FaTruck,
+  FaUndo,
   FaClock,
+  FaBoxOpen,
   FaCheck,
   FaUserCheck,
-  FaReply,
 } from "react-icons/fa";
 import ToastContainer from "../ui/toast/toastContainer";
 import { claimMailSave } from "../../services/mailHandler/ClaimMailsService";
@@ -26,7 +29,7 @@ type TableProps<T> = {
   searchableKeys?: (keyof T)[];
 };
 
-const ClaimMailTable = <T,>({
+const BranchAllMailTable = <T,>({
   columns,
   data,
   rowsPerPage = 10,
@@ -49,7 +52,6 @@ const ClaimMailTable = <T,>({
   ) => {
     setToasts((prev) => [...prev, { message, type }]);
   };
-
   // Filter states
   const [selectedMails, setSelectedMails] = useState<T[]>([]);
   const [isClaimModalOpen, setIsClaimModalOpen] = useState(false);
@@ -71,6 +73,18 @@ const ClaimMailTable = <T,>({
       .padStart(2, "0")}`;
   };
 
+  const statusOptions = useMemo(() => {
+    const statuses = new Set<string>();
+    data.forEach((row: any) => {
+      if (row.status) {
+        statuses.add(row.status.toLowerCase());
+      }
+    });
+    return Array.from(statuses).map(
+      (status) => status.charAt(0).toUpperCase() + status.slice(1)
+    );
+  }, [data]);
+
   const generateSuggestions = (query: string) => {
     if (!query) return [];
 
@@ -88,10 +102,6 @@ const ClaimMailTable = <T,>({
     return Array.from(suggestionSet).slice(0, 5);
   };
 
-
-  useEffect(() => {
-    console.log("Table data received:", data);
-  }, [data]);
   const filteredData = useMemo(() => {
     let result = data;
 
@@ -105,46 +115,39 @@ const ClaimMailTable = <T,>({
       );
     }
 
-    // Apply status filter if not "all"
-    if (selectedStatus !== "all") {
-      result = result.filter(
-        (row: any) => row.status?.toLowerCase() === selectedStatus.toLowerCase()
-      );
-    }
-
-
-    // Apply mail type filter if not "all"
-    if (mailTypeFilter !== "all") {
-      result = result.filter((row: any) => row.mailType === mailTypeFilter);
-    }
-
     // Apply date filter
     if (dateFilter !== "all") {
       const now = new Date();
       result = result.filter((row: any) => {
-        if (!row.insertDateTime) return false;
-        const mailDate = new Date(row.insertDateTime);
-
-        switch (dateFilter) {
-          case "today":
-            return (
-              mailDate.getDate() === now.getDate() &&
-              mailDate.getMonth() === now.getMonth() &&
-              mailDate.getFullYear() === now.getFullYear()
-            );
-          case "week":
-            const startOfWeek = new Date(now);
-            startOfWeek.setDate(now.getDate() - now.getDay());
-            return mailDate >= startOfWeek;
-          case "month":
-            return (
-              mailDate.getMonth() === now.getMonth() &&
-              mailDate.getFullYear() === now.getFullYear()
-            );
-          default:
-            return true;
+        const mailDate = new Date(row.date); // Assuming `date` is the key for mail date
+        if (dateFilter === "today") {
+          return mailDate.toDateString() === now.toDateString();
+        } else if (dateFilter === "week") {
+          const weekAgo = new Date();
+          weekAgo.setDate(now.getDate() - 7);
+          return mailDate >= weekAgo && mailDate <= now;
+        } else if (dateFilter === "month") {
+          return (
+            mailDate.getMonth() === now.getMonth() &&
+            mailDate.getFullYear() === now.getFullYear()
+          );
         }
+        return true;
       });
+    }
+
+    // Apply mail type filter
+    if (mailTypeFilter !== "all") {
+      result = result.filter(
+        (row: any) =>
+          row.mailType?.toLowerCase() === mailTypeFilter.toLowerCase()
+      );
+    }
+    // Apply status filter
+    if (selectedStatus !== "all") {
+      result = result.filter(
+        (row: any) => row.status?.toLowerCase() === selectedStatus.toLowerCase()
+      );
     }
 
     return result;
@@ -152,9 +155,9 @@ const ClaimMailTable = <T,>({
     data,
     searchQuery,
     searchableKeys,
-    selectedStatus,
-    mailTypeFilter,
     dateFilter,
+    mailTypeFilter,
+    selectedStatus,
   ]);
 
   const sortedData = useMemo(() => {
@@ -196,7 +199,7 @@ const ClaimMailTable = <T,>({
     id: generateClaimId(),
     name: "",
     contactNumber: "",
-    NIC: "",
+    idNumber: "",
     status: "",
     note: "",
   });
@@ -214,6 +217,11 @@ const ClaimMailTable = <T,>({
 
   // Handle mail selection for bulk claim
   const toggleMailSelection = (mail: T) => {
+    // Prevent selection if mail is already claimed
+    if ((mail as any).status?.toLowerCase() === "claimed") {
+      return;
+    }
+
     setSelectedMails((prev) =>
       prev.includes(mail) ? prev.filter((m) => m !== mail) : [...prev, mail]
     );
@@ -233,7 +241,7 @@ const ClaimMailTable = <T,>({
   const confirmClaim = async () => {
     if (
       !claimantDetails.name ||
-      !claimantDetails.NIC ||
+      !claimantDetails.idNumber ||
       !claimantDetails.status
     ) {
       triggerToast("Please fill in all required fields.", "warning");
@@ -266,7 +274,7 @@ const ClaimMailTable = <T,>({
       claimantDetails.name,
       claimantDetails.contactNumber,
       claimantDetails.status,
-      claimantDetails.NIC,
+      claimantDetails.idNumber,
       claimantDetails.note
     );
 
@@ -278,7 +286,7 @@ const ClaimMailTable = <T,>({
         id: generateClaimId(),
         name: "",
         contactNumber: "",
-        NIC: "",
+        idNumber: "",
         status: "",
         note: "",
       });
@@ -293,33 +301,6 @@ const ClaimMailTable = <T,>({
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage
   );
-
-  // Status styling
-  const getStatusStyle = (status: string) => {
-    switch (status?.toLowerCase()) {
-      case "pending":
-        return "px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800";
-      case "returned":
-        return "px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800";
-      case "claimed":
-        return "px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800";
-      default:
-        return "px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800";
-    }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status?.toLowerCase()) {
-      case "pending":
-        return <FaClock className="inline mr-1" />;
-      case "returned":
-        return <FaReply className="inline mr-1" />;
-      case "claimed":
-        return <FaCheckCircle className="inline mr-1" />;
-      default:
-        return null;
-    }
-  };
 
   // Format date
   const formatDate = (dateString: string) => {
@@ -340,6 +321,50 @@ const ClaimMailTable = <T,>({
       setSortDirection("asc");
     }
   }
+
+  const allSelectableMailsSelected = useMemo(() => {
+    const selectableMails = paginatedData.filter(
+      (mail: any) => mail.status?.toLowerCase() !== "claimed"
+    );
+    return (
+      selectableMails.length > 0 &&
+      selectableMails.every((mail) => selectedMails.includes(mail))
+    );
+  }, [paginatedData, selectedMails]);
+
+  // Status styling with icons
+  const getStatusStyle = (status: string) => {
+    const baseStyle =
+      "px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1";
+
+    switch (status?.toLowerCase()) {
+      case "claimed":
+        return `${baseStyle} bg-green-100 text-green-800`;
+      case "pending":
+        return `${baseStyle} bg-yellow-100 text-yellow-800`;
+      case "returned":
+        return `${baseStyle} bg-red-100 text-red-800`;
+      case "picked":
+        return `${baseStyle} bg-blue-100 text-blue-800`;
+      default:
+        return `${baseStyle} bg-gray-100 text-gray-800`;
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status?.toLowerCase()) {
+      case "claimed":
+        return <FaCheckCircle className="text-green-500" />;
+      case "pending":
+        return <FaClock className="text-yellow-500" />;
+      case "returned":
+        return <FaUndo className="text-red-500" />;
+      case "picked":
+        return <FaTruck className="text-blue-500" />;
+      default:
+        return <FaBoxOpen className="text-gray-500" />;
+    }
+  };
 
   return (
     <div className="overflow-x-auto w-auto">
@@ -411,21 +436,8 @@ const ClaimMailTable = <T,>({
           )}
         </div>
 
-        {/* Status Filter */}
-        <div className="w-full md:w-32">
-          <select
-            value={selectedStatus}
-            onChange={(e) => setSelectedStatus(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-700"
-          >
-            <option value="all">All Status</option>
-            <option value="pending">Pending</option>
-            <option value="returned">Returned</option>
-          </select>
-        </div>
-
         {/* Date Filter */}
-        <div className="w-full md:w-32">
+        <div className="w-full md:w-48">
           <select
             value={dateFilter}
             onChange={(e) => setDateFilter(e.target.value)}
@@ -439,7 +451,7 @@ const ClaimMailTable = <T,>({
         </div>
 
         {/* Mail Type Filter */}
-        <div className="w-full md:w-32">
+        <div className="w-full md:w-48">
           <select
             value={mailTypeFilter}
             onChange={(e) => setMailTypeFilter(e.target.value)}
@@ -449,6 +461,22 @@ const ClaimMailTable = <T,>({
             {mailTypeOptions.map((type) => (
               <option key={type} value={type}>
                 {type}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Status Filter - Add this new dropdown */}
+        <div className="w-full md:w-48">
+          <select
+            value={selectedStatus}
+            onChange={(e) => setSelectedStatus(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-700"
+          >
+            <option value="all">All Statuses</option>
+            {statusOptions.map((status) => (
+              <option key={status} value={status.toLowerCase()}>
+                {status}
               </option>
             ))}
           </select>
@@ -472,15 +500,19 @@ const ClaimMailTable = <T,>({
             <th className="px-3 py-2 w-10">
               <input
                 type="checkbox"
-                checked={
-                  selectedMails.length === paginatedData.length &&
-                  paginatedData.length > 0
-                }
+                checked={allSelectableMailsSelected}
                 onChange={() => {
-                  if (selectedMails.length === paginatedData.length) {
+                  const selectableMails = paginatedData.filter(
+                    (mail: any) => mail.status?.toLowerCase() !== "claimed"
+                  );
+
+                  if (allSelectableMailsSelected) {
                     setSelectedMails([]);
                   } else {
-                    setSelectedMails([...paginatedData]);
+                    // Add only selectable mails that aren't already selected
+                    const newSelected = new Set(selectedMails);
+                    selectableMails.forEach((mail) => newSelected.add(mail));
+                    setSelectedMails(Array.from(newSelected));
                   }
                 }}
                 className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
@@ -514,7 +546,12 @@ const ClaimMailTable = <T,>({
                     type="checkbox"
                     checked={selectedMails.includes(row)}
                     onChange={() => toggleMailSelection(row)}
-                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    disabled={(row as any).status?.toLowerCase() === "claimed"}
+                    className={`h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 ${
+                      (row as any).status?.toLowerCase() === "claimed"
+                        ? "opacity-50 cursor-not-allowed"
+                        : ""
+                    }`}
                   />
                 </td>
                 {columns.map((column) => (
@@ -524,10 +561,10 @@ const ClaimMailTable = <T,>({
                         {getStatusIcon(row[column.key])}
                         {row[column.key]}
                       </span>
-                    ) : column.render ? (
-                      column.render(row[column.key], row)
                     ) : column.key === "insertDateTime" ? (
                       formatDate(row[column.key])
+                    ) : column.render ? (
+                      column.render(row[column.key], row)
                     ) : (
                       <span className="truncate max-w-xs inline-block">
                         {String(row[column.key])}
@@ -541,8 +578,7 @@ const ClaimMailTable = <T,>({
             <tr>
               <td colSpan={columns.length + 1} className="text-center py-4">
                 {filteredData.length === 0
-                  ? "No mails available"
-
+                  ? "No pending mails available"
                   : "No matching records found"}
               </td>
             </tr>
@@ -553,7 +589,7 @@ const ClaimMailTable = <T,>({
       {/* Pagination Controls */}
       <div className="flex flex-col sm:flex-row justify-between items-center mt-4 gap-4">
         <div className="text-sm text-gray-600">
-          Showing {paginatedData.length} of {filteredData.length} mails
+          Showing {paginatedData.length} of {filteredData.length} pending mails
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -669,13 +705,14 @@ const ClaimMailTable = <T,>({
                   <input
                     type="text"
                     className="w-full p-2 border rounded-md uppercase"
-                    value={claimantDetails.NIC}
+                    value={claimantDetails.idNumber}
                     onChange={(e) =>
                       setClaimantDetails({
                         ...claimantDetails,
-                        NIC: e.target.value,
+                        idNumber: e.target.value.toUpperCase(),
                       })
                     }
+                    maxLength={3}
                     required
                   />
                 </div>
@@ -697,7 +734,7 @@ const ClaimMailTable = <T,>({
                       Select status
                     </option>
                     <option value="claimed">Claimed</option>
-                    <option value="picked">Branch Pickup</option>
+                    <option value="returned">Returned</option>
                   </select>
                 </div>
                 <div>
@@ -728,7 +765,7 @@ const ClaimMailTable = <T,>({
                   onClick={confirmClaim}
                   disabled={
                     !claimantDetails.name ||
-                    !claimantDetails.NIC ||
+                    !claimantDetails.idNumber ||
                     !claimantDetails.status
                   }
                   className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 flex items-center gap-2"
@@ -745,4 +782,4 @@ const ClaimMailTable = <T,>({
   );
 };
 
-export default ClaimMailTable;
+export default BranchAllMailTable;

@@ -38,7 +38,6 @@ interface MailDetails {
   barcodeId: string;
   // mailDescription: string;
   barcodeImage: string;
-  BranchName: string;
   location: string;
   status: string;
   referenceNumber: string;
@@ -55,7 +54,6 @@ const columns: {
   { key: "barcodeId", label: "Barcode ID" },
   { key: "senderName", label: "Sender" },
   { key: "receiverName", label: "Receiver" },
-  { key: "BranchName", label: "Branch Name" },
   { key: "mailType", label: "Type" },
   { key: "trackingNumber", label: "Tracking No." },
   { key: "insertDateTime", label: "Insert Date" },
@@ -81,12 +79,6 @@ const columns: {
 ];
 
 export const ClaimMails = () => {
-  const sampleMailCounts: MailCount[] = [
-    { branchCode: "BR001", count: 5 },
-    { branchCode: "BR002", count: 3 },
-    { branchCode: "BR003", count: 7 },
-  ];
-
   const [branches, setBranches] = useState<Branch[]>([]);
   const [mailCounts, setMailCounts] = useState<MailCount[]>([]);
   const [filter, setFilter] = useState("");
@@ -108,12 +100,12 @@ export const ClaimMails = () => {
   >([]);
 
   // Simulate initial data loading
+  // useEffect to load initial data
   useEffect(() => {
     const loadInitialData = async () => {
       setIsInitialLoading(true);
       try {
         await fetchBranchData();
-        setMailCounts(sampleMailCounts);
       } catch (error) {
         console.error("Initialization error:", error);
         setError("Failed to initialize application");
@@ -123,7 +115,14 @@ export const ClaimMails = () => {
     };
 
     loadInitialData();
-  }, [selectedBranch]);
+  }, []); // removed selectedBranch as dependency
+
+  // New useEffect: fetch mail counts when branches are loaded
+  useEffect(() => {
+    if (branches.length > 0) {
+      fetchPendingMailCounts();
+    }
+  }, [branches, selectedBranch]);
 
   //Fetch Branch Data
   const fetchBranchData = async () => {
@@ -152,18 +151,45 @@ export const ClaimMails = () => {
     }
   };
 
+
+  // Fetch pending mail counts for all branches
+  const fetchPendingMailCounts = async () => {
+    setError("");
+    try {
+      const counts: MailCount[] = [];
+      for (const branch of branches) {
+        const response = await fetchPendingBranchMails(branch.branchCode);
+        if (response.data && Array.isArray(response.data.data)) {
+          const pendingCount = response.data.data.filter(
+            (mail: any) => mail.status?.toLowerCase() === "pending"
+          ).length;
+          counts.push({ branchCode: branch.branchCode, count: pendingCount });
+        } else {
+          counts.push({ branchCode: branch.branchCode, count: 0 });
+        }
+      }
+      setMailCounts(counts);
+    } catch (err) {
+      console.error("Error fetching pending mail counts:", err);
+      setError("Failed to fetch pending mail counts.");
+      triggerToast("Failed to fetch pending mail counts", "error");
+    }
+  };
   //Fetch Mail Data
   const fetchBranchMailData = async (branchCode: string) => {
     setError("");
     try {
       const response = await fetchPendingBranchMails(branchCode); // Example branch code
       if (response.data && Array.isArray(response.data.data)) {
-        const mailDetailsWithIndex = response.data.data.map(
-          (mail: any, index: number) => ({
+        const mailDetailsWithIndex = response.data.data
+          .filter((mail: any) => {
+            const status = mail.status?.toLowerCase();
+            return status === "pending" || status === "returned";
+          })
+          .map((mail: any, index: number) => ({
             ...mail,
             index: index + 1,
-          })
-        );
+          }));
         setMailDetails(mailDetailsWithIndex);
       } else {
         setMailDetails([]);
@@ -265,7 +291,6 @@ export const ClaimMails = () => {
           <ClaimMailTable
             columns={columns}
             data={mailDetails}
-            // onViewClick={() => {}}
             rowsPerPage={10}
             searchableKeys={[
               "barcodeId",
@@ -332,16 +357,22 @@ export const ClaimMails = () => {
           </div>
         ) : (
           <div className="flex flex-wrap gap-5 ml-6">
-            {filteredBranches.map((branch) => (
-              <BranchCard
-                key={branch.branchCode}
-                code={branch.branchCode}
-                name={branch.branchName}
-                description={branch.branchDescription}
-                count={branch.count}
-                onClick={() => handleBranchClick(branch)}
-              />
-            ))}
+            {filteredBranches.map((branch) => {
+              const count =
+                mailCounts.find((mc) => mc.branchCode === branch.branchCode)
+                  ?.count || 0;
+
+              return (
+                <BranchCard
+                  key={branch.branchCode}
+                  code={branch.branchCode}
+                  name={branch.branchName}
+                  description={branch.branchDescription}
+                  count={count}
+                  onClick={() => handleBranchClick(branch)}
+                />
+              );
+            })}
           </div>
         )}
       </div>

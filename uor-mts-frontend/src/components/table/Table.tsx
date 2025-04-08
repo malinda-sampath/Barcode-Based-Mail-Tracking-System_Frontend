@@ -229,7 +229,13 @@ const Table = <T,>({
               <tr key={rowIndex} className="border-t hover:bg-gray-50">
                 {columns.map((column) => (
                   <td key={column.key.toString()} className="px-3 py-2">
-                    {column.key === "insertDateTime" ? (
+                    {column.key === "insertDate" ? (
+                      formatDate(row[column.key])
+                    ) : column.key === "updateDate" ? (
+                      formatDate(row[column.key])
+                    ) : column.key === "createdAt" ? (
+                      formatDate(row[column.key])
+                    ) : column.key === "updatedAt" ? (
                       formatDate(row[column.key])
                     ) : column.key === "barcodeImage" ? (
                       row[column.key] ? (
