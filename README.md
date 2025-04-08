@@ -69,7 +69,7 @@ Ensure you have the following installed:
    Create a `.env` file in the root directory and add the backend API base URL:
 
    ```env
-   REACT_APP_API_BASE_URL=http://localhost:8080/api
+   REACT_APP_API_BASE_URL=http://localhost:8081/api
    ```
 
 4. **Start the Development Server**:
