@@ -47,10 +47,3 @@ export const fetchPendingBranchMails = async () => {
     "GET"
   );
 };
-
-export const fetchBranchMails = async () => {
-  return await apiRequest<MailDetailsResponse>(
-    `branch-mail/branch-mail-data`,
-    "GET"
-  );
-};

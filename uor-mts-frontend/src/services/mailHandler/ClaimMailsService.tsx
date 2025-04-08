@@ -47,25 +47,3 @@ export const fetchPendingBranchMails = async (branchCode: string) => {
     "GET"
   );
 };
-
-export const claimMailSave = async (
-  barcodeID: string[],
-  branchCode: string,
-  referenceNumber: string,
-  personName: string,
-  personContact: string,
-  status: string,
-  nic: string,
-  note: string
-) => {
-  return await apiRequest<MailDetailsResponse>("mail-claim/save", "POST", {
-    barcodeID: barcodeID,
-    branchCode,
-    referenceNumber,
-    personName,
-    personContact,
-    status,
-    nic,
-    note,
-  });
-};

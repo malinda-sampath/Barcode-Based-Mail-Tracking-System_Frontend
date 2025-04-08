@@ -13,10 +13,9 @@ interface MainMailCart {
   mailType: string;
   trackingNumber: string;
   barcodeId: string;
-  BranchName: string;
   // mailDescription: string;
   barcodeImage: string;
-
+  BranchName: string;
   location: string;
   status: string;
   // referenceNumber: string;
