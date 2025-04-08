@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import BranchLayout from "../layouts/BranchLayout";
-import AllMails from "../pages/AllMails";
+import AllMails from "../pages/BranchMail";
 import Help from "../pages/Help";
 import Settings from "../pages/Setting";
 import BranchDashboard from "../pages/dashboard/BranchDashboard";

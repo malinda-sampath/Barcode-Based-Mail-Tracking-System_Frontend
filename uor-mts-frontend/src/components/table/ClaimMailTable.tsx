@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import {
   FaSort,
   FaSearch,
@@ -7,6 +7,7 @@ import {
   FaClock,
   FaCheck,
   FaUserCheck,
+  FaReply,
 } from "react-icons/fa";
 import ToastContainer from "../ui/toast/toastContainer";
 import { claimMailSave } from "../../services/mailHandler/ClaimMailsService";
@@ -48,12 +49,13 @@ const ClaimMailTable = <T,>({
   ) => {
     setToasts((prev) => [...prev, { message, type }]);
   };
+
   // Filter states
   const [selectedMails, setSelectedMails] = useState<T[]>([]);
   const [isClaimModalOpen, setIsClaimModalOpen] = useState(false);
   const [dateFilter, setDateFilter] = useState("all");
   const [mailTypeFilter, setMailTypeFilter] = useState("all");
-  const [selectedStatus, setSelectedStatus] = useState<string>("pending");
+  const [selectedStatus, setSelectedStatus] = useState<string>("all");
 
   // Auto-generate ID from current date and time
   const generateClaimId = () => {
@@ -86,6 +88,10 @@ const ClaimMailTable = <T,>({
     return Array.from(suggestionSet).slice(0, 5);
   };
 
+  useEffect(() => {
+    console.log("Table data received:", data);
+  }, [data]);
+
   const filteredData = useMemo(() => {
     let result = data;
 
@@ -106,8 +112,49 @@ const ClaimMailTable = <T,>({
       );
     }
 
+    // Apply mail type filter if not "all"
+    if (mailTypeFilter !== "all") {
+      result = result.filter((row: any) => row.mailType === mailTypeFilter);
+    }
+
+    // Apply date filter
+    if (dateFilter !== "all") {
+      const now = new Date();
+      result = result.filter((row: any) => {
+        if (!row.insertDateTime) return false;
+        const mailDate = new Date(row.insertDateTime);
+
+        switch (dateFilter) {
+          case "today":
+            return (
+              mailDate.getDate() === now.getDate() &&
+              mailDate.getMonth() === now.getMonth() &&
+              mailDate.getFullYear() === now.getFullYear()
+            );
+          case "week":
+            const startOfWeek = new Date(now);
+            startOfWeek.setDate(now.getDate() - now.getDay());
+            return mailDate >= startOfWeek;
+          case "month":
+            return (
+              mailDate.getMonth() === now.getMonth() &&
+              mailDate.getFullYear() === now.getFullYear()
+            );
+          default:
+            return true;
+        }
+      });
+    }
+
     return result;
-  }, [data, searchQuery, searchableKeys, selectedStatus]);
+  }, [
+    data,
+    searchQuery,
+    searchableKeys,
+    selectedStatus,
+    mailTypeFilter,
+    dateFilter,
+  ]);
 
   const sortedData = useMemo(() => {
     if (!sortKey) return filteredData;
@@ -148,7 +195,7 @@ const ClaimMailTable = <T,>({
     id: generateClaimId(),
     name: "",
     contactNumber: "",
-    idNumber: "",
+    NIC: "",
     status: "",
     note: "",
   });
@@ -185,7 +232,7 @@ const ClaimMailTable = <T,>({
   const confirmClaim = async () => {
     if (
       !claimantDetails.name ||
-      !claimantDetails.idNumber ||
+      !claimantDetails.NIC ||
       !claimantDetails.status
     ) {
       triggerToast("Please fill in all required fields.", "warning");
@@ -218,7 +265,7 @@ const ClaimMailTable = <T,>({
       claimantDetails.name,
       claimantDetails.contactNumber,
       claimantDetails.status,
-      claimantDetails.idNumber,
+      claimantDetails.NIC,
       claimantDetails.note
     );
 
@@ -230,7 +277,7 @@ const ClaimMailTable = <T,>({
         id: generateClaimId(),
         name: "",
         contactNumber: "",
-        idNumber: "",
+        NIC: "",
         status: "",
         note: "",
       });
@@ -247,8 +294,30 @@ const ClaimMailTable = <T,>({
   );
 
   // Status styling
-  const getStatusStyle = () => {
-    return "px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800";
+  const getStatusStyle = (status: string) => {
+    switch (status?.toLowerCase()) {
+      case "pending":
+        return "px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800";
+      case "returned":
+        return "px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800";
+      case "claimed":
+        return "px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800";
+      default:
+        return "px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800";
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status?.toLowerCase()) {
+      case "pending":
+        return <FaClock className="inline mr-1" />;
+      case "returned":
+        return <FaReply className="inline mr-1" />;
+      case "claimed":
+        return <FaCheckCircle className="inline mr-1" />;
+      default:
+        return null;
+    }
   };
 
   // Format date
@@ -341,8 +410,21 @@ const ClaimMailTable = <T,>({
           )}
         </div>
 
+        {/* Status Filter */}
+        <div className="w-full md:w-32">
+          <select
+            value={selectedStatus}
+            onChange={(e) => setSelectedStatus(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-700"
+          >
+            <option value="all">All Status</option>
+            <option value="pending">Pending</option>
+            <option value="returned">Returned</option>
+          </select>
+        </div>
+
         {/* Date Filter */}
-        <div className="w-full md:w-48">
+        <div className="w-full md:w-32">
           <select
             value={dateFilter}
             onChange={(e) => setDateFilter(e.target.value)}
@@ -356,7 +438,7 @@ const ClaimMailTable = <T,>({
         </div>
 
         {/* Mail Type Filter */}
-        <div className="w-full md:w-48">
+        <div className="w-full md:w-32">
           <select
             value={mailTypeFilter}
             onChange={(e) => setMailTypeFilter(e.target.value)}
@@ -437,12 +519,14 @@ const ClaimMailTable = <T,>({
                 {columns.map((column) => (
                   <td key={column.key.toString()} className="px-3 py-2">
                     {column.key === "status" ? (
-                      <span className={getStatusStyle()}>
-                        <FaClock className="inline mr-1" />
+                      <span className={getStatusStyle(row[column.key])}>
+                        {getStatusIcon(row[column.key])}
                         {row[column.key]}
                       </span>
                     ) : column.render ? (
                       column.render(row[column.key], row)
+                    ) : column.key === "insertDateTime" ? (
+                      formatDate(row[column.key])
                     ) : (
                       <span className="truncate max-w-xs inline-block">
                         {String(row[column.key])}
@@ -456,7 +540,7 @@ const ClaimMailTable = <T,>({
             <tr>
               <td colSpan={columns.length + 1} className="text-center py-4">
                 {filteredData.length === 0
-                  ? "No pending mails available"
+                  ? "No mails available"
                   : "No matching records found"}
               </td>
             </tr>
@@ -467,7 +551,7 @@ const ClaimMailTable = <T,>({
       {/* Pagination Controls */}
       <div className="flex flex-col sm:flex-row justify-between items-center mt-4 gap-4">
         <div className="text-sm text-gray-600">
-          Showing {paginatedData.length} of {filteredData.length} pending mails
+          Showing {paginatedData.length} of {filteredData.length} mails
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -583,14 +667,13 @@ const ClaimMailTable = <T,>({
                   <input
                     type="text"
                     className="w-full p-2 border rounded-md uppercase"
-                    value={claimantDetails.idNumber}
+                    value={claimantDetails.NIC}
                     onChange={(e) =>
                       setClaimantDetails({
                         ...claimantDetails,
-                        idNumber: e.target.value.toUpperCase(),
+                        NIC: e.target.value,
                       })
                     }
-                    maxLength={3}
                     required
                   />
                 </div>
@@ -644,7 +727,7 @@ const ClaimMailTable = <T,>({
                   onClick={confirmClaim}
                   disabled={
                     !claimantDetails.name ||
-                    !claimantDetails.idNumber ||
+                    !claimantDetails.NIC ||
                     !claimantDetails.status
                   }
                   className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 flex items-center gap-2"

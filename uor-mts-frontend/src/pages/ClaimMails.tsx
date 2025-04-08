@@ -38,7 +38,7 @@ interface MailDetails {
   barcodeId: string;
   // mailDescription: string;
   barcodeImage: string;
-  BranchName: string;
+  // BranchName: string;
   location: string;
   status: string;
   referenceNumber: string;
@@ -55,7 +55,7 @@ const columns: {
   { key: "barcodeId", label: "Barcode ID" },
   { key: "senderName", label: "Sender" },
   { key: "receiverName", label: "Receiver" },
-  { key: "BranchName", label: "Branch Name" },
+  // { key: "BranchName", label: "Branch Name" },
   { key: "mailType", label: "Type" },
   { key: "trackingNumber", label: "Tracking No." },
   { key: "insertDateTime", label: "Insert Date" },
@@ -102,12 +102,13 @@ export const ClaimMails = () => {
   >([]);
 
   // Simulate initial data loading
+  // useEffect to load initial data
   useEffect(() => {
     const loadInitialData = async () => {
       setIsInitialLoading(true);
       try {
         await fetchBranchData();
-        await fetchPendingMailCounts(); // Fetch pending mail counts
+        // Removed fetchPendingMailCounts() from here
       } catch (error) {
         console.error("Initialization error:", error);
         setError("Failed to initialize application");
@@ -117,7 +118,14 @@ export const ClaimMails = () => {
     };
 
     loadInitialData();
-  }, [selectedBranch]);
+  }, []); // removed selectedBranch as dependency
+
+  // New useEffect: fetch mail counts when branches are loaded
+  useEffect(() => {
+    if (branches.length > 0) {
+      fetchPendingMailCounts();
+    }
+  }, [branches, selectedBranch]);
 
   //Fetch Branch Data
   const fetchBranchData = async () => {
@@ -177,7 +185,10 @@ export const ClaimMails = () => {
       const response = await fetchPendingBranchMails(branchCode); // Example branch code
       if (response.data && Array.isArray(response.data.data)) {
         const mailDetailsWithIndex = response.data.data
-          .filter((mail: any) => mail.status?.toLowerCase() === "pending")
+          .filter((mail: any) => {
+            const status = mail.status?.toLowerCase();
+            return status === "pending" || status === "returned";
+          })
           .map((mail: any, index: number) => ({
             ...mail,
             index: index + 1,
@@ -283,7 +294,6 @@ export const ClaimMails = () => {
           <ClaimMailTable
             columns={columns}
             data={mailDetails}
-            // onViewClick={() => {}}
             rowsPerPage={10}
             searchableKeys={[
               "barcodeId",

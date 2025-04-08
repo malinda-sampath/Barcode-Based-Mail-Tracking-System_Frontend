@@ -1,29 +1,6 @@
-import React, { useState, useMemo, useEffect } from "react";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "../components/ui/card";
-import {
-  fetchBranches,
-  fetchPendingBranchMails,
-} from "../services/mailHandler/ClaimMailsService";
-import { Input } from "../components/ui/input";
-import { BranchCard } from "../components/pageComponent/BranchCard";
-import { Button } from "../components/ui/button";
-import ClaimMailTable from "../components/table/ClaimMailTable";
-import ToastContainer from "../components/ui/toast/toastContainer";
+import React, { useState, useEffect } from "react";
 import BranchAllMailTable from "../components/table/BranchAllMailTable";
-
-interface Branch {
-  branchCode: string;
-  branchName: string;
-  branchDescription: string;
-  insertDate: string;
-  updateDate: string;
-}
+import { fetchBranchMails } from "../services/branchManager/PendindMailService";
 
 type MailCount = {
   branchCode: string;
@@ -82,16 +59,8 @@ const columns: {
 ];
 
 const AllMails = () => {
-  const sampleMailCounts: MailCount[] = [
-    { branchCode: "BR001", count: 5 },
-    { branchCode: "BR002", count: 3 },
-    { branchCode: "BR003", count: 7 },
-  ];
-
-  const [branches, setBranches] = useState<Branch[]>([]);
   const [mailCounts, setMailCounts] = useState<MailCount[]>([]);
   const [filter, setFilter] = useState("");
-  const [selectedBranch, setSelectedBranch] = useState<Branch | null>(null);
   const [mailDetails, setMailDetails] = useState<MailDetails[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -110,73 +79,33 @@ const AllMails = () => {
 
   // Simulate initial data loading
   useEffect(() => {
-    const loadInitialData = async () => {
-      setIsInitialLoading(true);
-      try {
-        await fetchBranchData();
-        setMailCounts(sampleMailCounts);
-      } catch (error) {
-        console.error("Initialization error:", error);
-        setError("Failed to initialize application");
-      } finally {
-        setIsInitialLoading(false);
-      }
-    };
+    fetchBranchMailData();
+  }, []);
 
-    loadInitialData();
-  }, [selectedBranch]);
-
-  //Fetch Branch Data
-  const fetchBranchData = async () => {
+  const fetchBranchMailData = async () => {
     setError("");
     try {
-      const response = await fetchBranches();
+      const response = await fetchBranchMails(); // Example branch code
+      console.log("Branch mail data response:", response);
       if (response.data && Array.isArray(response.data.data)) {
-        setBranches(
-          response.data.data.map((branch: Branch) => ({
-            branchCode: branch.branchCode,
-            branchName: branch.branchName,
-            branchDescription: branch.branchDescription,
-            insertDate: branch.insertDate,
-            updateDate: branch.updateDate,
-          }))
-        );
+        const mailDetailsWithIndex = response.data.data
+          .filter((mail: any) => mail.status?.toLowerCase() === "")
+          .map((mail: any, index: number) => ({
+            ...mail,
+            index: index + 1,
+          }));
+        setMailDetails(mailDetailsWithIndex);
       } else {
-        setBranches([]);
-        setError("No branches found.");
-        triggerToast("No branches found.", "warning");
+        setMailDetails([]);
+        setError("No mail details found.");
+        triggerToast("No mail details found.", "warning");
       }
     } catch (err) {
-      console.error("Error fetching branches:", err);
-      setError("Failed to fetch branches.");
-      triggerToast("Failed to fetch branches", "error");
+      console.error("Error fetching mail details:", err);
+      setError("Failed to fetch mail details.");
+      triggerToast("Failed to fetch mail details", "error");
     }
   };
-
-  //Fetch Mail Data
-  // const fetchBranchMailData = async () => {
-  //   setError("");
-  //   try {
-  //     const response = await fetchPendingBranchMails(); // Example branch code
-  //     if (response.data && Array.isArray(response.data.data)) {
-  //       const mailDetailsWithIndex = response.data.data
-  //         .filter((mail: any) => mail.status?.toLowerCase() === "")
-  //         .map((mail: any, index: number) => ({
-  //           ...mail,
-  //           index: index + 1,
-  //         }));
-  //       setMailDetails(mailDetailsWithIndex);
-  //     } else {
-  //       setMailDetails([]);
-  //       setError("No mail details found.");
-  //       triggerToast("No mail details found.", "warning");
-  //     }
-  //   } catch (err) {
-  //     console.error("Error fetching mail details:", err);
-  //     setError("Failed to fetch mail details.");
-  //     triggerToast("Failed to fetch mail details", "error");
-  //   }
-  // };
 
   const currentDate = new Date().toLocaleDateString("en-GB", {
     day: "2-digit",
@@ -187,7 +116,7 @@ const AllMails = () => {
   return (
     <div className="ml-4 sm:ml-8 md:ml-16 px-4 sm:px-6 lg:px-8">
       <h1 className="text-xl sm:text-2xl font-semibold mt-2 text-[#611010]">
-        Mail Handler Management
+        Branch Mail Management
       </h1>
       <p className="text-xs sm:text-sm text-gray-500 ">{currentDate}</p>
 

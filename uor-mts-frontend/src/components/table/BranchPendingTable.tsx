@@ -328,8 +328,6 @@ const BranchPendingTable = <T,>({
                           className="h-8 w-auto"
                         />
                       ) : null
-                    ) : column.key === "branch" ? (
-                      row[column.key] || "N/A" // Ensure branch name is displayed or fallback to "N/A"
                     ) : column.render ? (
                       column.render(row[column.key], row)
                     ) : (

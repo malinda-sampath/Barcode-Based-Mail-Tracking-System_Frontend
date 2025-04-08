@@ -55,7 +55,7 @@ export const claimMailSave = async (
   personName: string,
   personContact: string,
   status: string,
-  NIC: string,
+  nic: string,
   note: string
 ) => {
   return await apiRequest<MailDetailsResponse>("mail-claim/save", "POST", {
@@ -65,7 +65,7 @@ export const claimMailSave = async (
     personName,
     personContact,
     status,
-    NIC,
+    nic,
     note,
   });
 };
