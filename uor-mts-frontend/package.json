@@ -51,6 +51,7 @@
     "recharts": "^2.15.1",
     "shadcn-ui": "^0.9.4",
     "sockjs-client": "^1.6.1",
+    "sonner": "^2.0.3",
     "tailwind-merge": "^3.0.1",
     "tailwindcss-animate": "^1.0.7",
     "typescript": "^4.9.5",
